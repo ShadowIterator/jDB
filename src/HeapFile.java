@@ -1,4 +1,4 @@
-import java.io.File;
+import java.io.*;
 import java.util.Arrays;
 
 public class HeapFile extends AbstractRecordManager {
@@ -58,7 +58,7 @@ public class HeapFile extends AbstractRecordManager {
         AbstractPage page = pager.get(page_id);
         byte[] cell = Arrays.copyOfRange(page.getContent(), cell_id * record_length, (cell_id + 1) * record_length);
         AbstractTuple tuple = new NaiveTuple();
-        tuple.deSerialize(cell);
+        tuple.deSerialize(cell, new NaiveTuple.NaiveTupleDesc());
         return tuple;
     }
 
@@ -72,28 +72,43 @@ public class HeapFile extends AbstractRecordManager {
     }
 
     public static void main(String[] args) throws Exception {
-        HeapFile hf = new HeapFile();
-        hf.init("database.temp.jDB");
-        hf.close();
-        hf.open("database.temp.jDB");
-//        hf.insertTuple(new NaiveTuple(12, 12.4));
-//        hf.insertTuple(new NaiveTuple(13, 11.4));
-//        hf.insertTuple(new NaiveTuple(15, 1.4));
-        for(int i = 0; i < 10000; ++i) {
-            hf.insertTuple(new NaiveTuple(i, 0.12 + (i % 4)));
-        }
-        hf.getTupleByRank(0).print();
-        hf.getTupleByRank(1).print();
-        hf.getTupleByRank(2).print();
+//        HeapFile hf = new HeapFile();
+//        hf.init("database.temp.jDB");
+//        hf.close();
+//        hf.open("database.temp.jDB");
+//        for(int i = 0; i < 10000; ++i) {
+//            hf.insertTuple(new NaiveTuple(i, 0.12 + (i % 4)));
+//        }
+//        hf.getTupleByRank(0).print();
+//        hf.getTupleByRank(1).print();
+//        hf.getTupleByRank(2).print();
+//
+//        for(HeapFile.Cursor cursor = hf.new Cursor(); !cursor.isEnd(); cursor.moveNext()){
+//            cursor.getTuple().print();
+//        }
+//
+//        HeapFile.Cursor cursor = hf.new Cursor(7652);
+//        cursor.getTuple().print();
+//        byte[] b = new NaiveTuple(1,25).serialize();
+//        NaiveTuple tuple = new NaiveTuple(0,0);
+//        tuple.deSerialize(b, new NaiveTuple.NaiveTupleDesc());
+//        System.out.println(b.length);
+//        tuple.print();
+        NaiveTuple t1 = new NaiveTuple(1,3.5);
+        NaiveTuple t2 = new NaiveTuple(2,2.5);
 
-        for(HeapFile.Cursor cursor = hf.new Cursor(); !cursor.isEnd(); cursor.moveNext()){
-            cursor.getTuple().print();
-        }
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ObjectOutputStream oout = new ObjectOutputStream(bout);
+        oout.writeObject(t1);
+        oout.writeObject(t2);
+        oout.flush();
 
-        HeapFile.Cursor cursor = hf.new Cursor(7652);
-        cursor.getTuple().print();
-
-
+        byte[] b = bout.toByteArray();
+        System.out.println(b.length);
+        ByteArrayInputStream bin = new ByteArrayInputStream(b);
+        ObjectInput oin = new ObjectInputStream(bin);
+        Object nt = oin.readObject();
+        ((NaiveTuple)nt).print();
     }
 
     public class Cursor extends AbstractCursor {
