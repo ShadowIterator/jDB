@@ -1,0 +1,9 @@
+update table1 set id = 100 where name = 'haha';
+update table1 set name = 'asdfa' where name = 'hehe';
+update table1 set grade = 99.99 where name = 'htht';
+
+show table table1;
+show table table2;
+
+drop table t1;
+drop table t2;
