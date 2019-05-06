@@ -26,3 +26,8 @@ hs_err_pid*
 *.jDB
 *.iml
 
+# mac
+.DS_Store
+
+# outpur folder
+out
