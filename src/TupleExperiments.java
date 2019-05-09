@@ -16,7 +16,7 @@ public class TupleExperiments extends AbstractTuple {
         objs = new Object[k];
     }
 
-    byte[] serialize() throws Exception {
+    byte[] serialize(AbstractTupleDesc desc) throws Exception {
 //        byte[] b;
         return new byte[12];
     }
@@ -40,6 +40,9 @@ public class TupleExperiments extends AbstractTuple {
         System.out.println(cls[0].toString() + "  " + (cls[0] == Integer.class) + "  " + tuple.getattr(0));
         System.out.println(cls[1].toString() + "  " + (cls[1] == Integer.class) + "  " + tuple.getattr(1));
         System.out.println(cls[2].toString() + "  " + (cls[2] == Integer.class) + "  " + tuple.getattr(2));
+        String str = (String) tuple.getattr(2);
+        byte[] bytes = str.getBytes();
+        System.out.println(bytes.length + " " + str.length());
 
 //        System.out.println((String) tuple.getattr(2));
 //        System.out.println(db);
