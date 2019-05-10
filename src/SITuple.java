@@ -64,13 +64,13 @@ public class SITuple extends AbstractTuple {
 
     static int bytesToInt(byte[] b) {
 //        int int_value;
-        return b[0] + ((int) b[1] << 8) + ((int) b[2] << 16) + ((int) b[3] << 24);
+        return b[0] | ((int) b[1] << 8) | ((int) b[2] << 16) | ((int) b[3] << 24);
     }
 
     static long bytesToLong(byte[] b) {
         byte[] b_low = Arrays.copyOfRange(b, 0, 4);
         byte[] b_high = Arrays.copyOfRange(b, 4, 8);
-        return (long) bytesToInt(b_low) + ((long) bytesToInt(b_high) << 32);
+        return (long) bytesToInt(b_low) | ((long) bytesToInt(b_high) << 32);
     }
 
     static float bytesToFloat(byte[] b) {
@@ -271,7 +271,7 @@ public class SITuple extends AbstractTuple {
 
         SITuple tuple1 = new SITuple(desc);
         SITuple tuple2 = new SITuple(desc);
-        tuple1.setAttr(0, (int)2);
+        tuple1.setAttr(0, (int)-2);
         tuple1.setAttr(1, (long)23);
         tuple1.setAttr(2, (float)2.2);
         tuple1.setAttr(3, null);
