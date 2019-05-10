@@ -64,13 +64,20 @@ public class SITuple extends AbstractTuple {
 
     static int bytesToInt(byte[] b) {
 //        int int_value;
-        return b[0] | ((int) b[1] << 8) | ((int) b[2] << 16) | ((int) b[3] << 24);
+//        int t_value = (b[0] & 0xff) | (((int) b[1] & 0xff) << 8);
+        return (b[0] & 0xff) |
+                (((int) b[1] & 0xff) << 8) |
+                (((int) b[2] & 0xff) << 16) |
+                (((int) b[3] & 0xff) << 24);
     }
 
     static long bytesToLong(byte[] b) {
         byte[] b_low = Arrays.copyOfRange(b, 0, 4);
         byte[] b_high = Arrays.copyOfRange(b, 4, 8);
-        return (long) bytesToInt(b_low) | ((long) bytesToInt(b_high) << 32);
+//        long vlow =  bytesToInt(b_low);
+//        long vhigh = bytesToInt(b_high);
+//        long res = (vlow & 0xffffffffl) | (((long) vhigh & 0xffffffffl) << 32);
+        return ((long) bytesToInt(b_low) & 0xffffffffl) | (((long) bytesToInt(b_high) & 0xffffffffl) << 32);
     }
 
     static float bytesToFloat(byte[] b) {
@@ -123,8 +130,8 @@ public class SITuple extends AbstractTuple {
 //        b[5] = (byte)((long_value >> 40) & 0xff);
 //        b[6] = (byte)((long_value >> 48) & 0xff);
 //        b[7] = (byte)((long_value >> 56) & 0xff);
-        byte[] b_low = intToBytes((int) (long_value));
-        byte[] b_high = intToBytes((int) (long_value >> 32));
+        byte[] b_low = intToBytes(((int) (long_value)) & 0xffffffff);
+        byte[] b_high = intToBytes(((int) (long_value >> 32)) & 0xffffffff);
         System.arraycopy(b_low, 0, b, 0, b_low.length);
         System.arraycopy(b_high, 0, b, b_low.length, b_high.length);
         return b;
@@ -272,14 +279,20 @@ public class SITuple extends AbstractTuple {
         SITuple tuple1 = new SITuple(desc);
         SITuple tuple2 = new SITuple(desc);
         tuple1.setAttr(0, (int)-2);
-        tuple1.setAttr(1, (long)23);
-        tuple1.setAttr(2, (float)2.2);
-        tuple1.setAttr(3, null);
-        tuple1.setAttr(4, "stringdvalue");
+        tuple1.setAttr(1, (long)4591870180066957722l);
+        tuple1.setAttr(2, (float)-0.872);
+        tuple1.setAttr(3, (double)-0.1);
+        tuple1.setAttr(4, (String)"stringdvalue");
         tuple1.print();
         byte[] b = tuple1.serialize(desc);
         tuple2.deSerialize(b, desc);
         tuple2.print();
+//        System.out.println((double)tuple2.getAttr(3));
+//        long la = 4591870180066957722l;
+//        int alow =(int) (la & 0xffffffffl);
+//        int ahigh = (int) ((la >> 32) & 0xffffffffl);
+//        long pa = (((long)alow) & 0xffffffffl) | ((((long)ahigh) & 0xffffffffl) << 32);
+//        System.out.println(la + " " + alow + " " + ahigh + " " + pa + " " + (long)(0xffffffff));
 
     }
 }
