@@ -15,6 +15,11 @@ public final class NaiveTuple extends AbstractTuple implements java.io.Serializa
         this.gpa = 0;
     }
 
+    Object getAttr(int k) {
+        return new Object();
+    }
+
+
     void print() {
         System.out.println("id:" + id + " ,gpa: " + gpa);
     }
@@ -79,6 +84,22 @@ public final class NaiveTuple extends AbstractTuple implements java.io.Serializa
 
         int getOffset(int k) throws Exception {
             return 0;
+        }
+
+        int getAttr_count() {
+            return 0;
+        }
+
+        Object getAttr_example(int k) {
+            return new Object();
+        }
+
+        String getAttr_name(int k) {
+            return "no";
+        }
+
+        byte getAttr_constraint(int k) {
+            return 1;
         }
     }
 

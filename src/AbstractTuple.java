@@ -2,6 +2,7 @@ abstract public class AbstractTuple {
     //Object[] attrs
     abstract byte[] serialize(AbstractTupleDesc desc) throws Exception;
     abstract void deSerialize(byte[] b, AbstractTupleDesc desc) throws Exception;
+    abstract Object getAttr(int k);
 
 //    void deSerialize(byte[] b, AbstractTupleDesc desc, int id) throws Exception {
 //
@@ -34,7 +35,10 @@ abstract public class AbstractTuple {
         abstract int tupleSize() throws Exception;
         abstract int descSize() throws Exception;
         abstract int getOffset(int k) throws Exception;
-
+        abstract int getAttr_count();
+        abstract Object getAttr_example(int k);
+        abstract String getAttr_name(int k);
+        abstract byte getAttr_constraint(int k);
     }
 
     void print() {

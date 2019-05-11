@@ -243,6 +243,14 @@ public class SITuple extends AbstractTuple {
         Object getAttr_example(int k) {
             return attr_example[k];
         }
+
+        String getAttr_name(int k) {
+            return attr_name[k];
+        }
+
+        byte getAttr_constraint(int k) {
+            return constraint_list[k];
+        }
     }
 
 
