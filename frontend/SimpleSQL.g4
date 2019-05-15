@@ -387,5 +387,5 @@ NUMINT     : DIGIT+;
 NUMINTNEG  : '-' (DIGIT+);
 OP         : ('>'|'>='|'<'|'<='|'<>');
 OPE        : '=';
-ID         : ([a-z]|[A-Z]|'_'|[0-9])+;
+ID         : ([a-z]|[A-Z]|'_')([a-z]|[A-Z]|'_'|[0-9])*;
 WS         : [ \n\t\r]+ -> skip;

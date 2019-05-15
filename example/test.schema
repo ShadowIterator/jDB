@@ -1,5 +1,5 @@
-create table student (id long, score double, gpa float, grade int, name string(128), primary key (id))
-create table teacher (id long, grade int, primary key (id))
+create table student (id long, score double, gpa float, grade int, name string(128), primary key (id));
+create table teacher (id long, grade int, primary key (id));
 insert into teacher values (1000, 1)
 insert into teacher values (1001, 2)
 insert into teacher values (1002, 3)
