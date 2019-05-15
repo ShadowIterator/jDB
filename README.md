@@ -19,3 +19,19 @@ This is going to be the 6th best java database (right after HSQLDB) which only s
 - 插入一个tuple的接口（序列化方法待讨论）
 - 删除一个tuple的接口
 - 更新一个tuple的接口
+
+## 基本任务TODO
+
+- [ ] 前端支持where语句中的and/or连接
+- [ ] 细化上述接口
+- [ ] 实现上述接口
+- [ ] 实现executor
+- [ ] 实现网络部分
+
+## 加分项TODO
+
+- [ ] 支持查询优化
+- [ ] 支持多个属性作为主键
+- [ ] 支持三张及以上表join操作
+- [ ] 支持outer join操作
+- [ ] 支持select语句中的子查询语句
