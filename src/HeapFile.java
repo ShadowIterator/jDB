@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.Arrays;
 
-public class HeapFile extends AbstractRecordManager {
+public class HeapFile {//extends AbstractRecordManager {
     static int record_length = NaiveTuple.TUPLE_SIZE;
     static int cells_per_page = NaivePage.PAGE_SIZE / record_length;
     int tot_tuple;
@@ -111,7 +111,7 @@ public class HeapFile extends AbstractRecordManager {
 //        ((NaiveTuple)nt).print();
     }
 
-    public class Cursor extends AbstractCursor {
+    public class Cursor {//extends AbstractCursor {
         int rank;
 
         Cursor() {
