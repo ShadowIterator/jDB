@@ -1,4 +1,6 @@
 import java.io.RandomAccessFile;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class NaivePager extends AbstractPager {
     final static int PAGE_TOT = 1024;
@@ -6,10 +8,12 @@ public final class NaivePager extends AbstractPager {
     int tot_page;
     //    String db_file_name;
     RandomAccessFile raf = null;
+    ConcurrentLinkedQueue<Integer> garbage_box;
 
     NaivePager() {
         page_pool = new NaivePage[PAGE_TOT];
         tot_page = 0;
+        garbage_box = new ConcurrentLinkedQueue<Integer>();
     }
 
     int getHash(int k) {
@@ -58,8 +62,6 @@ public final class NaivePager extends AbstractPager {
             writePage(page_pool[index]);
             return page_pool[index] = readPage(page_id);
         }
-
-
     }
 
     boolean write(AbstractPage page) throws Exception {
@@ -73,14 +75,25 @@ public final class NaivePager extends AbstractPager {
     }
 
     AbstractPage newPage() throws Exception {
-        NaivePage page = new NaivePage(tot_page);
+        NaivePage page;
+        if(!garbage_box.isEmpty()) {
+            page = new NaivePage(garbage_box.poll());
+        }
+        else {
+            page = new NaivePage(tot_page);
+            tot_page += 1;
+        }
         writePage(page);
         write(page);
-        tot_page += 1;
         return page;
     }
 
-    boolean delPage(int id) throws Exception {
+    boolean delPage(int page_id) throws Exception {
+//        return true;
+        garbage_box.offer(page_id);
+        int index = getHash(page_id);
+        if(page_pool[index] != null && page_pool[index].page_id == page_id)
+            page_pool[index] = null;
         return true;
     }
 
