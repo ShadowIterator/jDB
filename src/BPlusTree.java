@@ -8,15 +8,20 @@ public class BPlusTree extends  AbstractRecordManager{
     protected AbstractPager pager;
     protected SITuple.SITupleDesc desc;
 
-
+    
     //TODO:
     public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager) {
 
     }
 
-    //TODO:
+    //TODO: open a BPlusTree
     public BPlusTree(AbstractPager pager, int info_page_id) {
 
+    }
+
+    //TODO: return the info_page_id
+    public int getInfoPageID() {
+        return 0;
     }
 
     // TODO: add it to the upper class
