@@ -25,6 +25,17 @@ hs_err_pid*
 #datafile
 *.data
 
+#pdf & images
+*.pdf
+*.png
+*.PNG
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
+*.bmp
+*.BMP
+
 .idea/*
 *.jDB
 *.iml
