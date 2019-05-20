@@ -251,6 +251,13 @@ public class SITuple extends AbstractTuple {
         byte getAttr_constraint(int k) {
             return constraint_list[k];
         }
+
+        // added by zjl
+        int getPrimary_key_id()
+        {
+            return primary_key_id;
+        }
+
     }
 
 

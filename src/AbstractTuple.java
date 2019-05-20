@@ -39,6 +39,9 @@ abstract public class AbstractTuple {
         abstract Object getAttr_example(int k);
         abstract String getAttr_name(int k);
         abstract byte getAttr_constraint(int k);
+
+        // added by zjl
+        abstract int getPrimary_key_id();
     }
 
     void print() {
