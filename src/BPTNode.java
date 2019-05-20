@@ -329,6 +329,51 @@ public class BPTNode {
         return null;
     }
 
+    public int[] getKeyPos(Comparable key, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    {
+    // return [nodeId, keyPosInNode]
+        if(isLeaf)
+        {
+            int[] infoRes = new int[2];
+            infoRes[0] = selfPageId;
+            for(int i=0; i<entries.size(); i++)
+            {
+                if(key.compareTo(entries.get(i).getKey())<=0)
+                {
+                    infoRes[1] = i;
+                    return infoRes;
+                }
+            }
+            infoRes[1] = entries.size();
+            return infoRes;
+        }
+        else
+        {
+            if(key.compareTo(entries.get(0).getKey()) <= 0)
+            {
+                BPTNode child = new BPTNode(pager, desc, children.get(0));
+                return child.getKeyPos(key, pager, desc);
+            }
+            else if(key.compareTo(entries.get(entries.size()-1).getKey()) >= 0)
+            {
+                BPTNode child = new BPTNode(pager, desc, children.get(entries.size()-1));
+                return child.getKeyPos(key, pager, desc);
+            }
+            else
+            {
+                for(int i=0; i<entries.size(); i++)
+                {
+                    if (entries.get(i).getKey().compareTo(key) <= 0 && entries.get(i + 1).getKey().compareTo(key) > 0)
+                    {
+                        BPTNode child = new BPTNode(pager, desc, children.get(i));
+                        return child.getKeyPos(key, pager, desc);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     protected void parentAdjust(BPlusTree tree, BPTNode left, BPTNode right, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
     {
         BPTNode parNode = null;
@@ -361,7 +406,6 @@ public class BPTNode {
             parNode.getChildren().add(right.getId());
             setEntries(null);
             setChildren(null);
-
 
         }
         //新的左右节点持久化存储
