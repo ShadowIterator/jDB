@@ -6,6 +6,23 @@ public class BPlusTree extends  AbstractRecordManager{
     protected AbstractPager pager;
     protected SITuple.SITupleDesc desc;
 
+    //TODO:
+    public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager) {
+
+    }
+
+    //TODO:
+    public BPlusTree(AbstractPager pager, int info_page_id) {
+
+    }
+
+    // TODO: add it to the upper class
+    AbstractTuple.AbstractTupleDesc getTupleDesc() {
+        return desc;
+    }
+
+    //TODO:init()
+
     public BPlusTree(Integer order, SITuple.SITupleDesc desc)
     {
         this.desc = desc;
@@ -69,6 +86,7 @@ public class BPlusTree extends  AbstractRecordManager{
         head = root.getId();
     }
 
+    //TODO: no longer acquired
     public void open(String db_file_name) throws Exception
     {
 
