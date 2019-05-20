@@ -1,13 +1,13 @@
 abstract public class AbstractRecordManager {
 
     abstract void init(String db_file_name) throws Exception;
-    abstract void open(String db_file_name) throws Exception;
+//    abstract void open(String db_file_name) throws Exception;
     abstract void close() throws Exception;
 
-    abstract AbstractTuple getTuple(Comparable key) throws Exception;
-    abstract void insertTuple(AbstractTuple tuple) throws Exception;
-    abstract void setTuple(Comparable key, AbstractTuple tuple) throws  Exception;
-    abstract void removeTuple(Comparable key) throws Exception;
+//    abstract AbstractTuple getTuple(Comparable key) throws Exception;
+//    abstract void insertTuple(AbstractTuple tuple) throws Exception;
+//    abstract void setTuple(Comparable key, AbstractTuple tuple) throws  Exception;
+//    abstract void removeTuple(Comparable key) throws Exception;
 
 //    abstract boolean insertTuple(AbstractTuple tuple) throws Exception;
 //    abstract AbstractTuple getTupleByRank(int rank) throws Exception;

@@ -45,7 +45,7 @@ public class MetadataManager {
         AbstractTuple.AbstractTupleDesc desc = database_meta.getTupleDesc();
         if(db_name.length() != ((String) desc.getAttr_example(0)).length())
             return false;
-        String db_file_name = getDBFileName(db_name)
+        String db_file_name = getDBFileName(db_name);
         SITuple newTuple = new SITuple(desc);
         newTuple.setAttr(0, db_name);
         newTuple.setAttr(1, db_file_name);
@@ -88,7 +88,7 @@ public class MetadataManager {
         NaivePager pager = new NaivePager();
         pager.open(db_filename);
         table_meta = new BPlusTree(pager, 0);
-        
+
     }
 
 }
