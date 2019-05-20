@@ -1079,6 +1079,7 @@ public class SimpleSQLParser extends Parser {
 		public Token ID;
 		public Token op;
 		public Value_singleContext value_single;
+		public Where_listContext where_list;
 		public TerminalNode ID() { return getToken(SimpleSQLParser.ID, 0); }
 		public Value_singleContext value_single() {
 			return getRuleContext(Value_singleContext.class,0);
@@ -1125,33 +1126,32 @@ public class SimpleSQLParser extends Parser {
 				setState(224);
 				match(AND);
 				setState(225);
-				where_list();
+				((Where_listContext)_localctx).where_list = where_list();
 
-				                    ((Where_listContext)_localctx).whereCondition =  new WhereCondition();
-				                    _localctx.whereCondition.leftValue = _localctx.whereCondition.new SQLValue();
-				                    _localctx.whereCondition.leftValue.type = WhereCondition.SQLValueType.ATTRIBUTE;
-				                    _localctx.whereCondition.leftValue.tableName = null;
-				                    _localctx.whereCondition.leftValue.attributeName = (((Where_listContext)_localctx).ID!=null?((Where_listContext)_localctx).ID.getText():null);
-				                    _localctx.whereCondition.rightValue = _localctx.whereCondition.new SQLValue();
-				                    _localctx.whereCondition.rightValue.type = WhereCondition.SQLValueType.DIRECT;
-				                    _localctx.whereCondition.rightValue.directValue = ((Where_listContext)_localctx).value_single.value;
+				                    ((Where_listContext)_localctx).whereCondition =  ((Where_listContext)_localctx).where_list.whereCondition;
+				                    WhereCondition.SQLValue _leftValue = _localctx.whereCondition.new SQLValue(null, (((Where_listContext)_localctx).ID!=null?((Where_listContext)_localctx).ID.getText():null));
+				                    WhereCondition.SQLValue _rightValue = _localctx.whereCondition.new SQLValue(((Where_listContext)_localctx).value_single.value);
+				                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
 				                    switch((((Where_listContext)_localctx).op!=null?((Where_listContext)_localctx).op.getText():null)) {
 				                        case "=":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.EQ;
+				                            _op = WhereCondition.Operator.EQ;
 				                            break;
 				                        case ">":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.GT;
+				                            _op = WhereCondition.Operator.GT;
 				                            break;
 				                        case ">=":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.GEQ;
+				                            _op = WhereCondition.Operator.GEQ;
 				                            break;
 				                        case "<":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.LT;
+				                            _op = WhereCondition.Operator.LT;
 				                            break;
 				                        case "<=":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.LEQ;
+				                            _op = WhereCondition.Operator.LEQ;
 				                            break;
 				                    }
+				                    WhereCondition.OneCondition _oneCondition = _localctx.whereCondition.new OneCondition(_leftValue, _rightValue, _op);
+				                    WhereCondition.LogicConnection _logic = WhereCondition.LogicConnection.AND;
+				                    _localctx.whereCondition.AddCondition(_oneCondition, _logic);
 				                
 				}
 				break;
@@ -1176,33 +1176,32 @@ public class SimpleSQLParser extends Parser {
 				setState(231);
 				match(OR);
 				setState(232);
-				where_list();
+				((Where_listContext)_localctx).where_list = where_list();
 
-				                    ((Where_listContext)_localctx).whereCondition =  new WhereCondition();
-				                    _localctx.whereCondition.leftValue = _localctx.whereCondition.new SQLValue();
-				                    _localctx.whereCondition.leftValue.type = WhereCondition.SQLValueType.ATTRIBUTE;
-				                    _localctx.whereCondition.leftValue.tableName = null;
-				                    _localctx.whereCondition.leftValue.attributeName = (((Where_listContext)_localctx).ID!=null?((Where_listContext)_localctx).ID.getText():null);
-				                    _localctx.whereCondition.rightValue = _localctx.whereCondition.new SQLValue();
-				                    _localctx.whereCondition.rightValue.type = WhereCondition.SQLValueType.DIRECT;
-				                    _localctx.whereCondition.rightValue.directValue = ((Where_listContext)_localctx).value_single.value;
+				                    ((Where_listContext)_localctx).whereCondition =  ((Where_listContext)_localctx).where_list.whereCondition;
+				                    WhereCondition.SQLValue _leftValue = _localctx.whereCondition.new SQLValue(null, (((Where_listContext)_localctx).ID!=null?((Where_listContext)_localctx).ID.getText():null));
+				                    WhereCondition.SQLValue _rightValue = _localctx.whereCondition.new SQLValue(((Where_listContext)_localctx).value_single.value);
+				                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
 				                    switch((((Where_listContext)_localctx).op!=null?((Where_listContext)_localctx).op.getText():null)) {
 				                        case "=":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.EQ;
+				                            _op = WhereCondition.Operator.EQ;
 				                            break;
 				                        case ">":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.GT;
+				                            _op = WhereCondition.Operator.GT;
 				                            break;
 				                        case ">=":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.GEQ;
+				                            _op = WhereCondition.Operator.GEQ;
 				                            break;
 				                        case "<":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.LT;
+				                            _op = WhereCondition.Operator.LT;
 				                            break;
 				                        case "<=":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.LEQ;
+				                            _op = WhereCondition.Operator.LEQ;
 				                            break;
 				                    }
+				                    WhereCondition.OneCondition _oneCondition = _localctx.whereCondition.new OneCondition(_leftValue, _rightValue, _op);
+				                    WhereCondition.LogicConnection _logic = WhereCondition.LogicConnection.OR;
+				                    _localctx.whereCondition.AddCondition(_oneCondition, _logic);
 				                
 				}
 				break;
@@ -1226,30 +1225,28 @@ public class SimpleSQLParser extends Parser {
 				((Where_listContext)_localctx).value_single = value_single();
 
 				                    ((Where_listContext)_localctx).whereCondition =  new WhereCondition();
-				                    _localctx.whereCondition.leftValue = _localctx.whereCondition.new SQLValue();
-				                    _localctx.whereCondition.leftValue.type = WhereCondition.SQLValueType.ATTRIBUTE;
-				                    _localctx.whereCondition.leftValue.tableName = null;
-				                    _localctx.whereCondition.leftValue.attributeName = (((Where_listContext)_localctx).ID!=null?((Where_listContext)_localctx).ID.getText():null);
-				                    _localctx.whereCondition.rightValue = _localctx.whereCondition.new SQLValue();
-				                    _localctx.whereCondition.rightValue.type = WhereCondition.SQLValueType.DIRECT;
-				                    _localctx.whereCondition.rightValue.directValue = ((Where_listContext)_localctx).value_single.value;
+				                    WhereCondition.SQLValue _leftValue = _localctx.whereCondition.new SQLValue(null, (((Where_listContext)_localctx).ID!=null?((Where_listContext)_localctx).ID.getText():null));
+				                    WhereCondition.SQLValue _rightValue = _localctx.whereCondition.new SQLValue(((Where_listContext)_localctx).value_single.value);
+				                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
 				                    switch((((Where_listContext)_localctx).op!=null?((Where_listContext)_localctx).op.getText():null)) {
 				                        case "=":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.EQ;
+				                            _op = WhereCondition.Operator.EQ;
 				                            break;
 				                        case ">":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.GT;
+				                            _op = WhereCondition.Operator.GT;
 				                            break;
 				                        case ">=":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.GEQ;
+				                            _op = WhereCondition.Operator.GEQ;
 				                            break;
 				                        case "<":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.LT;
+				                            _op = WhereCondition.Operator.LT;
 				                            break;
 				                        case "<=":
-				                            _localctx.whereCondition.operator = WhereCondition.Operator.LEQ;
+				                            _op = WhereCondition.Operator.LEQ;
 				                            break;
 				                    }
+				                    WhereCondition.OneCondition _oneCondition = _localctx.whereCondition.new OneCondition(_leftValue, _rightValue, _op);
+				                    _localctx.whereCondition.conditions.add(_oneCondition);
 				                
 				}
 				break;
@@ -1576,15 +1573,12 @@ public class SimpleSQLParser extends Parser {
 				                            _localctx.tableJoin.isJoin = true;
 				                            _localctx.tableJoin.firstTableName = (((Table_list_selectContext)_localctx).f!=null?((Table_list_selectContext)_localctx).f.getText():null);
 				                            _localctx.tableJoin.secondTableName = (((Table_list_selectContext)_localctx).s!=null?((Table_list_selectContext)_localctx).s.getText():null);
-				                            WhereCondition whereCondition = new WhereCondition();
-				                            whereCondition.leftValue = whereCondition.new SQLValue();
-				                            whereCondition.leftValue.type = WhereCondition.SQLValueType.ATTRIBUTE;
-				                            whereCondition.leftValue.tableName = (((Table_list_selectContext)_localctx).ft!=null?((Table_list_selectContext)_localctx).ft.getText():null);
-				                            whereCondition.leftValue.attributeName = (((Table_list_selectContext)_localctx).fa!=null?((Table_list_selectContext)_localctx).fa.getText():null);
-				                            whereCondition.rightValue = whereCondition.new SQLValue();
-				                            whereCondition.rightValue.type = WhereCondition.SQLValueType.ATTRIBUTE;
-				                            whereCondition.rightValue.tableName = (((Table_list_selectContext)_localctx).st!=null?((Table_list_selectContext)_localctx).st.getText():null);
-				                            whereCondition.rightValue.attributeName = (((Table_list_selectContext)_localctx).sa!=null?((Table_list_selectContext)_localctx).sa.getText():null);
+				                            _localctx.tableJoin.onCondition = new WhereCondition();
+				                            WhereCondition.SQLValue _leftValue = _localctx.tableJoin.onCondition.new SQLValue((((Table_list_selectContext)_localctx).ft!=null?((Table_list_selectContext)_localctx).ft.getText():null), (((Table_list_selectContext)_localctx).fa!=null?((Table_list_selectContext)_localctx).fa.getText():null));
+				                            WhereCondition.SQLValue _rightValue = _localctx.tableJoin.onCondition.new SQLValue((((Table_list_selectContext)_localctx).st!=null?((Table_list_selectContext)_localctx).st.getText():null), (((Table_list_selectContext)_localctx).sa!=null?((Table_list_selectContext)_localctx).sa.getText():null));
+				                            WhereCondition.Operator _op = WhereCondition.Operator.EQ;
+				                            WhereCondition.OneCondition _oneCondition = _localctx.tableJoin.onCondition.new OneCondition(_leftValue, _rightValue, _op);
+				                            _localctx.tableJoin.onCondition.conditions.add(_oneCondition);
 				                        
 				}
 				break;
