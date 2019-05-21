@@ -30,7 +30,7 @@ public class BPTNode {
         this.selfPageId = pager.newPage().getPageID();
     }
 
-    public BPTNode(AbstractPager pager, SITuple.SITupleDesc desc, Integer pageId) throws Exception
+    public BPTNode(AbstractPager pager, AbstractTuple.AbstractTupleDesc desc, Integer pageId) throws Exception
     {
         this.selfPageId = pageId;
         AbstractPage page = pager.get(pageId);
@@ -118,7 +118,7 @@ public class BPTNode {
 //
 //    }
 
-    public void writeToPage(AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    public void writeToPage(AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         AbstractPage page = pager.get(selfPageId);
         byte[] originContent = page.getContent();
@@ -286,7 +286,7 @@ public class BPTNode {
     }
 
 
-    public AbstractTuple get(Comparable key, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    public AbstractTuple get(Comparable key, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         if(isLeaf)
         {
@@ -329,7 +329,7 @@ public class BPTNode {
         return null;
     }
 
-    public int[] getKeyPos(Comparable key, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    public int[] getKeyPos(Comparable key, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
     // return [nodeId, keyPosInNode]
         if(isLeaf)
@@ -374,7 +374,7 @@ public class BPTNode {
         return null;
     }
 
-    protected void parentAdjust(BPlusTree tree, BPTNode left, BPTNode right, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    protected void parentAdjust(BPlusTree tree, BPTNode left, BPTNode right, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         BPTNode parNode = null;
         if(parent>=0)
@@ -383,7 +383,6 @@ public class BPTNode {
             // BPTNode parNode = fromPage(pager.get(parent));
             parNode = new BPTNode(pager, desc, parent);
             int idInPar = parNode.getChildren().indexOf(getId());
-            //TODO: node written back after children updated
             parNode.getChildren().remove(getId());
             left.setParent(parent);
             right.setParent(parent);
@@ -416,7 +415,7 @@ public class BPTNode {
         pager.delPage(selfPageId);
     }
 
-    public void insertOrUpdate(Comparable key, AbstractTuple tuple, BPlusTree tree, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    public void insertOrUpdate(Comparable key, AbstractTuple tuple, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer order = tree.getOrder();
         if(isLeaf)
@@ -512,7 +511,7 @@ public class BPTNode {
         }
     }
 
-    protected void insertRelatedUpdate(BPlusTree tree, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    protected void insertRelatedUpdate(BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer order = tree.getOrder();
         validate(this, order, pager, desc);
@@ -553,7 +552,7 @@ public class BPTNode {
         }
     }
 
-    protected static void validate(BPTNode node, Integer order, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    protected static void validate(BPTNode node, Integer order, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         boolean entriesChanged = false;
         if(node.getEntries().size()==node.getChildren().size())
@@ -594,7 +593,7 @@ public class BPTNode {
         }
     }
 
-    protected void removeRelatedUpdate(BPlusTree tree, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    protected void removeRelatedUpdate(BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer order = tree.getOrder();
         validate(this, order, pager, desc);
@@ -716,7 +715,7 @@ public class BPTNode {
         }
     }
 
-    public void remove(Comparable key, BPlusTree tree, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    public void remove(Comparable key, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer order = tree.getOrder();
         if(isLeaf)
@@ -886,7 +885,7 @@ public class BPTNode {
         entries.add(entries.size(), toAdd);
     }
 
-    public void removeItem(Comparable key, AbstractPager pager, SITuple.SITupleDesc desc) throws Exception
+    public void removeItem(Comparable key, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer idx = -1;
         for(int i=0; i<entries.size(); i++)
