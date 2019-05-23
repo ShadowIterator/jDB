@@ -51,13 +51,13 @@ public class BPlusTree extends  AbstractRecordManager{
             readPos+=Integer.BYTES;
         }
         order = intInfo[0];
-
         head = intInfo[2];
         count = intInfo[4];
         Integer descLength = intInfo[5];
         desc = new SITuple.SITupleDesc();
         desc.deSerialize(Arrays.copyOfRange(info, readPos, readPos+descLength));
         this.root = new BPTNode(pager, desc, intInfo[1]);
+
     }
 
     public int getInfoPageID() {

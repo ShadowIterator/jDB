@@ -133,7 +133,9 @@ public class BPTNode {
                 keySize = Double.BYTES;
                 break;
             case BPTConfig.TYPE_STR:
-                keySize = BPTConfig.CUNSTOMIZED_SIZE;
+//                keySize = BPTConfig.CUNSTOMIZED_SIZE;
+                String keyExample =(String) desc.getAttr_example(desc.getPrimary_key_id());
+                keySize = SITuple.stringToBytes(keyExample).length;
                 break;
             case BPTConfig.TYPE_LONG:
                 keySize = Long.BYTES;
@@ -166,7 +168,6 @@ public class BPTNode {
             for(int i=0; i<entries.size(); i++)
             {
                 part = SITuple.objectToBytes(entries.get(i).getKey());
-//                System.arraycopy(part, 0, originContent, writePos, keySize);
                 System.arraycopy(part, 0, originContent, writePos, part.length);
                 writePos += keySize;
                 AbstractTuple tup = entries.get(i).getValue();
@@ -180,7 +181,7 @@ public class BPTNode {
             for(int i=0; i<entries.size(); i++)
             {
                 part = SITuple.objectToBytes(entries.get(i).getKey());
-                System.arraycopy(part, 0, originContent, writePos, keySize);
+                System.arraycopy(part, 0, originContent, writePos, part.length);
                 writePos += keySize;
                 part = SITuple.objectToBytes(children.get(i));
                 System.arraycopy(part, 0, originContent, writePos, Integer.BYTES);
