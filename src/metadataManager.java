@@ -121,6 +121,12 @@ public class MetadataManager {
         loadTables();
     }
 
-    
+    boolean dropTable(String table_name) throws Exception {
+
+        table_meta.removeTuple(table_name);
+        loadTables();
+
+        return true;
+    }
 
 }
