@@ -21,6 +21,7 @@ public class MetadataManager {
     }
 
     void init(String file_name) throws Exception {
+        FileUtils.delFile(file_name);
         NaivePager pager = new NaivePager();
         pager.open(file_name);
         //hardcoding metadata desc.
@@ -32,7 +33,7 @@ public class MetadataManager {
         attr_example[1] = "default_filename";
         attr_name[0] = "db_name";
         attr_name[1] = "db_file_name";
-        SITuple.SITupleDesc desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 1);
+        SITuple.SITupleDesc desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
         database_meta = new BPlusTree(bpt_order, desc, pager);
 
     }
@@ -60,6 +61,8 @@ public class MetadataManager {
         newTuple.setAttr(0, db_name);
         newTuple.setAttr(1, db_file_name);
         database_meta.insertTuple(newTuple);
+
+        SITuple getTuple = (SITuple) database_meta.getTuple(db_name);
 
         //create table_metadata_tree
         /***
@@ -108,7 +111,8 @@ public class MetadataManager {
     void checkoutDatabase(String db_name) throws Exception {
         AbstractTuple tuple = database_meta.getTuple(db_name);
         if(tuple == null) return ;
-        cur_db_pager.close();
+        if(cur_db_pager != null)
+            cur_db_pager.close();
         String db_filename = (String) tuple.getAttr(1);
         NaivePager pager = new NaivePager();
         pager.open(db_filename);

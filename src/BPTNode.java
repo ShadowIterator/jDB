@@ -166,7 +166,8 @@ public class BPTNode {
             for(int i=0; i<entries.size(); i++)
             {
                 part = SITuple.objectToBytes(entries.get(i).getKey());
-                System.arraycopy(part, 0, originContent, writePos, keySize);
+//                System.arraycopy(part, 0, originContent, writePos, keySize);
+                System.arraycopy(part, 0, originContent, writePos, part.length);
                 writePos += keySize;
                 AbstractTuple tup = entries.get(i).getValue();
                 part = tup.serialize(desc);
