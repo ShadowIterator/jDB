@@ -293,6 +293,7 @@ public class BPTNode {
         {
             for(Map.Entry<Comparable, AbstractTuple> item:entries)
             {
+                System.out.println(item.getKey() + " : " + key + " : " + item.getKey().compareTo(key));
                 if(item.getKey().compareTo(key) == 0)
                 {
                     return item.getValue();
