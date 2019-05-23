@@ -7,7 +7,7 @@ public class MetadataManager {
     static int bpt_order = 3;
     BPlusTree database_meta;
     BPlusTree table_meta;
-    BPlusTree[] tables;
+    public BPlusTree[] tables;
     NaivePager cur_db_pager;
     SITuple.SITupleDesc database_meta_desc;
     SITuple.SITupleDesc table_meta_desc;
@@ -49,7 +49,14 @@ public class MetadataManager {
         if(db_name.length() != ((String) desc.getAttr_example(0)).length())
             return false;
         String db_file_name = getDBFileName(db_name);
+
+        System.out.println(desc.getAttr_example(0) + " " + desc.getAttr_example(1));
+        System.out.println(db_name + " " + db_file_name);
+
+
+
         SITuple newTuple = new SITuple(desc);
+
         newTuple.setAttr(0, db_name);
         newTuple.setAttr(1, db_file_name);
         database_meta.insertTuple(newTuple);
@@ -127,6 +134,54 @@ public class MetadataManager {
         loadTables();
 
         return true;
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        MetadataManager mgr = new MetadataManager();
+        mgr.init("data_meta.jDB");
+        mgr.createDatabase("defaultdb1");
+        mgr.checkoutDatabase("defaultdb1");
+
+        int attr_count = 3;
+        Object[] attr_example = new Object[attr_count];
+        String[] attr_name = new String[attr_count];
+        byte[] constraint_list = new byte[attr_count];
+        attr_example[0] = "kurapika";
+        attr_example[1] = (long)16;
+        attr_example[2] = (float)14.4;
+        attr_name[0] = "attr1";
+        attr_name[1] = "attr2";
+        attr_name[2] = "attr3";
+
+        SITuple.SITupleDesc table1_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
+
+        mgr.createTable("defaulttable1", table1_desc);
+
+        SITuple tuple1 = new SITuple(table1_desc);
+        tuple1.setAttr(0, "gonnnnnn");
+        tuple1.setAttr(1, (long)13);
+        tuple1.setAttr(2, (float)14.8);
+
+        BPlusTree table = mgr.tables[0];
+        table.insertTuple(tuple1);
+
+        SITuple tuple2 = new SITuple(table1_desc);
+        tuple1.setAttr(0, "killuaaa");
+        tuple1.setAttr(1, (long)13);
+        tuple1.setAttr(2, (float)13.2);
+        table.insertTuple(tuple2);
+
+        SITuple tuple3 = new SITuple(table1_desc);
+        tuple1.setAttr(0, "reoriooo");
+        tuple1.setAttr(1, (long)18);
+        tuple1.setAttr(2, (float)17.8);
+        table.insertTuple(tuple3);
+
+        for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
+            it.getTuple().print();
+        }
+
     }
 
 }
