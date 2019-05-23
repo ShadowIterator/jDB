@@ -4,6 +4,7 @@ public class BPlusTree extends  AbstractRecordManager{
     protected Integer order;
     protected Integer head;
     protected Integer infoPageId;
+    protected Integer count;
     protected BPTNode root;
     protected AbstractPager pager;
     protected AbstractTuple.AbstractTupleDesc desc;
@@ -11,15 +12,29 @@ public class BPlusTree extends  AbstractRecordManager{
 
     //TODO: a method returning the tot tuple number of this tree
     public int getCount() {
-        return 0;
+        return count;
     }
 
-    //TODO: need init once created
-
-    public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager) {
+    public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager) throws Exception
+    {
         this.desc = desc;
         this.order = order;
         this.pager = pager;
+        this.count = 0;
+        AbstractPage infoPage = pager.newPage();
+        this.infoPageId = infoPage.getPageID();
+        init();
+    }
+
+    // used for hardcode meta-data bptree
+    public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager, Integer infoPageId) throws Exception
+    {
+        this.desc = desc;
+        this.order = order;
+        this.pager = pager;
+        this.infoPageId = infoPageId;
+        this.count = 0;
+        init();
     }
 
     public BPlusTree(AbstractPager pager, int info_page_id) throws Exception
@@ -29,7 +44,7 @@ public class BPlusTree extends  AbstractRecordManager{
         AbstractPage infoPage = pager.get(infoPageId);
         byte[] info = infoPage.getContent();
         Integer readPos = 0;
-        Integer[] intInfo = new Integer[5];
+        Integer[] intInfo = new Integer[6];
         for(int i=0; i<intInfo.length; i++)
         {
             intInfo[i] = SITuple.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
@@ -38,7 +53,8 @@ public class BPlusTree extends  AbstractRecordManager{
         order = intInfo[0];
         this.root = new BPTNode(pager, desc, intInfo[1]);
         head = intInfo[2];
-        Integer descLength = intInfo[4];
+        count = intInfo[4];
+        Integer descLength = intInfo[5];
         desc = new SITuple.SITupleDesc();
         desc.deSerialize(Arrays.copyOfRange(info, readPos, readPos+descLength));
 
@@ -52,9 +68,6 @@ public class BPlusTree extends  AbstractRecordManager{
     AbstractTuple.AbstractTupleDesc getTupleDesc() {
         return desc;
     }
-
-    //TODO:init()
-
 
     public BPlusTree(Integer order)
     {
@@ -87,11 +100,20 @@ public class BPlusTree extends  AbstractRecordManager{
         writeInfoPage();
     }
 
-    public void init(String db_file_name) throws Exception
+    public void incCount()
     {
-        pager.open(db_file_name);
-        AbstractPage infoPage = pager.newPage();
-        infoPageId = infoPage.getPageID();
+        count++;
+    }
+
+    public void decCount()
+    {
+        count--;
+    }
+
+    public void init() throws Exception
+    {
+//        AbstractPage infoPage = pager.newPage();
+//        infoPageId = infoPage.getPageID();
 
         Class keyClass = desc.getAttr_example(desc.getPrimary_key_id()).getClass();
         Integer keyType;
@@ -122,10 +144,6 @@ public class BPlusTree extends  AbstractRecordManager{
         writeInfoPage();
     }
 
-    //TODO: no longer acquired
-    public void open(String db_file_name) throws Exception {
-
-    }
     public void writeInfoPage() throws Exception
     {
         AbstractPage infoPage = pager.get(infoPageId);
@@ -133,7 +151,7 @@ public class BPlusTree extends  AbstractRecordManager{
         byte[] infoBuffer = infoPage.getContent();
         byte[] descPart = desc.serialize();
         Integer infoLength = descPart.length;
-        Integer[] infoInt = {order, root.getId(), head, infoPageId, infoLength};
+        Integer[] infoInt = {order, root.getId(), head, infoPageId, count, infoLength};
         byte[] part;
         for(int i=0; i<infoInt.length; i++)
         {
@@ -153,6 +171,7 @@ public class BPlusTree extends  AbstractRecordManager{
 
     public void close() throws Exception
     {
+        writeInfoPage();
         pager.close();
     }
 
@@ -201,7 +220,6 @@ public class BPlusTree extends  AbstractRecordManager{
         }
 
         BPlusTree testTree = new BPlusTree(3, desc);
-        testTree.init("test.data");
         for(int i=0; i<10; i+=2)
         {
             testTree.insertTuple(tuples[i]);

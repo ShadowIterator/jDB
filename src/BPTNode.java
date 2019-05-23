@@ -421,6 +421,10 @@ public class BPTNode {
         if(isLeaf)
         {
             // 叶子节点直接插入或更新
+            if(!contain(key))
+            {
+                tree.incCount();
+            }
             if(contain(key)||entries.size()<order)
             {
                 // 还有空间直接插入
@@ -722,6 +726,7 @@ public class BPTNode {
         {
             if(!contain(key))
                 return;
+            tree.decCount();
             if(isRoot)
             {
                 removeItem(key, pager, desc);

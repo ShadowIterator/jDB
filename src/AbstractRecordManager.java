@@ -1,6 +1,6 @@
 abstract public class AbstractRecordManager {
 
-    abstract void init(String db_file_name) throws Exception;
+//    abstract void init() throws Exception;
 //    abstract void open(String db_file_name) throws Exception;
     abstract void close() throws Exception;
 
