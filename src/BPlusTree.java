@@ -10,10 +10,24 @@ public class BPlusTree extends  AbstractRecordManager{
 
     
     //TODO: need init once created
-    public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager) {
+    public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager)throws Exception
+    {
         this.desc = desc;
         this.order = order;
         this.pager = pager;
+        AbstractPage infoPage = pager.newPage();
+        this.infoPageId = infoPage.getPageID();
+        init();
+    }
+
+    // used for hardcode meta-data bptree
+    public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager, Integer infoPageId) throws Exception
+    {
+        this.desc = desc;
+        this.order = order;
+        this.pager = pager;
+        this.infoPageId = infoPageId;
+        init();
     }
 
     public BPlusTree(AbstractPager pager, int info_page_id) throws Exception
@@ -47,9 +61,6 @@ public class BPlusTree extends  AbstractRecordManager{
         return desc;
     }
 
-    //TODO:init()
-
-
     public BPlusTree(Integer order)
     {
         this.order = order;
@@ -81,11 +92,10 @@ public class BPlusTree extends  AbstractRecordManager{
         writeInfoPage();
     }
 
-    public void init(String db_file_name) throws Exception
+    public void init() throws Exception
     {
-        pager.open(db_file_name);
-        AbstractPage infoPage = pager.newPage();
-        infoPageId = infoPage.getPageID();
+//        AbstractPage infoPage = pager.newPage();
+//        infoPageId = infoPage.getPageID();
 
         Class keyClass = desc.getAttr_example(desc.getPrimary_key_id()).getClass();
         Integer keyType;
@@ -116,10 +126,6 @@ public class BPlusTree extends  AbstractRecordManager{
         writeInfoPage();
     }
 
-    //TODO: no longer acquired
-    public void open(String db_file_name) throws Exception {
-
-    }
     public void writeInfoPage() throws Exception
     {
         AbstractPage infoPage = pager.get(infoPageId);
@@ -195,7 +201,6 @@ public class BPlusTree extends  AbstractRecordManager{
         }
 
         BPlusTree testTree = new BPlusTree(3, desc);
-        testTree.init("test.data");
         for(int i=0; i<10; i+=2)
         {
             testTree.insertTuple(tuples[i]);
