@@ -171,6 +171,7 @@ public class BPlusTree extends  AbstractRecordManager{
 
     public void close() throws Exception
     {
+        writeInfoPage();
         pager.close();
     }
 
