@@ -8,6 +8,9 @@ public class MetadataManager {
     BPlusTree database_meta;
     BPlusTree table_meta;
     BPlusTree[] tables;
+    NaivePager cur_db_pager;
+    SITuple.SITupleDesc database_meta_desc;
+    SITuple.SITupleDesc table_meta_desc;
 
     String getDBFileName(String db_name) {
         return db_name + "xx.jDB";
@@ -41,7 +44,7 @@ public class MetadataManager {
         database_meta = new BPlusTree(pager, 0);
     }
 
-    boolean create_database(String db_name) throws Exception{
+    boolean createDatabase(String db_name) throws Exception{
         AbstractTuple.AbstractTupleDesc desc = database_meta.getTupleDesc();
         if(db_name.length() != ((String) desc.getAttr_example(0)).length())
             return false;
@@ -52,6 +55,9 @@ public class MetadataManager {
         database_meta.insertTuple(newTuple);
 
         //create table_metadata_tree
+        /***
+         *  table_name info_id
+         */
         FileUtils.delFile(db_file_name);
         NaivePager pager = new NaivePager();
         pager.open(db_file_name);
@@ -75,20 +81,52 @@ public class MetadataManager {
         return true;
     }
 
-    void delete_database(String db_name) throws Exception {
+    void deleteDatabase(String db_name) throws Exception {
 //        AbstractTuple tuple = database_meta.getTuple(db_name);
         database_meta.removeTuple(db_name);
         FileUtils.delFile(getDBFileName(db_name));
     }
 
-    void checkout_database(String db_name) throws Exception {
+    void loadTables() throws Exception {
+        table_meta = new BPlusTree(cur_db_pager, 0);
+        tables = new BPlusTree[table_meta.getCount()];
+
+        int i = 0;
+        // to create all b-tree and add it in a list
+        for(BPlusTree.Cursor it = table_meta.new Cursor(); !it.isEnd(); it.moveNext(), ++i) {
+            tables[i] = new BPlusTree(cur_db_pager, (int)it.getTuple().getAttr(1));
+        }
+    }
+
+    void checkoutDatabase(String db_name) throws Exception {
         AbstractTuple tuple = database_meta.getTuple(db_name);
         if(tuple == null) return ;
+        cur_db_pager.close();
         String db_filename = (String) tuple.getAttr(1);
         NaivePager pager = new NaivePager();
         pager.open(db_filename);
-        table_meta = new BPlusTree(pager, 0);
+        cur_db_pager = pager;
 
+        loadTables();
+
+    }
+
+    void createTable(String table_name, AbstractTuple.AbstractTupleDesc desc) throws Exception{
+        BPlusTree newTableTree = new BPlusTree(bpt_order, desc, cur_db_pager);
+        SITuple tuple = new SITuple(table_meta.getTupleDesc());
+        tuple.setAttr(0, table_name);
+        tuple.setAttr(1, newTableTree.getInfoPageID());
+        table_meta.insertTuple(tuple);
+
+        loadTables();
+    }
+
+    boolean dropTable(String table_name) throws Exception {
+
+        table_meta.removeTuple(table_name);
+        loadTables();
+
+        return true;
     }
 
 }
