@@ -9,6 +9,7 @@ public final class NaivePager extends AbstractPager {
     //    String db_file_name;
     RandomAccessFile raf = null;
     ConcurrentLinkedQueue<Integer> garbage_box;
+    String file_name;
 
     NaivePager() {
         page_pool = new NaivePage[PAGE_TOT];
@@ -25,6 +26,7 @@ public final class NaivePager extends AbstractPager {
         raf = new RandomAccessFile(db_file_name, "rw");
         long temp_lenth = raf.length();
         tot_page = (int) (raf.length() / NaivePage.PAGE_SIZE);
+        file_name = db_file_name;
     }
 
     void close() throws Exception {

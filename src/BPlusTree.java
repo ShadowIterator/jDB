@@ -1,10 +1,79 @@
+import java.util.Arrays;
+
 public class BPlusTree extends  AbstractRecordManager{
     protected Integer order;
     protected Integer head;
     protected Integer infoPageId;
+    protected Integer count;
     protected BPTNode root;
     protected AbstractPager pager;
-    protected SITuple.SITupleDesc desc;
+    protected AbstractTuple.AbstractTupleDesc desc;
+
+
+    //TODO: a method returning the tot tuple number of this tree
+    public int getCount() {
+        return count;
+    }
+
+    public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager) throws Exception
+    {
+        this.desc = desc;
+        this.order = order;
+        this.pager = pager;
+        this.count = 0;
+        AbstractPage infoPage = pager.newPage();
+        this.infoPageId = infoPage.getPageID();
+        init();
+    }
+
+    // used for hardcode meta-data bptree
+    public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager, Integer infoPageId) throws Exception
+    {
+        this.desc = desc;
+        this.order = order;
+        this.pager = pager;
+        this.infoPageId = infoPageId;
+        this.count = 0;
+        init();
+    }
+
+    public BPlusTree(AbstractPager pager, int info_page_id) throws Exception
+    {
+        this.infoPageId = info_page_id;
+        this.pager = pager;
+        AbstractPage infoPage = pager.get(infoPageId);
+        byte[] info = infoPage.getContent();
+        Integer readPos = 0;
+        Integer[] intInfo = new Integer[6];
+        for(int i=0; i<intInfo.length; i++)
+        {
+            intInfo[i] = SITuple.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
+            readPos+=Integer.BYTES;
+        }
+        order = intInfo[0];
+        head = intInfo[2];
+        count = intInfo[4];
+        Integer descLength = intInfo[5];
+        desc = new SITuple.SITupleDesc();
+        desc.deSerialize(Arrays.copyOfRange(info, readPos, readPos+descLength));
+        this.root = new BPTNode(pager, desc, intInfo[1]);
+
+    }
+
+    public int getInfoPageID() {
+        return infoPageId;
+    }
+
+    // TODO: add it to the upper class
+    AbstractTuple.AbstractTupleDesc getTupleDesc() {
+        return desc;
+    }
+
+    public BPlusTree(Integer order)
+    {
+        this.order = order;
+        pager = new NaivePager();
+    }
 
     public BPlusTree(Integer order, SITuple.SITupleDesc desc)
     {
@@ -13,9 +82,11 @@ public class BPlusTree extends  AbstractRecordManager{
         pager = new NaivePager();
     }
 
-    public void setRoot(BPTNode root)
+    public void setRoot(BPTNode root) throws Exception
     {
         this.root=root;
+
+        writeInfoPage();
     }
 
     public Integer getOrder()
@@ -23,27 +94,28 @@ public class BPlusTree extends  AbstractRecordManager{
         return order;
     }
 
-    public void setHead(Integer head)
+    public void setHead(Integer head) throws Exception
     {
         this.head = head;
+        writeInfoPage();
     }
 
-    public void init(String db_file_name) throws Exception
+    public void incCount()
     {
-        pager.open(db_file_name);
-        AbstractPage infoPage = pager.newPage();
-        infoPageId = infoPage.getPageID();
-        Integer writePos = 0;
-        byte[] infoBuffer = infoPage.getContent();
-        byte[] descPart = desc.serialize();
-        Integer infoLength = descPart.length;
-        byte[] part = SITuple.intToBytes(infoLength);
-        System.arraycopy(part, 0, infoBuffer, writePos, Integer.BYTES);
-        writePos+=Integer.BYTES;
-        System.arraycopy(descPart, 0, infoBuffer, writePos, infoLength);
-        writePos+=infoLength;
+        count++;
+    }
 
-        Class keyClass = desc.getAttr_example(desc.primary_key_id).getClass();
+    public void decCount()
+    {
+        count--;
+    }
+
+    public void init() throws Exception
+    {
+//        AbstractPage infoPage = pager.newPage();
+//        infoPageId = infoPage.getPageID();
+
+        Class keyClass = desc.getAttr_example(desc.getPrimary_key_id()).getClass();
         Integer keyType;
         if(keyClass == Integer.class)
         {
@@ -66,16 +138,40 @@ public class BPlusTree extends  AbstractRecordManager{
             keyType = BPTConfig.TYPE_STR;
         }
         root = new BPTNode(true, true, keyType, pager);
+        root.writeToPage(pager, desc);
         head = root.getId();
+
+        writeInfoPage();
     }
 
-    public void open(String db_file_name) throws Exception
+    public void writeInfoPage() throws Exception
+    {
+        AbstractPage infoPage = pager.get(infoPageId);
+        Integer writePos = 0;
+        byte[] infoBuffer = infoPage.getContent();
+        byte[] descPart = desc.serialize();
+        Integer infoLength = descPart.length;
+        Integer[] infoInt = {order, root.getId(), head, infoPageId, count, infoLength};
+        byte[] part;
+        for(int i=0; i<infoInt.length; i++)
+        {
+            part = SITuple.intToBytes(infoInt[i]);
+            System.arraycopy(part, 0, infoBuffer, writePos, Integer.BYTES);
+            writePos+=Integer.BYTES;
+        }
+        System.arraycopy(descPart, 0, infoBuffer, writePos, infoLength);
+        writePos+=infoLength;
+        pager.write(infoPage);
+    }
+
+    public void open(Integer infoPageId) throws Exception
     {
 
     }
 
     public void close() throws Exception
     {
+        writeInfoPage();
         pager.close();
     }
 
@@ -86,7 +182,7 @@ public class BPlusTree extends  AbstractRecordManager{
 
     public void insertTuple(AbstractTuple tuple) throws Exception
     {
-        Comparable key = (Comparable) tuple.getAttr(desc.primary_key_id);
+        Comparable key = (Comparable) tuple.getAttr(desc.getPrimary_key_id());
         root.insertOrUpdate(key, tuple, this, pager, desc);
     }
 
@@ -124,7 +220,6 @@ public class BPlusTree extends  AbstractRecordManager{
         }
 
         BPlusTree testTree = new BPlusTree(3, desc);
-        testTree.init("test.data");
         for(int i=0; i<10; i+=2)
         {
             testTree.insertTuple(tuples[i]);
@@ -139,22 +234,58 @@ public class BPlusTree extends  AbstractRecordManager{
 
     public class Cursor extends AbstractRecordManager.AbstractCursor
     {
-        int rank;
+        Comparable keyStart;
+        Comparable keyEnd;
+        BPTNode currentNode;
+        Integer idInNode;
 
-        Cursor() {
-            rank = 0;
+        Cursor() throws Exception
+        {
+            currentNode = new BPTNode(pager, desc, head);
+            idInNode = 0;
+            keyStart = null;
+            keyEnd = null;
         }
 
-        Cursor(int k)  {
-            rank = k;
+        public void setRange(Comparable start, Comparable end) throws Exception
+        {
+            keyStart = start;
+            keyEnd = end;
+            int[] info = root.getKeyPos(start, pager, desc);
+            currentNode = new BPTNode(pager, desc, info[0]);
+            idInNode = info[1];
         }
 
         void moveNext() throws Exception {
-
+            if(idInNode<currentNode.getEntries().size()-1)
+            {
+                idInNode++;
+            }
+            else if(currentNode.getNext()>=0)
+            {
+                currentNode = new BPTNode(pager, desc, currentNode.getNext());
+                idInNode = 0;
+            }
+            else
+            {
+                idInNode++;
+            }
         }
 
         void movePrev() throws Exception {
-
+            if(idInNode>0)
+            {
+                idInNode--;
+            }
+            else if(currentNode.getPrevious()>=0)
+            {
+                currentNode = new BPTNode(pager, desc, currentNode.getPrevious());
+                idInNode = currentNode.getEntries().size()-1;
+            }
+            else
+            {
+                idInNode--;
+            }
         }
 
         boolean setPosition(int pos) throws Exception {
@@ -163,16 +294,72 @@ public class BPlusTree extends  AbstractRecordManager{
         }
 
         boolean isEnd() throws Exception {
-            return true;
+            if(keyEnd == null)
+            {
+                if(idInNode >= currentNode.getEntries().size())
+                {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            else
+            {
+                if(idInNode >= currentNode.getEntries().size())
+                {
+                    return true;
+                }
+                else
+                {
+                    Comparable currentKey = currentNode.getEntries().get(idInNode).getKey();
+                    if(currentKey.compareTo(keyEnd)<=0)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
         }
 
         boolean isrEnd() throws Exception {
-            return true;
+            if(keyStart == null)
+            {
+                if(idInNode < 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if(idInNode<0)
+                {
+                    return true;
+                }
+                else
+                {
+                    Comparable currentKey = currentNode.getEntries().get(idInNode).getKey();
+                    if(currentKey.compareTo(keyStart)>=0)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
         }
 
-
         AbstractTuple getTuple() throws Exception {
-            return null;
+            return currentNode.getEntries().get(idInNode).getValue();
         }
     }
 }

@@ -22,8 +22,21 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+src/test.java
+
 #datafile
 *.data
+
+#pdf & images
+*.pdf
+*.png
+*.PNG
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
+*.bmp
+*.BMP
 
 .idea/*
 *.jDB

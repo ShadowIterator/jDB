@@ -41,6 +41,9 @@ abstract public class AbstractTuple {
         abstract byte getAttr_constraint(int k);
         //TODO:
         // abstract int getAttrIdByName(String name);
+
+        // added by zjl
+        abstract int getPrimary_key_id();
     }
 
     void print() {
