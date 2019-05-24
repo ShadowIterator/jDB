@@ -39,6 +39,8 @@ abstract public class AbstractTuple {
         abstract Object getAttr_example(int k);
         abstract String getAttr_name(int k);
         abstract byte getAttr_constraint(int k);
+        //TODO:
+        // abstract int getAttrIdByName(String name);
     }
 
     void print() {
