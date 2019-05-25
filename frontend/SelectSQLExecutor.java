@@ -49,4 +49,42 @@ public class SelectSQLExecutor extends SQLExecutor {
             System.out.println("\t\t"+whereCondition.toString());
         }
     }
+
+    public boolean isLegal() {
+        boolean result = true;
+        result &= this.attributeList.size() != 0;
+        result &= this.tableJoin.firstTableName != null;
+        if(this.tableJoin.secondTableName != null) {
+            result &= this.tableJoin.onCondition != null;
+        }
+        result &= this.whereCondition.isLegal();
+        return result;
+    }
+
+    @Override
+    public SQLResult execute(MetadataManager mgr) throws Exception {
+        if(!this.isLegal()) {
+            return new SQLResult(-1, "Illegal Select Expression.");
+        }
+//        try {
+            SQLResult sqlResult = new SQLResult(1);
+            if (tableJoin.secondTableName == null) {
+                String tableName = this.tableJoin.firstTableName;
+                BPlusTree table = mgr.getTableBPlusTreeByName(tableName);
+                AbstractTuple.AbstractTupleDesc desc = table.getTupleDesc();
+                for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
+                    AbstractTuple tuple = it.getTuple();
+                    if(this.whereCondition.NaiveJudge(tuple, desc)) {
+                        sqlResult.addTuple(tuple);
+                    }
+                }
+                return sqlResult;
+            } else {
+                //TODO: case of JOIN..ON
+                return new SQLResult(-1, "JOIN..ON is not implemented.");
+            }
+//        } catch (Exception e) {
+//            return new SQLResult(-1, "Some Storage Error.");
+//        }
+    }
 }

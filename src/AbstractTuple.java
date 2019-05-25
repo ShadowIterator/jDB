@@ -12,6 +12,11 @@ abstract public class AbstractTuple {
     //abstract Object getAttr(int id) throws Exception;
     //abstract boolean setAttr(int id, Object obj) throw Exception;
     //abstract Object getPrimaryKey() throw Exception;
+
+    public static class Constraints {
+        public static byte NOT_NULL = 1;
+    }
+
     abstract public static class AbstractTupleDesc{
 //        String[] attr_name_list;
 //        String[] attr_type_list;
@@ -39,8 +44,9 @@ abstract public class AbstractTuple {
         abstract Object getAttr_example(int k);
         abstract String getAttr_name(int k);
         abstract byte getAttr_constraint(int k);
-        //TODO:
-        // abstract int getAttrIdByName(String name);
+
+        // added by hfz
+        abstract int getIDByName(String attrName);
 
         // added by zjl
         abstract int getPrimary_key_id();

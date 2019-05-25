@@ -134,9 +134,14 @@ attribute_list_insert returns [ArrayList<String> attributeList]
                 }
               ;
 value_single returns [String value]
-              : v=(TEXT|NUMFLOAT|NUMINT|NUMFLOATNEG|NUMINTNEG)
+              : v=(NUMFLOAT|NUMINT|NUMFLOATNEG|NUMINTNEG)
                 {
                     $value = $v.text;
+                }
+              | v=TEXT
+                {
+                    int length = $v.text.length();
+                    $value = $v.text.substring(1, length-1);
                 }
               ;
 value_list returns [ArrayList<String> valueList]

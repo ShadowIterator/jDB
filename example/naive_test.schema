@@ -1,0 +1,8 @@
+create table defaulttable1 (id long, score double, gpa float, grade int, name string(8), primary key (id));
+insert into defaulttable1 values (1000, 99.9, 3.99, 3, 'jiege001')
+insert into defaulttable1 values (1001, 99.8, 3.98, 3, 'jiege002')
+insert into defaulttable1 values (1002, 99.7, 3.97, 3, 'jiege003')
+insert into defaulttable1 values (1003, 99.6, 3.96, 3, 'jiege004')
+insert into defaulttable1 values (1004, 99.5, 3.95, 3, 'jiege005')
+insert into defaulttable1 values (1005, 60.0, 2.7, 3, 'tuixue01')
+select id, name from defaulttable1 where score > 99.5

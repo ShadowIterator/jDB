@@ -105,6 +105,8 @@ public final class NaiveTuple extends AbstractTuple implements java.io.Serializa
         byte getAttr_constraint(int k) {
             return 1;
         }
+
+        int getIDByName(String attrName) { return -1; }
     }
 
 }

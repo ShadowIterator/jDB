@@ -4,8 +4,13 @@ import java.io.*;
 import java.util.*;
 
 public class Frontend {
-    public static void main(String[] args) throws IOException {
-        InputStream is = new FileInputStream("example/test.schema");
+    public static void main(String[] args) throws IOException, Exception {
+        MetadataManager mgr = new MetadataManager();
+        mgr.init("data_meta.jDB");
+        mgr.createDatabase("defaultdb1");
+        mgr.checkoutDatabase("defaultdb1");
+
+        InputStream is = new FileInputStream("example/naive_test.schema");
         ANTLRInputStream input = new ANTLRInputStream(is);
         SimpleSQLLexer lexer = new SimpleSQLLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -16,9 +21,14 @@ public class Frontend {
         for(SQLExecutor sqlExecutor: sqlExecutorList) {
             sqlExecutor.printExecutor();
         }
+        System.out.println("------------------- Execute Result -------------------");
+        for(SQLExecutor sqlExecutor: sqlExecutorList) {
+            SQLResult sqlResult = sqlExecutor.execute(mgr);
+            sqlResult.print();
+        }
 
-        System.out.println("LISP:");
-        System.out.println(tree.toStringTree(parser));
+//        System.out.println("LISP:");
+//        System.out.println(tree.toStringTree(parser));
 
 //        System.out.println("Visitor:");
 //        SimpleSQLVisitor SQLVisitor = new SimpleSQLBaseVisitor();
