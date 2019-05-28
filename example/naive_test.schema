@@ -6,4 +6,7 @@ insert into defaulttable1 values (1002, 99.7, 3.97, 3, 'jiege003')
 insert into defaulttable1 values (1003, 99.6, 3.96, 3, 'jiege004')
 insert into defaulttable1 values (1004, 99.5, 3.95, 3, 'jiege005')
 insert into defaulttable1 values (1005, 60.0, 2.7, 3, 'tuixue01')
+update defaulttable1 set score = 99 where id = 1000
 select id, name from defaulttable1 where score > 99.5
+delete from defaulttable1 where score < 99.79 and score > 99.61
+select id, score, name from defaulttable1 where score > 0

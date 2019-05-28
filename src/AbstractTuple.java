@@ -3,6 +3,8 @@ abstract public class AbstractTuple {
     abstract byte[] serialize(AbstractTupleDesc desc) throws Exception;
     abstract void deSerialize(byte[] b, AbstractTupleDesc desc) throws Exception;
     abstract Object getAttr(int k);
+    // added by hfz
+    abstract void setAttr(int k, Object obj);
 
 //    void deSerialize(byte[] b, AbstractTupleDesc desc, int id) throws Exception {
 //

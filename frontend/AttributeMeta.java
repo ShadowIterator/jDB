@@ -16,7 +16,7 @@ public class AttributeMeta {
             return (int)0;
         } else if(this.dataType.type == SQLDataType.Type.STRING) {
             char[] charArray = new char[this.dataType.length];
-            Arrays.fill(charArray, '-');
+            Arrays.fill(charArray, '\0');
             return new String(charArray);
         } else if(this.dataType.type == SQLDataType.Type.DOUBLE) {
             return (double)0;
