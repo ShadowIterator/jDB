@@ -1,4 +1,5 @@
-create table defaulttable1 (id long, score double, gpa float, grade int, name string(8), primary key (id));
+create table defaulttable1 (id long, score double, gpa float, grade int, name string(8), primary key (id))
+show table defaulttable1
 insert into defaulttable1 values (1000, 99.9, 3.99, 3, 'jiege001')
 insert into defaulttable1 values (1001, 99.8, 3.98, 3, 'jiege002')
 insert into defaulttable1 values (1002, 99.7, 3.97, 3, 'jiege003')

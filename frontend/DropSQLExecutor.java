@@ -11,4 +11,13 @@ public class DropSQLExecutor extends SQLExecutor {
         System.out.println("Drop Expression:");
         System.out.println("\tTarget Table: "+this.tableName);
     }
+    @Override
+    public SQLResult execute(MetadataManager mgr) throws Exception {
+        try {
+            mgr.dropTable(this.tableName);
+        } catch (Exception e) {
+            return new SQLResult(-1, "Drop: Some Storage Error.");
+        }
+        return new SQLResult(0);
+    }
 }

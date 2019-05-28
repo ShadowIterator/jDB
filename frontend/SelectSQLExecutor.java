@@ -66,7 +66,7 @@ public class SelectSQLExecutor extends SQLExecutor {
         if(!this.isLegal()) {
             return new SQLResult(-1, "Illegal Select Expression.");
         }
-//        try {
+        try {
             SQLResult sqlResult = new SQLResult(1);
             if (tableJoin.secondTableName == null) {
                 String tableName = this.tableJoin.firstTableName;
@@ -83,8 +83,8 @@ public class SelectSQLExecutor extends SQLExecutor {
                 //TODO: case of JOIN..ON
                 return new SQLResult(-1, "JOIN..ON is not implemented.");
             }
-//        } catch (Exception e) {
-//            return new SQLResult(-1, "Some Storage Error.");
-//        }
+        } catch (Exception e) {
+            return new SQLResult(-1, "Some Storage Error.");
+        }
     }
 }
