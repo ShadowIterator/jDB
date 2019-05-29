@@ -47,7 +47,6 @@ public class InsertSQLExecutor extends SQLExecutor {
             BPlusTree table = mgr.getTableBPlusTreeByName(this.tableName);
             AbstractTuple.AbstractTupleDesc desc = table.getTupleDesc();
             SITuple tuple = new SITuple(desc);
-            //TODO: constraint check
             if(this.attributeList == null || (this.attributeList != null && this.attributeList.size() == 0)) {
                 if(this.valueList.size() != desc.getAttr_count()) {
                     return new SQLResult(-1, "Not enough value provided.");
@@ -85,16 +84,91 @@ public class InsertSQLExecutor extends SQLExecutor {
                             return new SQLResult(-1, "The "+i+"th value's type is wrong. Expecting DOUBLE.");
                         }
                     } else /* if(obj.getClass() == String.class) */ {
+                        if(((String)obj).length() < value.length()) {
+                            return new SQLResult(-1, "Length of the "+i+"th value is larger than defined.");
+                        }
                         tuple.setAttr(i, value);
                     }
                 }
                 table.insertTuple(tuple);
             } else {
-                //TODO: specify attributeList
+                // specify attributeList
                 if(this.attributeList.size() != this.valueList.size()) {
                     return new SQLResult(-1, "Attribute list size does not match value list size.");
                 }
-                return new SQLResult(-1, "Specify attributeList is not implemented.");
+                // Constraint Validation: pk cannot be null, not null cannot be null
+                int insert_num = this.attributeList.size();
+                int pkId = desc.getPrimary_key_id();
+                boolean havePk = false;
+                for(int i = 0; i < insert_num; ++i) {
+                    int currentId = desc.getIDByName(this.attributeList.get(i));
+                    if(currentId == pkId) {
+                        havePk = true;
+                        break;
+                    }
+                }
+                if(!havePk) {
+                    return new SQLResult(-1, "Primary Key cannot be Null.");
+                }
+                int allAttributeCount = desc.getAttr_count();
+                for(int i = 0; i < allAttributeCount; ++i) {
+                    int isNotNull = desc.getAttr_constraint(i) & SITuple.Constraints.NOT_NULL;
+                    if(isNotNull == 0) {
+                        continue;
+                    }
+                    boolean haveAttribute = false;
+                    for(int j = 0; j < insert_num; ++j) {
+                        int attributeId = desc.getIDByName(this.attributeList.get(j));
+                        if(attributeId == i) {
+                            haveAttribute = true;
+                            break;
+                        }
+                    }
+                    if(!haveAttribute) {
+                        return new SQLResult(-1, desc.getAttr_name(i) + " cannot be null.");
+                    }
+                }
+                for(int i = 0; i < insert_num; ++i) {
+                    String attributeName = this.attributeList.get(i);
+                    int attributeId = desc.getIDByName(attributeName);
+                    Object example = desc.getAttr_example(attributeId);
+                    String value = this.valueList.get(i);
+                    if (example.getClass() == Integer.class) {
+                        try {
+                            int intValue = Integer.parseInt(value);
+                            tuple.setAttr(attributeId, intValue);
+                        } catch(Exception e) {
+                            return new SQLResult(-1, "The "+i+"th value's type is wrong. Expecting INT.");
+                        }
+                    } else if (example.getClass() == Long.class) {
+                        try {
+                            long longValue = Long.parseLong(value);
+                            tuple.setAttr(attributeId, longValue);
+                        } catch(Exception e) {
+                            return new SQLResult(-1, "The "+i+"th value's type is wrong. Expecting LONG.");
+                        }
+                    } else if (example.getClass() == Float.class) {
+                        try{
+                            float floatValue = Float.parseFloat(value);
+                            tuple.setAttr(attributeId, floatValue);
+                        } catch(Exception e) {
+                            return new SQLResult(-1, "The "+i+"th value's type is wrong. Expecting FLOAT.");
+                        }
+                    } else if (example.getClass() == Double.class) {
+                        try {
+                            double doubleValue = Double.parseDouble(value);
+                            tuple.setAttr(attributeId, doubleValue);
+                        } catch(Exception e) {
+                            return new SQLResult(-1, "The "+i+"th value's type is wrong. Expecting DOUBLE.");
+                        }
+                    } else /* if(obj.getClass() == String.class) */ {
+                        if(((String)example).length() < value.length()) {
+                            return new SQLResult(-1, "Length of the "+i+"th value is larger than defined.");
+                        }
+                        tuple.setAttr(attributeId, value);
+                    }
+                }
+                table.insertTuple(tuple);
             }
             return new SQLResult(0);
         } catch (Exception e) {

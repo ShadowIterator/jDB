@@ -1,4 +1,4 @@
-create table defaulttable1 (id long, score double, gpa float, grade int, name string(8), primary key (id))
+create table defaulttable1 (id long, score double not null, gpa float, grade int, name string(8), primary key (id))
 show table defaulttable1
 insert into defaulttable1 values (1000, 99.9, 3.99, 3, 'jiege001')
 insert into defaulttable1 values (1001, 99.8, 3.98, 3, 'jiege002')
@@ -6,6 +6,10 @@ insert into defaulttable1 values (1002, 99.7, 3.97, 3, 'jiege003')
 insert into defaulttable1 values (1003, 99.6, 3.96, 3, 'jiege004')
 insert into defaulttable1 values (1004, 99.5, 3.95, 3, 'jiege005')
 insert into defaulttable1 values (1005, 60.0, 2.7, 3, 'tuixue01')
+insert into defaulttable1(score, id, gpa, name, grade) values (89.9, 1006, 3.3, "tuixue01", 2)
+insert into defaulttable1(score, gpa, name, grade) values (89.9, 3.3, "tuixue01", 2)
+insert into defaulttable1(id, gpa, name, grade) values (1006, 3.3, "tuixue01", 2)
+insert into defaulttable1(score, id, name, grade) values (89.9, 1006, "tuixue01", 2)
 update defaulttable1 set score = 99 where id = 1000
 select id, name from defaulttable1 where score > 99.5
 delete from defaulttable1 where score < 99.79 and score > 99.61
