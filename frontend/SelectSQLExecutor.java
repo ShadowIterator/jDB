@@ -95,7 +95,12 @@ public class SelectSQLExecutor extends SQLExecutor {
                 // no JOIN
                 SQLResult sqlResult = new SQLResult(1);
                 String tableName = this.tableJoin.firstTableName;
-                BPlusTree table = mgr.getTableBPlusTreeByName(tableName);
+                BPlusTree table;
+                try {
+                    table = mgr.getTableBPlusTreeByName(tableName);
+                } catch(Exception e) {
+                    return new SQLResult(-1, "Cannot find the table " + tableName);
+                }
                 AbstractTuple.AbstractTupleDesc desc = table.getTupleDesc();
                 for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
                     AbstractTuple tuple = it.getTuple();
@@ -116,8 +121,18 @@ public class SelectSQLExecutor extends SQLExecutor {
                 SQLResult sqlResult = new SQLResult(2);
                 String firstTableName = this.tableJoin.firstTableName;
                 String secondTableName = this.tableJoin.secondTableName;
-                BPlusTree firstTable = mgr.getTableBPlusTreeByName(firstTableName);
-                BPlusTree secondTable = mgr.getTableBPlusTreeByName(secondTableName);
+                BPlusTree firstTable;
+                try {
+                    firstTable = mgr.getTableBPlusTreeByName(firstTableName);
+                } catch(Exception e) {
+                    return new SQLResult(-1, "Cannot find the table " + firstTableName);
+                }
+                BPlusTree secondTable;
+                try {
+                    secondTable = mgr.getTableBPlusTreeByName(secondTableName);
+                } catch (Exception e) {
+                    return new SQLResult(-1, "Cannot find the table " + secondTableName);
+                }
                 AbstractTuple.AbstractTupleDesc firstDesc = firstTable.getTupleDesc();
                 AbstractTuple.AbstractTupleDesc secondDesc = secondTable.getTupleDesc();
                 ArrayList<AbstractTuple.AbstractTupleDesc> descs = new ArrayList<AbstractTuple.AbstractTupleDesc>();

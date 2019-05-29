@@ -24,3 +24,6 @@ insert into defaulttable2 values (2003, 'laoshi04', 4)
 select id, score, gpa, grade, name from defaulttable1
 select id, name, grade from defaulttable2
 select defaulttable1.id, score, gpa, grade, defaulttable1.name, defaulttable2.id, defaulttable2.name from defaulttable1 join defaulttable2 on defaulttable1.grade = defaulttable2.grade
+
+drop table defaulttable1
+select name from defaulttable1
