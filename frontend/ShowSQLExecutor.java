@@ -53,6 +53,9 @@ public class ShowSQLExecutor extends SQLExecutor {
         try {
             this.show_desc = new SITuple.SITupleDesc(this.show_attr_example, this.show_attr_name, this.show_constraint_list, 0);
             SQLResult result = new SQLResult(1);
+            for(int i = 0; i < this.show_attr_count; ++i) {
+                result.addAttributeInfo(0, this.show_attr_name[i], i);
+            }
             BPlusTree table;
             try {
                 table = mgr.getTableBPlusTreeByName(this.tableName);

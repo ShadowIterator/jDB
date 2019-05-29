@@ -153,6 +153,81 @@ public class WhereCondition {
                 return relation <= 0;
             }
         }
+
+        public Object findObject(String targetTableName, String targetAttributeName, ArrayList<AbstractTuple> tuples, ArrayList<AbstractTuple.AbstractTupleDesc> descs, ArrayList<String> tableNames) throws Exception {
+            int tableNum = tableNames.size();
+            Object returnValue = null;
+            if(targetTableName != null) {
+                for (int i = 0; i < tableNum; ++i) {
+                    String tableName = tableNames.get(i);
+                    if (tableName.equals(targetTableName)) {
+                        AbstractTuple tuple = tuples.get(i);
+                        AbstractTuple.AbstractTupleDesc desc = descs.get(i);
+                        int attributeId = desc.getIDByName(targetAttributeName);
+                        if (attributeId == -1) {
+                            throw new Exception("Could not find attribute " + targetAttributeName + " in table " + tableName);
+                        }
+                        returnValue = tuple.getAttr(attributeId);
+                        break;
+                    }
+                }
+            }
+            else {
+                for(int i = 0; i < tableNum; ++i) {
+                    AbstractTuple.AbstractTupleDesc desc = descs.get(i);
+                    int attributeId = desc.getIDByName(targetAttributeName);
+                    if(attributeId == -1) {
+                        continue;
+                    }
+                    AbstractTuple tuple = tuples.get(i);
+                    returnValue = tuple.getAttr(attributeId);
+                    break;
+                }
+            }
+            return returnValue;
+        }
+
+        public boolean JoinNaiveJudgeCondition(ArrayList<AbstractTuple> tuples, ArrayList<AbstractTuple.AbstractTupleDesc> descs, ArrayList<String> tableNames) throws Exception {
+            if(this.leftValue.type == SQLValueType.DIRECT) {
+                SQLValue tmp = this.leftValue;
+                this.leftValue = this.rightValue;
+                this.rightValue = tmp;
+            }
+            String leftTableName = this.leftValue.tableName;
+            String leftAttrName = this.leftValue.attributeName;
+            String rightTableName = this.rightValue.tableName;
+            String rightAttrName = this.rightValue.attributeName;
+            Object leftValue = this.findObject(leftTableName, leftAttrName, tuples, descs, tableNames);
+            Object rightValue = null;
+            if(this.rightValue.type == SQLValueType.DIRECT) {
+                String rightValueStr = this.rightValue.directValue;
+                try {
+                    rightValue = getObjFromStr(rightValueStr, leftValue);
+                } catch (Exception e) {
+                    throw e;
+                }
+            } else {
+                rightValue = this.findObject(rightTableName, rightAttrName, tuples, descs, tableNames);
+            }
+            if(leftValue == null) {
+                throw new Exception("Cannot find attribute " + leftTableName + "." + leftAttrName);
+            }
+            if(rightValue == null) {
+                throw new Exception("Cannot find attribute " + rightTableName + "." + rightAttrName);
+            }
+            int relation = this.getRelation(leftValue, rightValue);
+            if(this.operator == Operator.EQ) {
+                return relation == 0;
+            } else if(this.operator == Operator.GT) {
+                return relation == 1;
+            } else if(this.operator == Operator.GEQ) {
+                return relation >= 0;
+            } else if(this.operator == Operator.LT) {
+                return relation == -1;
+            } else /* if(this.operator == Operator.LEQ) */ {
+                return relation <= 0;
+            }
+        }
     }
     public enum LogicConnection {
         AND("AND"), OR("OR");
@@ -206,6 +281,19 @@ public class WhereCondition {
                 result &= this.conditions.get(i+1).NaiveJudgeCondition(tuple, desc);
             } else {
                 result |= this.conditions.get(i+1).NaiveJudgeCondition(tuple, desc);
+            }
+        }
+        return result;
+    }
+
+    public boolean JoinNaiveJudge(ArrayList<AbstractTuple> tuples, ArrayList<AbstractTuple.AbstractTupleDesc> descs, ArrayList<String> tableNames) throws Exception {
+        boolean result = this.conditions.get(0).JoinNaiveJudgeCondition(tuples, descs, tableNames);
+        int connectionSize = this.connections.size();
+        for(int i = 0; i < connectionSize; ++i) {
+            if(this.connections.get(i) == LogicConnection.AND) {
+                result &= this.conditions.get(i+1).JoinNaiveJudgeCondition(tuples, descs, tableNames);
+            } else {
+                result |= this.conditions.get(i+1).JoinNaiveJudgeCondition(tuples, descs, tableNames);
             }
         }
         return result;

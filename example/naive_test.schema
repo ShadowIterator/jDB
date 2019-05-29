@@ -1,6 +1,6 @@
 create table defaulttable1 (id long, score double not null, gpa float, grade int, name string(8), primary key (id))
 show table defaulttable1
-insert into defaulttable1 values (1000, 99.9, 3.99, 3, 'jiege001')
+insert into defaulttable1 values (1000, 99.9, 3.99, 4, 'jiege001')
 insert into defaulttable1 values (1001, 99.8, 3.98, 3, 'jiege002')
 insert into defaulttable1 values (1002, 99.7, 3.97, 3, 'jiege003')
 insert into defaulttable1 values (1003, 99.6, 3.96, 3, 'jiege004')
@@ -9,8 +9,18 @@ insert into defaulttable1 values (1005, 60.0, 2.7, 3, 'tuixue01')
 insert into defaulttable1(score, id, gpa, name, grade) values (89.9, 1006, 3.3, "tuixue01", 2)
 insert into defaulttable1(score, gpa, name, grade) values (89.9, 3.3, "tuixue01", 2)
 insert into defaulttable1(id, gpa, name, grade) values (1006, 3.3, "tuixue01", 2)
-insert into defaulttable1(score, id, name, grade) values (89.9, 1006, "tuixue01", 2)
+insert into defaulttable1(score, id, name, grade) values (89.9, 1006, "tuixue02", 2)
 update defaulttable1 set score = 99 where id = 1000
 select id, name from defaulttable1 where score > 99.5
 delete from defaulttable1 where score < 99.79 and score > 99.61
-select id, score, name from defaulttable1 where score > 0
+select id, score, name from defaulttable1 where score > 0 and grade <= 4
+
+create table defaulttable2 (id long, name string(8), grade int, primary key(id))
+show table defaulttable2
+insert into defaulttable2 values (2000, 'laoshi01', 2)
+insert into defaulttable2 values (2001, 'laoshi02', 3)
+insert into defaulttable2 values (2002, 'laoshi03', 3)
+insert into defaulttable2 values (2003, 'laoshi04', 4)
+select id, score, gpa, grade, name from defaulttable1
+select id, name, grade from defaulttable2
+select defaulttable1.id, score, gpa, grade, defaulttable1.name, defaulttable2.id, defaulttable2.name from defaulttable1 join defaulttable2 on defaulttable1.grade = defaulttable2.grade
