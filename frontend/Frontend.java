@@ -9,13 +9,26 @@ public class Frontend {
         mgr.init("data_meta.jDB");
         mgr.createDatabase("defaultdb1");
         mgr.checkoutDatabase("defaultdb1");
+        ParseTree tree;
+        try {
+            InputStream is = new FileInputStream("example/naive_test.schema");
+            ANTLRInputStream input = new ANTLRInputStream(is);
+            SimpleSQLLexer lexer = new SimpleSQLLexer(input);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(ThrowingErrorListener.INSTANCE);
 
-        InputStream is = new FileInputStream("example/naive_test.schema");
-        ANTLRInputStream input = new ANTLRInputStream(is);
-        SimpleSQLLexer lexer = new SimpleSQLLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        SimpleSQLParser parser = new SimpleSQLParser(tokens);
-        ParseTree tree = parser.commands();
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+            SimpleSQLParser parser = new SimpleSQLParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+
+            tree = parser.commands();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return;
+        }
 
         ArrayList<SQLExecutor> sqlExecutorList = ((SimpleSQLParser.CommandsContext)tree).sqlExecutorList;
         for(SQLExecutor sqlExecutor: sqlExecutorList) {

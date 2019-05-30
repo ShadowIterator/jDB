@@ -3,7 +3,7 @@ import java.lang.*;
 import java.util.Arrays;
 
 
-public class SITuple extends AbstractTuple {
+public class SITuple extends AbstractTuple implements Serializable {
     Object[] attrs;
 
 

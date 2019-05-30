@@ -1,12 +1,14 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 // resultType:
+//  -2: parse error
 //  -1: error
 //   0: non-select
 //   1: select
 //   2: join on
-public class SQLResult {
+public class SQLResult implements Serializable {
     private ArrayList<AbstractTuple> tuples;
     private ArrayList<AbstractTuple> secondTuples;
     private ArrayList<String> attributeName;
@@ -26,6 +28,8 @@ public class SQLResult {
             return;
         } else if(_resultType == 0) {
             return;
+        } else if(_resultType == -2) {
+            this.resultInfo = "Some Parse Error.";
         }
         this.tuples = new ArrayList<AbstractTuple>();
         this.attributeName = new ArrayList<String>();
@@ -39,7 +43,7 @@ public class SQLResult {
     public SQLResult(int _resultType, String _resultInfo) {
         this.resultType = _resultType;
         this.resultInfo = _resultInfo;
-        if(_resultType == 0 || _resultType == -1) { return; }
+        if(_resultType == 0 || _resultType == -1 || _resultType == -2) { return; }
         this.tuples = new ArrayList<AbstractTuple>();
         this.attributeName = new ArrayList<String>();
         this.attributeId = new ArrayList<Integer>();
@@ -90,7 +94,7 @@ public class SQLResult {
 
     public void print() throws Exception {
         String result = "Result Type: " + this.resultType;
-        if(this.resultType == -1) {
+        if(this.resultType == -1 || this.resultType == -2) {
             result += "\n" + this.resultInfo;
         }
         System.out.println(result);
