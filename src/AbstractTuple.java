@@ -49,7 +49,7 @@ abstract public class AbstractTuple {
         abstract Object getAttr_default(int k);
         //TODO:
         // abstract int getAttrIdByName(String name);
-        
+
         // added by hfz
         abstract int getIDByName(String attrName);
 

@@ -23,7 +23,7 @@ public class jDBClient {
     public static void main(String[] arg) {
         jDBClient client = new jDBClient("127.0.0.1", 10086);
         String sql =
-                "create table defaulttable2 (id long, name string(8), grade int, primary key(id))\n" +
+                "creat table defaulttable2 (id long, name string(8), grade int, primary key(id))\n" +
                 "show table defaulttable2\n" +
                 "insert into defaulttable2 values (2000, 'laoshi01', 2)\n" +
                 "insert into defaulttable2 values (2001, 'laoshi02', 3)\n" +

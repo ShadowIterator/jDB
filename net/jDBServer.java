@@ -37,8 +37,7 @@ public class jDBServer extends Thread{
             } catch (Exception e) {
 //                e.printStackTrace();
                 System.out.println(e.getMessage());
-                ObjectOutputStream oos = new ObjectOutputStream(os);
-                sqlResults = new ArrayList<>();
+                sqlResults = new ArrayList<SQLResult>();
                 sqlResults.add(new SQLResult(-2, e.getMessage()));
             }
             ObjectOutputStream oos;

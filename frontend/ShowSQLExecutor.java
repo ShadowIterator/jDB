@@ -83,8 +83,8 @@ public class ShowSQLExecutor extends SQLExecutor {
                 } else {
                     data_type = "STRING(" + ((String)attribute_example).length() + ")";
                 }
-                attribute_name = this.fillString(attribute_name, 22);
-                data_type = this.fillString(data_type, 22);
+//                attribute_name = this.fillString(attribute_name, 22);
+//                data_type = this.fillString(data_type, 22);
                 tuple.setAttr(0, i);
                 tuple.setAttr(1, attribute_name);
                 tuple.setAttr(2, data_type);

@@ -83,7 +83,13 @@ public class SQLResult implements Serializable {
     public boolean addSecondTuple(AbstractTuple tup) { return this.secondTuples.add(tup); }
 
     public ArrayList<AbstractTuple> getTuples() { return this.tuples; }
-    public ArrayList<AbstractTuple> getSecondTuple() { return this.secondTuples; }
+    public ArrayList<AbstractTuple> getSecondTuples() { return this.secondTuples; }
+    public ArrayList<String> getAttributeName() { return this.attributeName; }
+    public ArrayList<String> getSecondAttributeName() { return this.secondAttributeName; }
+    public String getFirstTableName() { return this.firstTableName; }
+    public String getSecondTableName() { return this.secondTableName; }
+    public ArrayList<Integer> getAttributeId() { return this.attributeId; }
+    public ArrayList<Integer> getSecondAttributeId() { return this.secondAttributeId; }
 
     private static void printResultTuple(AbstractTuple tuple, ArrayList<Integer> ids) {
         for(int id: ids) {

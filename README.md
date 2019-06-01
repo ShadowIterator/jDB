@@ -26,7 +26,7 @@ This is going to be the 6th best java database (right after HSQLDB) which only s
 - [x] 细化上述接口
 - [x] 实现上述接口
 - [x] 实现executor
-- [ ] 实现网络部分
+- [x] 实现网络部分
 - [ ] 实现一个前端
 
 ## 加分项TODO
