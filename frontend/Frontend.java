@@ -11,7 +11,7 @@ public class Frontend {
         mgr.checkoutDatabase("defaultdb1");
         ParseTree tree;
         try {
-            InputStream is = new FileInputStream("example/test.schema");
+            InputStream is = new FileInputStream("example/naive_test.schema");
             ANTLRInputStream input = new ANTLRInputStream(is);
             SimpleSQLLexer lexer = new SimpleSQLLexer(input);
             lexer.removeErrorListeners();

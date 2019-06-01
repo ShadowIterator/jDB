@@ -105,8 +105,18 @@ public class JDBGUI extends JFrame {
                 this.tableModel.addRow(newRow);
             }
         } else if(result.getResultType() == 2) {
+            String firstTableName = result.getFirstTableName();
+            String secondTableName = result.getSecondTableName();
             ArrayList<String> columnNames = result.getAttributeName();
             ArrayList<String> secondAttrName = result.getSecondAttributeName();
+            int firstCount = columnNames.size();
+            int secondCount = secondAttrName.size();
+            for(int i = 0; i < firstCount; ++i) {
+                columnNames.set(i, firstTableName + "." + columnNames.get(i));
+            }
+            for(int i = 0; i < secondCount; ++i) {
+                secondAttrName.set(i, secondTableName + "." + secondAttrName.get(i));
+            }
             columnNames.addAll(secondAttrName);
             String[] newColumns = new String[columnNames.size()];
             newColumns = columnNames.toArray(newColumns);
@@ -119,7 +129,12 @@ public class JDBGUI extends JFrame {
             for(int i = 0; i < tupleCount; ++i) {
                 Vector<String> newRow = new Vector<String>();
                 for(Integer id: firstAttrId) {
-                    newRow.add(firstTuples.get(i).getAttr(id).toString());
+                    Object obj = firstTuples.get(i).getAttr(id);
+                    if(obj == null) {
+                        newRow.add("NULL");
+                    } else {
+                        newRow.add(obj.toString());
+                    }
                 }
                 for(Integer id: secondAttrId) {
                     newRow.add(secondTuples.get(i).getAttr(id).toString());
@@ -212,6 +227,7 @@ public class JDBGUI extends JFrame {
                 importFail(file.getName());
             }
             String sql = buffer.toString();
+            sqlArea.setText(sql);
             execute(sql);
         }
     }
