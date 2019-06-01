@@ -336,8 +336,11 @@ public class BPTNode {
     // return [nodeId, keyPosInNode]
         if(isLeaf)
         {
-            int[] infoRes = new int[2];
+            int[] infoRes = new int[5];
             infoRes[0] = selfPageId;
+            infoRes[2] = entries.size();
+            infoRes[3] = previous;
+            infoRes[4] = next;
             for(int i=0; i<entries.size(); i++)
             {
                 if(key.compareTo(entries.get(i).getKey())<=0)
@@ -347,6 +350,7 @@ public class BPTNode {
                 }
             }
             infoRes[1] = entries.size();
+
             return infoRes;
         }
         else
@@ -417,9 +421,10 @@ public class BPTNode {
         pager.delPage(selfPageId);
     }
 
-    public void insertOrUpdate(Comparable key, AbstractTuple tuple, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
+    public boolean insertOrUpdate(Comparable key, AbstractTuple tuple, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer order = tree.getOrder();
+        boolean succeed = false;
         if(isLeaf)
         {
             // 叶子节点直接插入或更新
@@ -430,7 +435,7 @@ public class BPTNode {
             if(contain(key)||entries.size()<order)
             {
                 // 还有空间直接插入
-                insertOrUpdateItem(key, tuple, pager);
+                succeed = insertOrUpdateItem(key, tuple, pager);
                 if(parent>=0)
                 {
                     // BPTNode parNode = fromPage(pager.get(parent));
@@ -474,7 +479,7 @@ public class BPTNode {
                 // 原本数据分到两个节点中
                 Integer leftSize = (order+1)/2+(order+1)%2;
                 Integer rightSize = (order+1)/2;
-                insertOrUpdateItem(key, tuple, pager);
+                succeed = insertOrUpdateItem(key, tuple, pager);
                 for(int i=0; i<leftSize; i++)
                 {
                     left.getEntries().add(entries.get(i));
@@ -493,13 +498,13 @@ public class BPTNode {
             {
                 // BPTNode chNode = fromPage(pager.get(children.get(0)));
                 BPTNode chNode = new BPTNode(pager, desc, children.get(0));
-                chNode.insertOrUpdate(key, tuple, tree, pager, desc);
+                succeed = chNode.insertOrUpdate(key, tuple, tree, pager, desc);
             }
             else if(key.compareTo(entries.get(entries.size()-1).getKey())>=0)
             {
                 // BPTNode chNode = fromPage(pager.get(children.get(children.size()-1)));
                 BPTNode chNode = new BPTNode(pager, desc, children.get(children.size()-1));
-                chNode.insertOrUpdate(key, tuple, tree, pager, desc);
+                succeed = chNode.insertOrUpdate(key, tuple, tree, pager, desc);
             }
             else
             {
@@ -509,12 +514,13 @@ public class BPTNode {
                     {
                         // BPTNode chNode = fromPage(pager.get(children.get(i)));
                         BPTNode chNode = new BPTNode(pager, desc, children.get(i));
-                        chNode.insertOrUpdate(key, tuple, tree, pager, desc);
+                        succeed = chNode.insertOrUpdate(key, tuple, tree, pager, desc);
                         break;
                     }
                 }
             }
         }
+        return succeed;
     }
 
     protected void insertRelatedUpdate(BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
@@ -554,7 +560,6 @@ public class BPTNode {
             }
 
             parentAdjust(tree, left, right, pager, desc);
-
         }
     }
 
@@ -721,17 +726,18 @@ public class BPTNode {
         }
     }
 
-    public void remove(Comparable key, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
+    public boolean remove(Comparable key, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer order = tree.getOrder();
+        boolean succeed = false;
         if(isLeaf)
         {
             if(!contain(key))
-                return;
+                return false;
             tree.decCount();
             if(isRoot)
             {
-                removeItem(key, pager, desc);
+                return removeItem(key, pager, desc);
             }
             else
             {
@@ -739,7 +745,7 @@ public class BPTNode {
                 BPTNode parNode = new BPTNode(pager, desc, parent);
                 if(entries.size()>order/2 && entries.size()>2)
                 {
-                    removeItem(key, pager, desc);
+                    succeed = removeItem(key, pager, desc);
                 }
                 else
                 {
@@ -844,13 +850,13 @@ public class BPTNode {
             {
                 // child = fromPage(pager.get(children.get(0)));
                 child = new BPTNode(pager, desc, children.get(0));
-                child.remove(key, tree, pager, desc);
+                succeed = child.remove(key, tree, pager, desc);
             }
             else if(key.compareTo(entries.get(entries.size()-1).getKey())>=0)
             {
                 // child = fromPage(pager.get(children.get(children.size()-1)));
                 child = new BPTNode(pager, desc, children.get(children.size()-1));
-                child.remove(key, tree, pager, desc);
+                succeed = child.remove(key, tree, pager, desc);
             }
             else
             {
@@ -860,39 +866,42 @@ public class BPTNode {
                     {
                         // child = fromPage(pager.get(children.get(i)));
                         child = new BPTNode(pager, desc, children.get(i));
-                        child.remove(key, tree, pager, desc);
+                        succeed = child.remove(key, tree, pager, desc);
                         break;
                     }
                 }
             }
         }
+        return succeed;
     }
 
-    protected void insertOrUpdateItem(Comparable key, AbstractTuple info, AbstractPager pager)
+    protected boolean insertOrUpdateItem(Comparable key, AbstractTuple info, AbstractPager pager)
     {
         Map.Entry<Comparable, AbstractTuple> toAdd = new AbstractMap.SimpleEntry<Comparable, AbstractTuple>(key, info);
         if(entries.size()==0)
         {
             entries.add(toAdd);
-            return;
+            return true;
         }
         for(int i=0; i<entries.size(); i++)
         {
             if(entries.get(i).getKey().compareTo(key)==0)
             {
                 entries.get(i).setValue(info);
-                return;
+                // TODO: 检查新值和原值是否相同
+                return true;
             }
             else if(entries.get(i).getKey().compareTo(key)>0)
             {
                 entries.add(i, toAdd);
-                return;
+                return true;
             }
         }
         entries.add(entries.size(), toAdd);
+        return true;
     }
 
-    public void removeItem(Comparable key, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
+    public boolean removeItem(Comparable key, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer idx = -1;
         for(int i=0; i<entries.size(); i++)
@@ -907,7 +916,9 @@ public class BPTNode {
         {
             entries.remove((int)idx);
             writeToPage(pager, desc);
+            return true;
         }
+        return false;
     }
 
     protected boolean contain(Comparable key)
