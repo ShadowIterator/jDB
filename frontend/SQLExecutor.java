@@ -6,7 +6,7 @@ public class SQLExecutor {
     public void printExecutor() {
         System.out.println("Base class SQLExecutor");
     }
-    public SQLResult execute() {
+    public SQLResult execute(MetadataManager mgr) throws Exception {
         System.out.println("Need to be implemented!");
         return new SQLResult(-1, "Not implemented!");
     }

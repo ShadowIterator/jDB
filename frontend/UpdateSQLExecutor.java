@@ -21,4 +21,60 @@ public class UpdateSQLExecutor extends SQLExecutor {
         System.out.println("\tWhere List:");
         System.out.println("\t\t"+this.whereCondition.toString());
     }
+
+    @Override
+    public SQLResult execute(MetadataManager mgr) throws Exception {
+        if(!this.whereCondition.isLegal()) {
+            return new SQLResult(-1, "Delete: Some Where Condition Error.");
+        }
+        try {
+            BPlusTree table;
+            try {
+                table = mgr.getTableBPlusTreeByName(this.tableName);
+            } catch (Exception e) {
+                return new SQLResult(-1, "Delete: Cannot find table " + this.tableName);
+            }
+            AbstractTuple.AbstractTupleDesc desc = table.getTupleDesc();
+            int pkId = desc.getPrimary_key_id();
+            int changeId;
+            try {
+                changeId = desc.getIDByName(this.attributeName);
+            } catch (Exception e) {
+                return new SQLResult(-1, "Delete: Table " + this.tableName + " does not have attribute " + this.attributeName);
+            }
+            Object changeExample = desc.getAttr_example(changeId);
+            Object newObj;
+            try {
+                if (changeExample.getClass() == Integer.class) {
+                    newObj = Integer.parseInt(this.newValue);
+                } else if (changeExample.getClass() == Long.class) {
+                    newObj = Long.parseLong(this.newValue);
+                } else if (changeExample.getClass() == Float.class) {
+                    newObj = Float.parseFloat(this.newValue);
+                } else if (changeExample.getClass() == Double.class) {
+                    newObj = Double.parseDouble(this.newValue);
+                } else {
+                    newObj = this.newValue;
+                }
+            } catch (Exception e) {
+                return new SQLResult(-1, "Update: New value's type does not match the expected data type.");
+            }
+            for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
+                AbstractTuple tuple = it.getTuple();
+                if(this.whereCondition.NaiveJudge(tuple, desc)) {
+                    tuple.setAttr(changeId, newObj);
+                    Object obj = tuple.getAttr(pkId);
+                    if(pkId == changeId) {
+                        table.removeTuple((Comparable)obj);
+                        table.insertTuple(tuple);
+                    } else {
+                        table.setTuple((Comparable)obj, tuple);
+                    }
+                }
+            }
+            return new SQLResult(0);
+        } catch (Exception e) {
+            return new SQLResult(-1, "Update: Some Storage Error.");
+        }
+    }
 }

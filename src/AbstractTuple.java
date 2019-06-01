@@ -3,6 +3,8 @@ abstract public class AbstractTuple {
     abstract byte[] serialize(AbstractTupleDesc desc) throws Exception;
     abstract void deSerialize(byte[] b, AbstractTupleDesc desc) throws Exception;
     abstract Object getAttr(int k);
+    // added by hfz
+    abstract void setAttr(int k, Object obj);
 
 //    void deSerialize(byte[] b, AbstractTupleDesc desc, int id) throws Exception {
 //
@@ -12,6 +14,11 @@ abstract public class AbstractTuple {
     //abstract Object getAttr(int id) throws Exception;
     //abstract boolean setAttr(int id, Object obj) throw Exception;
     //abstract Object getPrimaryKey() throw Exception;
+
+    public static class Constraints {
+        public static byte NOT_NULL = 1;
+    }
+
     abstract public static class AbstractTupleDesc{
 //        String[] attr_name_list;
 //        String[] attr_type_list;
@@ -42,6 +49,9 @@ abstract public class AbstractTuple {
         abstract Object getAttr_default(int k);
         //TODO:
         // abstract int getAttrIdByName(String name);
+        
+        // added by hfz
+        abstract int getIDByName(String attrName);
 
         // added by zjl
         abstract int getPrimary_key_id();

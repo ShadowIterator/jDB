@@ -23,10 +23,11 @@ This is going to be the 6th best java database (right after HSQLDB) which only s
 ## 基本任务TODO
 
 - [x] 前端支持where语句中的and/or连接
-- [ ] 细化上述接口
-- [ ] 实现上述接口
-- [ ] 实现executor
+- [x] 细化上述接口
+- [x] 实现上述接口
+- [x] 实现executor
 - [ ] 实现网络部分
+- [ ] 实现一个前端
 
 ## 加分项TODO
 

@@ -1,5 +1,3 @@
-import sun.plugin.services.AxBridgeBrowserService;
-
 import java.io.File;
 
 public class MetadataManager {

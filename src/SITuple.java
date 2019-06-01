@@ -3,7 +3,7 @@ import java.lang.*;
 import java.util.Arrays;
 
 
-public class SITuple extends AbstractTuple {
+public class SITuple extends AbstractTuple implements Serializable {
     Object[] attrs;
 
 
@@ -25,8 +25,9 @@ public class SITuple extends AbstractTuple {
 
     void print() {
         for(int i = 0; i < attrs.length; ++i) {
-            System.out.println(attrs[i]);
+            System.out.print("" + attrs[i] + "\t");
         }
+        System.out.println("");
     }
 
     byte[] serialize(AbstractTupleDesc desc) throws Exception {
@@ -205,6 +206,16 @@ public class SITuple extends AbstractTuple {
                 offset_list[i + 1] = offset_list[i] + SITuple.objectToBytes(attr_example[i]).length;
             }
             desc_size = serialize().length;
+        }
+
+        int getIDByName(String attrName) {
+            int attrSize = this.attr_name.length;
+            for(int i = 0; i < attrSize; ++i) {
+                if(this.attr_name[i].equals(attrName)) {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         int getAttr_count() {
