@@ -17,9 +17,9 @@ abstract public class AbstractRecordManager {
     abstract public class AbstractCursor {
         abstract void moveNext() throws Exception;
         abstract void movePrev() throws Exception;
-        abstract boolean setPosition(int pos) throws Exception;
-        abstract boolean isEnd() throws Exception;
-        abstract boolean isrEnd() throws Exception;
+//        abstract boolean setPosition(int pos) throws Exception;
+//        abstract boolean isEnd() throws Exception;
+//        abstract boolean isrEnd() throws Exception;
         abstract AbstractTuple getTuple() throws Exception;
     }
 }

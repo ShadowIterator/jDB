@@ -325,75 +325,18 @@ public class BPlusTree extends  AbstractRecordManager{
 
         public boolean isEqual(Cursor another)
         {
-            if(nodeId == another.nodeId && idInNode == another.idInNode)
+            if(nodeId.intValue() == another.nodeId.intValue() && idInNode.intValue() == another.idInNode.intValue())
                 return true;
             return false;
         }
 
-//        boolean isEnd() throws Exception {
-//            if(keyEnd == null)
-//            {
-//                if(idInNode >= entryNum)
-//                {
-//                    return true;
-//                }
-//                else {
-//                    return false;
-//                }
-//            }
-//            else
-//            {
-//                if(idInNode >= entryNum)
-//                {
-//                    return true;
-//                }
-//                else
-//                {
-//                    Comparable currentKey = currentNode.getEntries().get(idInNode).getKey();
-//                    if(currentKey.compareTo(keyEnd)<=0)
-//                    {
-//                        return false;
-//                    }
-//                    else
-//                    {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//
-//        boolean isrEnd() throws Exception {
-//            if(keyStart == null)
-//            {
-//                if(idInNode < 0)
-//                {
-//                    return true;
-//                }
-//                else
-//                {
-//                    return false;
-//                }
-//            }
-//            else
-//            {
-//                if(idInNode<0)
-//                {
-//                    return true;
-//                }
-//                else
-//                {
-//                    Comparable currentKey = currentNode.getEntries().get(idInNode).getKey();
-//                    if(currentKey.compareTo(keyStart)>=0)
-//                    {
-//                        return false;
-//                    }
-//                    else
-//                    {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
+        boolean isEnd() throws Exception {
+            return idInNode >= entryNum && nextId < 0;
+        }
+
+        boolean isrEnd() throws Exception {
+            return idInNode < 0 && prevId < 0;
+        }
 
         AbstractTuple getTuple() throws Exception {
             BPTNode currentNode = new BPTNode(pager, desc, nodeId);
