@@ -3,7 +3,7 @@ import java.lang.*;
 import java.util.Arrays;
 
 
-public class SITuple extends AbstractTuple {
+public class SITuple extends AbstractTuple implements Serializable {
     Object[] attrs;
 
 
@@ -25,8 +25,9 @@ public class SITuple extends AbstractTuple {
 
     void print() {
         for(int i = 0; i < attrs.length; ++i) {
-            System.out.println(attrs[i]);
+            System.out.print("" + attrs[i] + "\t");
         }
+        System.out.println("");
     }
 
     byte[] serialize(AbstractTupleDesc desc) throws Exception {
@@ -94,6 +95,11 @@ public class SITuple extends AbstractTuple {
         return new String(b);
     }
 
+    static Object stringShrink(String str) {
+        int k = str.indexOf(0);
+        return (Object) str.substring(0, k >= 0? k : str.length());
+    }
+
     static Object bytesToObject(byte[] b, Class cls) {
         Object obj;
         if (cls == Integer.class) {
@@ -106,7 +112,8 @@ public class SITuple extends AbstractTuple {
         } else if (cls == Double.class) {
             obj = bytesToDouble(b);
         } else /* if(cls == String.class) */ {
-            obj = bytesToString(b);
+            obj = stringShrink(bytesToString(b));
+//            obj = bytesToString(b);
         }
         return obj;
     }
@@ -201,6 +208,16 @@ public class SITuple extends AbstractTuple {
             desc_size = serialize().length;
         }
 
+        int getIDByName(String attrName) {
+            int attrSize = this.attr_name.length;
+            for(int i = 0; i < attrSize; ++i) {
+                if(this.attr_name[i].equals(attrName)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         int getAttr_count() {
             return attr_count;
         }
@@ -244,6 +261,16 @@ public class SITuple extends AbstractTuple {
             return attr_example[k];
         }
 
+        Object getAttr_default(int k) {
+            Object obj = attr_example[k];
+            if(obj.getClass() == String.class) {
+//                String str = (String) obj;
+//                obj = str.substring(0, str.indexOf(0));
+                obj = stringShrink((String) obj);
+            }
+            return obj;
+        }
+
         String getAttr_name(int k) {
             return attr_name[k];
         }
@@ -263,7 +290,7 @@ public class SITuple extends AbstractTuple {
 
     public static void main(String[] args) throws Exception {
         System.out.println("SITuple.main:");
-        int attr_count = 5;
+        int attr_count = 6;
         Object[] attr_example = new Object[attr_count];
         String[] attr_name = new String[attr_count];
         byte[] constraint_list = new byte[attr_count];
@@ -272,12 +299,14 @@ public class SITuple extends AbstractTuple {
         attr_example[2] = (float) 2.1;
         attr_example[3] = (double) 3.3;
         attr_example[4] = (String) "string_value";
+        attr_example[5] = (String) "string2";
 
         attr_name[0] = "int_value";
         attr_name[1] = "long_value";
         attr_name[2] = "float_value";
         attr_name[3] = "double_value";
         attr_name[4] = "string_value";
+        attr_name[5] = "string2";
 
         for(int i = 0; i < attr_count; ++i)
              constraint_list[i] = 0;
@@ -297,11 +326,14 @@ public class SITuple extends AbstractTuple {
         tuple1.setAttr(1, (long)4591870180066957722l);
         tuple1.setAttr(2, (float)-0.872);
         tuple1.setAttr(3, (double)-0.1);
-        tuple1.setAttr(4, (String)"stringdvalue");
+        tuple1.setAttr(4, (String)"strivalue");
+        tuple1.setAttr(5, "stri");
         tuple1.print();
         byte[] b = tuple1.serialize(desc);
         tuple2.deSerialize(b, desc);
         tuple2.print();
+//        desc.attr_example[4] = tuple2.getAttr(4);
+//        System.out.println(desc.getAttr_example(4) + " : " + desc.getAttr_default(4));
 //        System.out.println((double)tuple2.getAttr(3));
 //        long la = 4591870180066957722l;
 //        int alow =(int) (la & 0xffffffffl);

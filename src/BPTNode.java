@@ -171,7 +171,13 @@ public class BPTNode {
                 System.arraycopy(part, 0, originContent, writePos, part.length);
                 writePos += keySize;
                 AbstractTuple tup = entries.get(i).getValue();
+
+//                System.out.println("serialize tuple:    ");
+//                tup.print();
+
                 part = tup.serialize(desc);
+
+
                 System.arraycopy(part, 0, originContent, writePos, tupleSize);
                 writePos += tupleSize;
             }
@@ -294,6 +300,7 @@ public class BPTNode {
         {
             for(Map.Entry<Comparable, AbstractTuple> item:entries)
             {
+//                System.out.println("--From BPTNode: " + item.getKey() + " : " + key + " : " + item.getKey().compareTo(key));
                 if(item.getKey().compareTo(key) == 0)
                 {
                     return item.getValue();

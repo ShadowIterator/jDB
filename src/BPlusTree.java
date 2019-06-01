@@ -182,6 +182,8 @@ public class BPlusTree extends  AbstractRecordManager{
 
     public boolean insertTuple(AbstractTuple tuple) throws Exception
     {
+//        System.out.println("insert tuple  ");
+//        tuple.print();
         Comparable key = (Comparable) tuple.getAttr(desc.getPrimary_key_id());
         return root.insertOrUpdate(key, tuple, this, pager, desc);
     }

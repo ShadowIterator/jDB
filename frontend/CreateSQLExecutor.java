@@ -32,4 +32,34 @@ public class CreateSQLExecutor extends SQLExecutor {
             System.out.println("\tPrimary Key: "+this.pkName);
         }
     }
+
+    @Override
+    public SQLResult execute(MetadataManager mgr) throws Exception {
+        int attr_count = this.attributeList.size();
+        Object[] attr_example = new Object[attr_count];
+        String[] attr_name = new String[attr_count];
+        byte[] constraint_list = new byte[attr_count];
+        int pk_id = 0;
+
+        for(int i = 0; i < attr_count; ++i) {
+            AttributeMeta attr = this.attributeList.get(i);
+            if(attr.attributeName == this.pkName) {
+                pk_id = i;
+            }
+            attr_name[i] = attr.attributeName;
+            attr_example[i] = attr.getDefaultValue();
+            constraint_list[i] = 0;
+            if(attr.isNotNull) {
+                constraint_list[i] |= AbstractTuple.Constraints.NOT_NULL;
+            }
+        }
+        try {
+            SITuple.SITupleDesc table_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, pk_id);
+            mgr.createTable(this.tableName, table_desc);
+        } catch(Exception e) {
+            return new SQLResult(-1, "Some Storage Error.");
+        }
+
+        return new SQLResult(0);
+    }
 }
