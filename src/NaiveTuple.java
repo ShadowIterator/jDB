@@ -74,6 +74,10 @@ public final class NaiveTuple extends AbstractTuple implements java.io.Serializa
             return 0;
         }
 
+        Object getAttr_default(int k) {
+            return new Object();
+        }
+
         void deSerialize(byte[] b) throws Exception {
 
         }
