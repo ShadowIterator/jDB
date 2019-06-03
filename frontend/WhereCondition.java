@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-import java.util.Comparator;
+import javafx.util.Pair;
 
 public class WhereCondition {
     public enum Operator {
@@ -12,223 +12,7 @@ public class WhereCondition {
     public enum SQLValueType {
         DIRECT, ATTRIBUTE
     }
-    public class SQLValue {
-        public SQLValueType type;
-        public String directValue;
-        public String tableName;
-        public String attributeName;
 
-        public SQLValue(String _directValue) {
-            this.directValue = _directValue;
-            this.type = SQLValueType.DIRECT;
-        }
-
-        public SQLValue(String _tableName, String _attributeName) {
-            this.tableName = _tableName;
-            this.attributeName = _attributeName;
-            this.type = SQLValueType.ATTRIBUTE;
-        }
-
-        public String toString() {
-            String result = "";
-            if(this.type == SQLValueType.DIRECT) {
-                result += this.directValue;
-            } else {
-                if(this.tableName == null) {
-                    result += "<null>.";
-                } else {
-                    result += (this.tableName + ".");
-                }
-                result += this.attributeName;
-            }
-            return result;
-        }
-    }
-    public class OneCondition {
-        public SQLValue leftValue;
-        public SQLValue rightValue;
-        public Operator operator;
-
-        public OneCondition(SQLValue _leftValue, SQLValue _rightValue, Operator _operator) {
-            this.leftValue = _leftValue;
-            this.rightValue = _rightValue;
-            this.operator = _operator;
-        }
-
-        public String toString() {
-            return leftValue.toString() + " " + operator.toString() + " " + rightValue.toString();
-        }
-
-        public boolean isLegal() {
-            if(this.leftValue.type == SQLValueType.DIRECT && this.rightValue.type == SQLValueType.DIRECT) {
-                return false;
-            }
-            return true;
-        }
-
-        public Object getObjFromStr(String str, Object targetObj) throws Exception {
-            try {
-                if (targetObj.getClass() == Integer.class) {
-                    return Integer.parseInt(str);
-                } else if (targetObj.getClass() == Long.class) {
-                    return Long.parseLong(str);
-                } else if (targetObj.getClass() == Float.class) {
-                    return Float.parseFloat(str);
-                } else if (targetObj.getClass() == Double.class) {
-                    return Double.parseDouble(str);
-                } else {
-                    return str;
-                }
-            } catch (Exception e) {
-                throw new Exception("Wrong Data Type.");
-            }
-        }
-
-        public int getRelation(Object left, Object right) {
-            //-1: LT
-            //0: EQ
-            //1: GT
-            if(left.getClass() == Integer.class) {
-                int ileft = (int)left;
-                int iright = (int)right;
-                return Integer.compare(ileft, iright);
-            } else if(left.getClass() == Long.class) {
-                long lleft = (long)left;
-                long lright = (long)right;
-                return Long.compare(lleft, lright);
-            } else if(left.getClass() == Float.class) {
-                float fleft = (float)left;
-                float fright = (float)right;
-                return Float.compare(fleft, fright);
-            } else if(left.getClass() == Double.class) {
-                double dleft = (double)left;
-                double dright = (double)right;
-                return Double.compare(dleft, dright);
-            } else {
-                String sleft = (String)left;
-                String sright = (String)right;
-                int result = sleft.compareTo(sright);
-                return Integer.compare(result, 0);
-            }
-        }
-
-        public boolean NaiveJudgeCondition(AbstractTuple tuple, AbstractTuple.AbstractTupleDesc desc) throws Exception {
-            if(this.leftValue.type == SQLValueType.DIRECT) {
-                SQLValue tmp = this.leftValue;
-                this.leftValue = this.rightValue;
-                this.rightValue = tmp;
-            }
-            String leftAttrName = this.leftValue.attributeName;
-            int leftAttrID = desc.getIDByName(leftAttrName);
-            if(leftAttrID == -1) {
-                throw new Exception("Invalid Attribute Name "+leftAttrName);
-            }
-            Object leftValue = tuple.getAttr(leftAttrID);
-            Object rightValue;
-            if(this.rightValue.type == SQLValueType.DIRECT) {
-                String rightValueStr = this.rightValue.directValue;
-                try {
-                    rightValue = getObjFromStr(rightValueStr, leftValue);
-                } catch (Exception e) {
-                    throw e;
-                }
-            } else {
-                String rightAttrName = this.rightValue.attributeName;
-                int rightAttrID = desc.getIDByName(rightAttrName);
-                if(rightAttrID == -1) {
-                    throw new Exception("Invalue Attribute Name " + rightAttrName);
-                }
-                rightValue = tuple.getAttr(rightAttrID);
-            }
-            int relation = this.getRelation(leftValue, rightValue);
-            if(this.operator == Operator.EQ) {
-                return relation == 0;
-            } else if(this.operator == Operator.GT) {
-                return relation == 1;
-            } else if(this.operator == Operator.GEQ) {
-                return relation >= 0;
-            } else if(this.operator == Operator.LT) {
-                return relation == -1;
-            } else /* if(this.operator == Operator.LEQ) */ {
-                return relation <= 0;
-            }
-        }
-
-        public Object findObject(String targetTableName, String targetAttributeName, ArrayList<AbstractTuple> tuples, ArrayList<AbstractTuple.AbstractTupleDesc> descs, ArrayList<String> tableNames) throws Exception {
-            int tableNum = tableNames.size();
-            Object returnValue = null;
-            if(targetTableName != null) {
-                for (int i = 0; i < tableNum; ++i) {
-                    String tableName = tableNames.get(i);
-                    if (tableName.equals(targetTableName)) {
-                        AbstractTuple tuple = tuples.get(i);
-                        AbstractTuple.AbstractTupleDesc desc = descs.get(i);
-                        int attributeId = desc.getIDByName(targetAttributeName);
-                        if (attributeId == -1) {
-                            throw new Exception("Could not find attribute " + targetAttributeName + " in table " + tableName);
-                        }
-                        returnValue = tuple.getAttr(attributeId);
-                        break;
-                    }
-                }
-            }
-            else {
-                for(int i = 0; i < tableNum; ++i) {
-                    AbstractTuple.AbstractTupleDesc desc = descs.get(i);
-                    int attributeId = desc.getIDByName(targetAttributeName);
-                    if(attributeId == -1) {
-                        continue;
-                    }
-                    AbstractTuple tuple = tuples.get(i);
-                    returnValue = tuple.getAttr(attributeId);
-                    break;
-                }
-            }
-            return returnValue;
-        }
-
-        public boolean JoinNaiveJudgeCondition(ArrayList<AbstractTuple> tuples, ArrayList<AbstractTuple.AbstractTupleDesc> descs, ArrayList<String> tableNames) throws Exception {
-            if(this.leftValue.type == SQLValueType.DIRECT) {
-                SQLValue tmp = this.leftValue;
-                this.leftValue = this.rightValue;
-                this.rightValue = tmp;
-            }
-            String leftTableName = this.leftValue.tableName;
-            String leftAttrName = this.leftValue.attributeName;
-            String rightTableName = this.rightValue.tableName;
-            String rightAttrName = this.rightValue.attributeName;
-            Object leftValue = this.findObject(leftTableName, leftAttrName, tuples, descs, tableNames);
-            Object rightValue = null;
-            if(this.rightValue.type == SQLValueType.DIRECT) {
-                String rightValueStr = this.rightValue.directValue;
-                try {
-                    rightValue = getObjFromStr(rightValueStr, leftValue);
-                } catch (Exception e) {
-                    throw e;
-                }
-            } else {
-                rightValue = this.findObject(rightTableName, rightAttrName, tuples, descs, tableNames);
-            }
-            if(leftValue == null) {
-                throw new Exception("Cannot find attribute " + leftTableName + "." + leftAttrName);
-            }
-            if(rightValue == null) {
-                throw new Exception("Cannot find attribute " + rightTableName + "." + rightAttrName);
-            }
-            int relation = this.getRelation(leftValue, rightValue);
-            if(this.operator == Operator.EQ) {
-                return relation == 0;
-            } else if(this.operator == Operator.GT) {
-                return relation == 1;
-            } else if(this.operator == Operator.GEQ) {
-                return relation >= 0;
-            } else if(this.operator == Operator.LT) {
-                return relation == -1;
-            } else /* if(this.operator == Operator.LEQ) */ {
-                return relation <= 0;
-            }
-        }
-    }
     public enum LogicConnection {
         AND("AND"), OR("OR");
         private String name;
@@ -297,6 +81,222 @@ public class WhereCondition {
             }
         }
         return result;
+    }
+
+    private String isPKCondition(OneCondition cond, String tableName, String pkName) {
+        if(cond.rightValue.type == SQLValueType.ATTRIBUTE) {
+            SQLValue tmp = cond.leftValue;
+            cond.leftValue = cond.rightValue;
+            cond.rightValue = tmp;
+            if(cond.operator == Operator.LEQ) cond.operator = Operator.GEQ;
+            else if(cond.operator == Operator.LT) cond.operator = Operator.GT;
+            else if(cond.operator == Operator.GEQ) cond.operator = Operator.LEQ;
+            else if(cond.operator == Operator.GT) cond.operator = Operator.LT;
+        }
+        if(cond.rightValue.type == SQLValueType.ATTRIBUTE) {
+            return null;
+        }
+        if(tableName != null && cond.leftValue.tableName != null) {
+            if(tableName != cond.leftValue.tableName) {
+                return null;
+            }
+        }
+        if(cond.leftValue.attributeName == pkName) {
+            return cond.rightValue.directValue;
+        } else {
+            return null;
+        }
+    }
+
+    private Comparable getComparableFromStr(String str, Object example) {
+        if(example.getClass() == Integer.class) {
+            return Integer.parseInt(str);
+        } else if(example.getClass() == Float.class) {
+            return Float.parseFloat(str);
+        } else if(example.getClass() == Double.class) {
+            return Double.parseDouble(str);
+        } else if(example.getClass() == Long.class) {
+            return Long.parseLong(str);
+        } else {
+            return str;
+        }
+    }
+
+    public Pair<Comparable, Comparable> findPKRange(String tableName, String pkName, Object pkExample) {
+        Comparable start = null;
+        Comparable end = null;
+        OneCondition firstCond = this.conditions.get(0);
+        String firstStr = isPKCondition(firstCond, tableName, pkName);
+        if(firstStr != null) {
+            Comparable firstVal = getComparableFromStr(firstStr, pkExample);
+            Operator op = firstCond.operator;
+            if(op == Operator.EQ) {
+                start = firstVal;
+                end = firstVal;
+            } else if(op == Operator.GEQ || op == Operator.GT) {
+                start = firstVal;
+            } else {
+                end = firstVal;
+            }
+        }
+        int connCount = this.connections.size();
+        for(int i = 0; i < connCount; ++i) {
+            OneCondition cond = this.conditions.get(i+1);
+            String comStr = isPKCondition(cond, tableName, pkName);
+            if(comStr == null) {
+                continue;
+            }
+            Comparable comVal = getComparableFromStr(comStr, pkExample);
+            LogicConnection conn = this.connections.get(i);
+            Operator op = cond.operator;
+            if(conn == LogicConnection.AND) {
+                if(op == Operator.EQ) {
+                    if(start == null) {
+                        if(end == null) {
+                            start = comVal;
+                            end = comVal;
+                        } else {
+                            if(end.compareTo(comVal) == -1) {
+                                return null;
+                            } else {
+                                start = comVal;
+                                end = comVal;
+                            }
+                        }
+                    } else {
+                        if(end == null) {
+                            if(start.compareTo(comVal) == 1) {
+                                return null;
+                            } else {
+                                start = comVal;
+                                end = comVal;
+                            }
+                        } else {
+                            if(start.compareTo(comVal) == 1 || end.compareTo(comVal) == -1) {
+                                return null;
+                            }
+                            start = comVal;
+                            end = comVal;
+                        }
+                    }
+                } else if(op == Operator.GEQ || op == Operator.GT) {
+                    if(start == null) {
+                        if(end == null) {
+                            start = comVal;
+                        } else {
+                            if(end.compareTo(comVal) == -1) {
+                                return null;
+                            } else {
+                                start = comVal;
+//                                if(op == Operator.GT && end.compareTo(comVal) == 0) {
+//                                    return null;
+//                                } else {
+//                                    start = comVal;
+//                                }
+                            }
+                        }
+                    } else {
+                        if(end == null) {
+                            if(start.compareTo(comVal) == -1) {
+                                start = comVal;
+                            }
+                        } else {
+                            if(start.compareTo(comVal) == -1) {
+                                if(end.compareTo(comVal) == -1) {
+                                    return null;
+                                } else {
+                                    start = comVal;
+                                }
+                            }
+                        }
+                    }
+                } else /* if(op == Operator.LEQ || op == Operator.LT) */ {
+                    if(start == null) {
+                        if(end == null) {
+                            end = comVal;
+                        } else {
+                            if(end.compareTo(comVal) == 1) {
+                                end = comVal;
+                            }
+                        }
+                    } else {
+                        if(end == null) {
+                            if(start.compareTo(comVal) == 1) {
+                                return null;
+                            } else {
+                                end = comVal;
+                            }
+                        } else {
+                            if(end.compareTo(comVal) == 1) {
+                                if(start.compareTo(comVal) == 1) {
+                                    return null;
+                                } else {
+                                    end = comVal;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else /* if (conn == LogicConnection.OR) */ {
+                if(op == Operator.EQ) {
+                    if(start == null) {
+                        if(end != null) {
+                            if(end.compareTo(comVal) == -1) {
+                                end = comVal;
+                            }
+                        }
+                    } else {
+                        if(end == null) {
+                            if(start.compareTo(comVal) == 1) {
+                                start = comVal;
+                            }
+                        } else {
+                            if(start.compareTo(comVal) == 1) {
+                                start = comVal;
+                            }
+                            if(end.compareTo(comVal) == -1) {
+                                end = comVal;
+                            }
+                        }
+                    }
+                } else if(op == Operator.GEQ || op == Operator.GT) {
+                    if(start == null) {
+                        if(end != null) {
+                            end = null;
+                        }
+                    } else {
+                        if(end == null) {
+                            if(start.compareTo(comVal) == 1) {
+                                start = comVal;
+                            }
+                        } else {
+                            if(start.compareTo(comVal) == 1) {
+                                start = comVal;
+                            }
+                            end = null;
+                        }
+                    }
+                } else {
+                    if(start == null) {
+                        if(end != null) {
+                            if(end.compareTo(comVal) == -1) {
+                                end = comVal;
+                            }
+                        }
+                    } else {
+                        if(end == null) {
+                            start = null;
+                        } else {
+                            if(end.compareTo(comVal) == -1) {
+                                end = comVal;
+                            }
+                            start = null;
+                        }
+                    }
+                }
+            }
+        }
+        return new Pair<Comparable, Comparable>(start, end);
     }
 
 }

@@ -164,86 +164,64 @@ delete_from returns [DeleteSQLExecutor deleteSqlExec]
                     $deleteSqlExec = new DeleteSQLExecutor($ID.text, $where_list.whereCondition);
                 }
               ;
+
+sql_value returns [SQLValue sqlValue]
+              : ID
+                {
+                    $sqlValue = new SQLValue(null, $ID.text);
+                }
+              | t=ID '.' a=ID
+                {
+                    $sqlValue = new SQLValue($t.text, $a.text);
+                }
+              | value_single
+                {
+                    $sqlValue = new SQLValue($value_single.value);
+                }
+              ;
+
+one_condition returns [OneCondition oneCondition]
+              : l=sql_value op=(OP|OPE) r=sql_value
+                {
+                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
+                    switch($op.text) {
+                        case "=":
+                            _op = WhereCondition.Operator.EQ;
+                            break;
+                        case ">":
+                            _op = WhereCondition.Operator.GT;
+                            break;
+                        case ">=":
+                            _op = WhereCondition.Operator.GEQ;
+                            break;
+                        case "<":
+                            _op = WhereCondition.Operator.LT;
+                            break;
+                        case "<=":
+                            _op = WhereCondition.Operator.LEQ;
+                            break;
+                    }
+                    $oneCondition = new OneCondition($l.sqlValue, $r.sqlValue, _op);
+                }
+              ;
+
 where_list returns [WhereCondition whereCondition]
-              : ID op=(OP|OPE) value_single AND where_list // deprecated!!
+              : one_condition AND where_list // deprecated!!
                 {
                     $whereCondition = $where_list.whereCondition;
-                    WhereCondition.SQLValue _leftValue = $whereCondition.new SQLValue(null, $ID.text);
-                    WhereCondition.SQLValue _rightValue = $whereCondition.new SQLValue($value_single.value);
-                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-                    switch($op.text) {
-                        case "=":
-                            _op = WhereCondition.Operator.EQ;
-                            break;
-                        case ">":
-                            _op = WhereCondition.Operator.GT;
-                            break;
-                        case ">=":
-                            _op = WhereCondition.Operator.GEQ;
-                            break;
-                        case "<":
-                            _op = WhereCondition.Operator.LT;
-                            break;
-                        case "<=":
-                            _op = WhereCondition.Operator.LEQ;
-                            break;
-                    }
-                    WhereCondition.OneCondition _oneCondition = $whereCondition.new OneCondition(_leftValue, _rightValue, _op);
                     WhereCondition.LogicConnection _logic = WhereCondition.LogicConnection.AND;
-                    $whereCondition.AddCondition(_oneCondition, _logic);
+                    $whereCondition.AddCondition($one_condition.oneCondition, _logic);
                 }
-              | ID op=(OP|OPE) value_single OR where_list // deprecated!!
+              | one_condition OR where_list // deprecated!!
                 {
                     $whereCondition = $where_list.whereCondition;
-                    WhereCondition.SQLValue _leftValue = $whereCondition.new SQLValue(null, $ID.text);
-                    WhereCondition.SQLValue _rightValue = $whereCondition.new SQLValue($value_single.value);
-                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-                    switch($op.text) {
-                        case "=":
-                            _op = WhereCondition.Operator.EQ;
-                            break;
-                        case ">":
-                            _op = WhereCondition.Operator.GT;
-                            break;
-                        case ">=":
-                            _op = WhereCondition.Operator.GEQ;
-                            break;
-                        case "<":
-                            _op = WhereCondition.Operator.LT;
-                            break;
-                        case "<=":
-                            _op = WhereCondition.Operator.LEQ;
-                            break;
-                    }
-                    WhereCondition.OneCondition _oneCondition = $whereCondition.new OneCondition(_leftValue, _rightValue, _op);
                     WhereCondition.LogicConnection _logic = WhereCondition.LogicConnection.OR;
-                    $whereCondition.AddCondition(_oneCondition, _logic);
+                    $whereCondition.AddCondition($one_condition.oneCondition, _logic);
                 }
-              | ID op=(OP|OPE) value_single
+              | one_condition
                 {
                     $whereCondition = new WhereCondition();
-                    WhereCondition.SQLValue _leftValue = $whereCondition.new SQLValue(null, $ID.text);
-                    WhereCondition.SQLValue _rightValue = $whereCondition.new SQLValue($value_single.value);
-                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-                    switch($op.text) {
-                        case "=":
-                            _op = WhereCondition.Operator.EQ;
-                            break;
-                        case ">":
-                            _op = WhereCondition.Operator.GT;
-                            break;
-                        case ">=":
-                            _op = WhereCondition.Operator.GEQ;
-                            break;
-                        case "<":
-                            _op = WhereCondition.Operator.LT;
-                            break;
-                        case "<=":
-                            _op = WhereCondition.Operator.LEQ;
-                            break;
-                    }
-                    WhereCondition.OneCondition _oneCondition = $whereCondition.new OneCondition(_leftValue, _rightValue, _op);
-                    $whereCondition.conditions.add(_oneCondition);
+                    $whereCondition.conditions.add($one_condition.oneCondition);
                 }
               ;
 
@@ -267,6 +245,19 @@ select_table returns [SelectSQLExecutor selectSqlExec]
                 {
                     $selectSqlExec = new SelectSQLExecutor();
                     $selectSqlExec.setAttributeList($attribute_list_select.attributeList);
+                    $selectSqlExec.setTableJoin($table_list_select.tableJoin);
+                    $selectSqlExec.setWhereCondition($where_list.whereCondition);
+                }
+              | SELECT '*' FROM table_list_select
+                {
+                    $selectSqlExec = new SelectSQLExecutor();
+                    $selectSqlExec.setSelectAll(true);
+                    $selectSqlExec.setTableJoin($table_list_select.tableJoin);
+                }
+              | SELECT '*' FROM table_list_select WHERE where_list
+                {
+                    $selectSqlExec = new SelectSQLExecutor();
+                    $selectSqlExec.setSelectAll(true);
                     $selectSqlExec.setTableJoin($table_list_select.tableJoin);
                     $selectSqlExec.setWhereCondition($where_list.whereCondition);
                 }
@@ -305,10 +296,10 @@ table_list_select returns [TableJoin tableJoin]
                             $tableJoin.firstTableName = $f.text;
                             $tableJoin.secondTableName = $s.text;
                             $tableJoin.onCondition = new WhereCondition();
-                            WhereCondition.SQLValue _leftValue = $tableJoin.onCondition.new SQLValue($ft.text, $fa.text);
-                            WhereCondition.SQLValue _rightValue = $tableJoin.onCondition.new SQLValue($st.text, $sa.text);
+                            SQLValue _leftValue = new SQLValue($ft.text, $fa.text);
+                            SQLValue _rightValue = new SQLValue($st.text, $sa.text);
                             WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-                            WhereCondition.OneCondition _oneCondition = $tableJoin.onCondition.new OneCondition(_leftValue, _rightValue, _op);
+                            OneCondition _oneCondition = new OneCondition(_leftValue, _rightValue, _op);
                             $tableJoin.onCondition.conditions.add(_oneCondition);
                         }
                       | ID

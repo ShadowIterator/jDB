@@ -20,40 +20,41 @@ public class SimpleSQLParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, CREATE=6, TABLE=7, INT=8, LONG=9, 
-		FLOAT=10, DOUBLE=11, STRING=12, NOT=13, NULL=14, PRIMARY=15, KEY=16, DROP=17, 
-		SHOW=18, INSERT=19, INTO=20, VALUES=21, DELETE=22, FROM=23, WHERE=24, 
-		UPDATE=25, SET=26, SELECT=27, JOIN=28, ON=29, AND=30, OR=31, TEXT=32, 
-		NUMFLOAT=33, NUMFLOATNEG=34, NUMINT=35, NUMINTNEG=36, OP=37, OPE=38, ID=39, 
-		WS=40;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, CREATE=7, TABLE=8, INT=9, 
+		LONG=10, FLOAT=11, DOUBLE=12, STRING=13, NOT=14, NULL=15, PRIMARY=16, 
+		KEY=17, DROP=18, SHOW=19, INSERT=20, INTO=21, VALUES=22, DELETE=23, FROM=24, 
+		WHERE=25, UPDATE=26, SET=27, SELECT=28, JOIN=29, ON=30, AND=31, OR=32, 
+		TEXT=33, NUMFLOAT=34, NUMFLOATNEG=35, NUMINT=36, NUMINTNEG=37, OP=38, 
+		OPE=39, ID=40, WS=41;
 	public static final int
 		RULE_commands = 0, RULE_sql = 1, RULE_create_table = 2, RULE_attribute_list = 3, 
 		RULE_primary_key = 4, RULE_type = 5, RULE_drop_table = 6, RULE_show_table = 7, 
 		RULE_insert_into = 8, RULE_attribute_list_insert = 9, RULE_value_single = 10, 
-		RULE_value_list = 11, RULE_delete_from = 12, RULE_where_list = 13, RULE_update_table = 14, 
-		RULE_select_table = 15, RULE_attribute_list_select = 16, RULE_table_list_select = 17;
+		RULE_value_list = 11, RULE_delete_from = 12, RULE_sql_value = 13, RULE_one_condition = 14, 
+		RULE_where_list = 15, RULE_update_table = 16, RULE_select_table = 17, 
+		RULE_attribute_list_select = 18, RULE_table_list_select = 19;
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"commands", "sql", "create_table", "attribute_list", "primary_key", "type", 
 			"drop_table", "show_table", "insert_into", "attribute_list_insert", "value_single", 
-			"value_list", "delete_from", "where_list", "update_table", "select_table", 
-			"attribute_list_select", "table_list_select"
+			"value_list", "delete_from", "sql_value", "one_condition", "where_list", 
+			"update_table", "select_table", "attribute_list_select", "table_list_select"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "';'", "'('", "')'", "','", "'.'", null, null, null, null, null, 
+			null, "';'", "'('", "')'", "','", "'.'", "'*'", null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, "'='"
+			null, null, null, null, "'='"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, null, null, null, "CREATE", "TABLE", "INT", "LONG", 
+			null, null, null, null, null, null, null, "CREATE", "TABLE", "INT", "LONG", 
 			"FLOAT", "DOUBLE", "STRING", "NOT", "NULL", "PRIMARY", "KEY", "DROP", 
 			"SHOW", "INSERT", "INTO", "VALUES", "DELETE", "FROM", "WHERE", "UPDATE", 
 			"SET", "SELECT", "JOIN", "ON", "AND", "OR", "TEXT", "NUMFLOAT", "NUMFLOATNEG", 
@@ -135,21 +136,21 @@ public class SimpleSQLParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			((CommandsContext)_localctx).sqlExecutorList =  new ArrayList<SQLExecutor>();
-			setState(37);
+			setState(41);
 			((CommandsContext)_localctx).s = sql();
 			_localctx.sqlExecutorList.add(((CommandsContext)_localctx).s.sqlExecutor);
-			setState(44);
+			setState(48);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << CREATE) | (1L << DROP) | (1L << SHOW) | (1L << INSERT) | (1L << DELETE) | (1L << UPDATE) | (1L << SELECT))) != 0)) {
 				{
 				{
-				setState(39);
+				setState(43);
 				((CommandsContext)_localctx).ns = sql();
 				_localctx.sqlExecutorList.add(((CommandsContext)_localctx).ns.sqlExecutor);
 				}
 				}
-				setState(46);
+				setState(50);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -207,20 +208,20 @@ public class SimpleSQLParser extends Parser {
 		enterRule(_localctx, 2, RULE_sql);
 		int _la;
 		try {
-			setState(89);
+			setState(93);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case CREATE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(47);
+				setState(51);
 				((SqlContext)_localctx).create_table = create_table();
-				setState(49);
+				setState(53);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==T__0) {
 					{
-					setState(48);
+					setState(52);
 					match(T__0);
 					}
 				}
@@ -233,14 +234,14 @@ public class SimpleSQLParser extends Parser {
 			case DROP:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(53);
+				setState(57);
 				((SqlContext)_localctx).drop_table = drop_table();
-				setState(55);
+				setState(59);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==T__0) {
 					{
-					setState(54);
+					setState(58);
 					match(T__0);
 					}
 				}
@@ -253,14 +254,14 @@ public class SimpleSQLParser extends Parser {
 			case SHOW:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(59);
+				setState(63);
 				((SqlContext)_localctx).show_table = show_table();
-				setState(61);
+				setState(65);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==T__0) {
 					{
-					setState(60);
+					setState(64);
 					match(T__0);
 					}
 				}
@@ -273,14 +274,14 @@ public class SimpleSQLParser extends Parser {
 			case INSERT:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(65);
+				setState(69);
 				((SqlContext)_localctx).insert_into = insert_into();
-				setState(67);
+				setState(71);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==T__0) {
 					{
-					setState(66);
+					setState(70);
 					match(T__0);
 					}
 				}
@@ -293,14 +294,14 @@ public class SimpleSQLParser extends Parser {
 			case DELETE:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(71);
+				setState(75);
 				((SqlContext)_localctx).delete_from = delete_from();
-				setState(73);
+				setState(77);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==T__0) {
 					{
-					setState(72);
+					setState(76);
 					match(T__0);
 					}
 				}
@@ -313,14 +314,14 @@ public class SimpleSQLParser extends Parser {
 			case UPDATE:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(77);
+				setState(81);
 				((SqlContext)_localctx).update_table = update_table();
-				setState(79);
+				setState(83);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==T__0) {
 					{
-					setState(78);
+					setState(82);
 					match(T__0);
 					}
 				}
@@ -333,14 +334,14 @@ public class SimpleSQLParser extends Parser {
 			case SELECT:
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(83);
+				setState(87);
 				((SqlContext)_localctx).select_table = select_table();
-				setState(85);
+				setState(89);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==T__0) {
 					{
-					setState(84);
+					setState(88);
 					match(T__0);
 					}
 				}
@@ -389,23 +390,23 @@ public class SimpleSQLParser extends Parser {
 		Create_tableContext _localctx = new Create_tableContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_create_table);
 		try {
-			setState(108);
+			setState(112);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(91);
-				match(CREATE);
-				setState(92);
-				match(TABLE);
-				setState(93);
-				((Create_tableContext)_localctx).ID = match(ID);
-				setState(94);
-				match(T__1);
 				setState(95);
-				((Create_tableContext)_localctx).attribute_list = attribute_list();
+				match(CREATE);
 				setState(96);
+				match(TABLE);
+				setState(97);
+				((Create_tableContext)_localctx).ID = match(ID);
+				setState(98);
+				match(T__1);
+				setState(99);
+				((Create_tableContext)_localctx).attribute_list = attribute_list();
+				setState(100);
 				match(T__2);
 
 				                    ((Create_tableContext)_localctx).createSqlExec =  new CreateSQLExecutor((((Create_tableContext)_localctx).ID!=null?((Create_tableContext)_localctx).ID.getText():null), ((Create_tableContext)_localctx).attribute_list.attributeList, null);
@@ -415,19 +416,19 @@ public class SimpleSQLParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(99);
-				match(CREATE);
-				setState(100);
-				match(TABLE);
-				setState(101);
-				((Create_tableContext)_localctx).ID = match(ID);
-				setState(102);
-				match(T__1);
 				setState(103);
-				((Create_tableContext)_localctx).attribute_list = attribute_list();
+				match(CREATE);
 				setState(104);
-				((Create_tableContext)_localctx).primary_key = primary_key();
+				match(TABLE);
 				setState(105);
+				((Create_tableContext)_localctx).ID = match(ID);
+				setState(106);
+				match(T__1);
+				setState(107);
+				((Create_tableContext)_localctx).attribute_list = attribute_list();
+				setState(108);
+				((Create_tableContext)_localctx).primary_key = primary_key();
+				setState(109);
 				match(T__2);
 
 				                    ((Create_tableContext)_localctx).createSqlExec =  new CreateSQLExecutor((((Create_tableContext)_localctx).ID!=null?((Create_tableContext)_localctx).ID.getText():null), ((Create_tableContext)_localctx).attribute_list.attributeList, ((Create_tableContext)_localctx).primary_key.pkName);
@@ -471,19 +472,19 @@ public class SimpleSQLParser extends Parser {
 		Attribute_listContext _localctx = new Attribute_listContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_attribute_list);
 		try {
-			setState(134);
+			setState(138);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(110);
+				setState(114);
 				((Attribute_listContext)_localctx).ID = match(ID);
-				setState(111);
+				setState(115);
 				((Attribute_listContext)_localctx).type = type();
-				setState(112);
+				setState(116);
 				match(T__3);
-				setState(113);
+				setState(117);
 				((Attribute_listContext)_localctx).attribute_list = attribute_list();
 
 				                     ((Attribute_listContext)_localctx).attributeList =  ((Attribute_listContext)_localctx).attribute_list.attributeList;
@@ -494,17 +495,17 @@ public class SimpleSQLParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(116);
-				((Attribute_listContext)_localctx).ID = match(ID);
-				setState(117);
-				((Attribute_listContext)_localctx).type = type();
-				setState(118);
-				match(NOT);
-				setState(119);
-				match(NULL);
 				setState(120);
-				match(T__3);
+				((Attribute_listContext)_localctx).ID = match(ID);
 				setState(121);
+				((Attribute_listContext)_localctx).type = type();
+				setState(122);
+				match(NOT);
+				setState(123);
+				match(NULL);
+				setState(124);
+				match(T__3);
+				setState(125);
 				((Attribute_listContext)_localctx).attribute_list = attribute_list();
 
 				                     ((Attribute_listContext)_localctx).attributeList =  ((Attribute_listContext)_localctx).attribute_list.attributeList;
@@ -515,9 +516,9 @@ public class SimpleSQLParser extends Parser {
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(124);
+				setState(128);
 				((Attribute_listContext)_localctx).ID = match(ID);
-				setState(125);
+				setState(129);
 				((Attribute_listContext)_localctx).type = type();
 
 				                     ((Attribute_listContext)_localctx).attributeList =  new ArrayList<AttributeMeta>();
@@ -528,13 +529,13 @@ public class SimpleSQLParser extends Parser {
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(128);
+				setState(132);
 				((Attribute_listContext)_localctx).ID = match(ID);
-				setState(129);
+				setState(133);
 				((Attribute_listContext)_localctx).type = type();
-				setState(130);
+				setState(134);
 				match(NOT);
-				setState(131);
+				setState(135);
 				match(NULL);
 
 				                     ((Attribute_listContext)_localctx).attributeList =  new ArrayList<AttributeMeta>();
@@ -573,17 +574,17 @@ public class SimpleSQLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(136);
-			match(T__3);
-			setState(137);
-			match(PRIMARY);
-			setState(138);
-			match(KEY);
-			setState(139);
-			match(T__1);
 			setState(140);
-			((Primary_keyContext)_localctx).ID = match(ID);
+			match(T__3);
 			setState(141);
+			match(PRIMARY);
+			setState(142);
+			match(KEY);
+			setState(143);
+			match(T__1);
+			setState(144);
+			((Primary_keyContext)_localctx).ID = match(ID);
+			setState(145);
 			match(T__2);
 
 			                    ((Primary_keyContext)_localctx).pkName =  (((Primary_keyContext)_localctx).ID!=null?((Primary_keyContext)_localctx).ID.getText():null);
@@ -620,13 +621,13 @@ public class SimpleSQLParser extends Parser {
 		TypeContext _localctx = new TypeContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_type);
 		try {
-			setState(157);
+			setState(161);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case INT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(144);
+				setState(148);
 				match(INT);
 				((TypeContext)_localctx).dataType =  new SQLDataType(-1, SQLDataType.Type.INT);
 				}
@@ -634,7 +635,7 @@ public class SimpleSQLParser extends Parser {
 			case LONG:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(146);
+				setState(150);
 				match(LONG);
 				((TypeContext)_localctx).dataType =  new SQLDataType(-1, SQLDataType.Type.LONG);
 				}
@@ -642,7 +643,7 @@ public class SimpleSQLParser extends Parser {
 			case FLOAT:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(148);
+				setState(152);
 				match(FLOAT);
 				((TypeContext)_localctx).dataType =  new SQLDataType(-1, SQLDataType.Type.FLOAT);
 				}
@@ -650,7 +651,7 @@ public class SimpleSQLParser extends Parser {
 			case DOUBLE:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(150);
+				setState(154);
 				match(DOUBLE);
 				((TypeContext)_localctx).dataType =  new SQLDataType(-1, SQLDataType.Type.DOUBLE);
 				}
@@ -658,13 +659,13 @@ public class SimpleSQLParser extends Parser {
 			case STRING:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(152);
+				setState(156);
 				match(STRING);
-				setState(153);
+				setState(157);
 				match(T__1);
-				setState(154);
+				setState(158);
 				((TypeContext)_localctx).NUMINT = match(NUMINT);
-				setState(155);
+				setState(159);
 				match(T__2);
 				((TypeContext)_localctx).dataType =  new SQLDataType(Integer.parseInt((((TypeContext)_localctx).NUMINT!=null?((TypeContext)_localctx).NUMINT.getText():null)), SQLDataType.Type.STRING);
 				}
@@ -702,11 +703,11 @@ public class SimpleSQLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(159);
+			setState(163);
 			match(DROP);
-			setState(160);
+			setState(164);
 			match(TABLE);
-			setState(161);
+			setState(165);
 			((Drop_tableContext)_localctx).ID = match(ID);
 
 			                    ((Drop_tableContext)_localctx).dropSqlExec =  new DropSQLExecutor((((Drop_tableContext)_localctx).ID!=null?((Drop_tableContext)_localctx).ID.getText():null));
@@ -742,11 +743,11 @@ public class SimpleSQLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(164);
+			setState(168);
 			match(SHOW);
-			setState(165);
+			setState(169);
 			match(TABLE);
-			setState(166);
+			setState(170);
 			((Show_tableContext)_localctx).ID = match(ID);
 
 			                    ((Show_tableContext)_localctx).showSqlExec =  new ShowSQLExecutor((((Show_tableContext)_localctx).ID!=null?((Show_tableContext)_localctx).ID.getText():null));
@@ -789,25 +790,25 @@ public class SimpleSQLParser extends Parser {
 		Insert_intoContext _localctx = new Insert_intoContext(_ctx, getState());
 		enterRule(_localctx, 16, RULE_insert_into);
 		try {
-			setState(190);
+			setState(194);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(169);
-				match(INSERT);
-				setState(170);
-				match(INTO);
-				setState(171);
-				((Insert_intoContext)_localctx).ID = match(ID);
-				setState(172);
-				match(VALUES);
 				setState(173);
-				match(T__1);
+				match(INSERT);
 				setState(174);
-				((Insert_intoContext)_localctx).value_list = value_list();
+				match(INTO);
 				setState(175);
+				((Insert_intoContext)_localctx).ID = match(ID);
+				setState(176);
+				match(VALUES);
+				setState(177);
+				match(T__1);
+				setState(178);
+				((Insert_intoContext)_localctx).value_list = value_list();
+				setState(179);
 				match(T__2);
 
 				                    ((Insert_intoContext)_localctx).insertSqlExec =  new InsertSQLExecutor((((Insert_intoContext)_localctx).ID!=null?((Insert_intoContext)_localctx).ID.getText():null), null, ((Insert_intoContext)_localctx).value_list.valueList);
@@ -817,25 +818,25 @@ public class SimpleSQLParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(178);
-				match(INSERT);
-				setState(179);
-				match(INTO);
-				setState(180);
-				((Insert_intoContext)_localctx).ID = match(ID);
-				setState(181);
-				match(T__1);
 				setState(182);
-				((Insert_intoContext)_localctx).attribute_list_insert = attribute_list_insert();
+				match(INSERT);
 				setState(183);
-				match(T__2);
+				match(INTO);
 				setState(184);
-				match(VALUES);
+				((Insert_intoContext)_localctx).ID = match(ID);
 				setState(185);
 				match(T__1);
 				setState(186);
-				((Insert_intoContext)_localctx).value_list = value_list();
+				((Insert_intoContext)_localctx).attribute_list_insert = attribute_list_insert();
 				setState(187);
+				match(T__2);
+				setState(188);
+				match(VALUES);
+				setState(189);
+				match(T__1);
+				setState(190);
+				((Insert_intoContext)_localctx).value_list = value_list();
+				setState(191);
 				match(T__2);
 
 				                    ((Insert_intoContext)_localctx).insertSqlExec =  new InsertSQLExecutor((((Insert_intoContext)_localctx).ID!=null?((Insert_intoContext)_localctx).ID.getText():null), ((Insert_intoContext)_localctx).attribute_list_insert.attributeList, ((Insert_intoContext)_localctx).value_list.valueList);
@@ -873,17 +874,17 @@ public class SimpleSQLParser extends Parser {
 		Attribute_list_insertContext _localctx = new Attribute_list_insertContext(_ctx, getState());
 		enterRule(_localctx, 18, RULE_attribute_list_insert);
 		try {
-			setState(199);
+			setState(203);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,13,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(192);
+				setState(196);
 				((Attribute_list_insertContext)_localctx).ID = match(ID);
-				setState(193);
+				setState(197);
 				match(T__3);
-				setState(194);
+				setState(198);
 				((Attribute_list_insertContext)_localctx).attribute_list_insert = attribute_list_insert();
 
 				                    ((Attribute_list_insertContext)_localctx).attributeList =  ((Attribute_list_insertContext)_localctx).attribute_list_insert.attributeList;
@@ -894,7 +895,7 @@ public class SimpleSQLParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(197);
+				setState(201);
 				((Attribute_list_insertContext)_localctx).ID = match(ID);
 
 				                    ((Attribute_list_insertContext)_localctx).attributeList =  new ArrayList<String>();
@@ -934,7 +935,7 @@ public class SimpleSQLParser extends Parser {
 		enterRule(_localctx, 20, RULE_value_single);
 		int _la;
 		try {
-			setState(205);
+			setState(209);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case NUMFLOAT:
@@ -943,7 +944,7 @@ public class SimpleSQLParser extends Parser {
 			case NUMINTNEG:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(201);
+				setState(205);
 				((Value_singleContext)_localctx).v = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NUMFLOAT) | (1L << NUMFLOATNEG) | (1L << NUMINT) | (1L << NUMINTNEG))) != 0)) ) {
@@ -962,7 +963,7 @@ public class SimpleSQLParser extends Parser {
 			case TEXT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(203);
+				setState(207);
 				((Value_singleContext)_localctx).v = match(TEXT);
 
 				                    int length = (((Value_singleContext)_localctx).v!=null?((Value_singleContext)_localctx).v.getText():null).length();
@@ -1005,17 +1006,17 @@ public class SimpleSQLParser extends Parser {
 		Value_listContext _localctx = new Value_listContext(_ctx, getState());
 		enterRule(_localctx, 22, RULE_value_list);
 		try {
-			setState(215);
+			setState(219);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,15,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(207);
+				setState(211);
 				((Value_listContext)_localctx).value_single = value_single();
-				setState(208);
+				setState(212);
 				match(T__3);
-				setState(209);
+				setState(213);
 				((Value_listContext)_localctx).value_list = value_list();
 
 				                    ((Value_listContext)_localctx).valueList =  ((Value_listContext)_localctx).value_list.valueList;
@@ -1026,7 +1027,7 @@ public class SimpleSQLParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(212);
+				setState(216);
 				((Value_listContext)_localctx).value_single = value_single();
 
 				                    ((Value_listContext)_localctx).valueList =  new ArrayList<String>();
@@ -1070,15 +1071,15 @@ public class SimpleSQLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(217);
-			match(DELETE);
-			setState(218);
-			match(FROM);
-			setState(219);
-			((Delete_fromContext)_localctx).ID = match(ID);
-			setState(220);
-			match(WHERE);
 			setState(221);
+			match(DELETE);
+			setState(222);
+			match(FROM);
+			setState(223);
+			((Delete_fromContext)_localctx).ID = match(ID);
+			setState(224);
+			match(WHERE);
+			setState(225);
 			((Delete_fromContext)_localctx).where_list = where_list();
 
 			                    ((Delete_fromContext)_localctx).deleteSqlExec =  new DeleteSQLExecutor((((Delete_fromContext)_localctx).ID!=null?((Delete_fromContext)_localctx).ID.getText():null), ((Delete_fromContext)_localctx).where_list.whereCondition);
@@ -1096,22 +1097,165 @@ public class SimpleSQLParser extends Parser {
 		return _localctx;
 	}
 
-	public static class Where_listContext extends ParserRuleContext {
-		public WhereCondition whereCondition;
+	public static class Sql_valueContext extends ParserRuleContext {
+		public SQLValue sqlValue;
 		public Token ID;
-		public Token op;
+		public Token t;
+		public Token a;
 		public Value_singleContext value_single;
-		public Where_listContext where_list;
-		public TerminalNode ID() { return getToken(SimpleSQLParser.ID, 0); }
+		public List<TerminalNode> ID() { return getTokens(SimpleSQLParser.ID); }
+		public TerminalNode ID(int i) {
+			return getToken(SimpleSQLParser.ID, i);
+		}
 		public Value_singleContext value_single() {
 			return getRuleContext(Value_singleContext.class,0);
+		}
+		public Sql_valueContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_sql_value; }
+	}
+
+	public final Sql_valueContext sql_value() throws RecognitionException {
+		Sql_valueContext _localctx = new Sql_valueContext(_ctx, getState());
+		enterRule(_localctx, 26, RULE_sql_value);
+		try {
+			setState(237);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,16,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(228);
+				((Sql_valueContext)_localctx).ID = match(ID);
+
+				                    ((Sql_valueContext)_localctx).sqlValue =  new SQLValue(null, (((Sql_valueContext)_localctx).ID!=null?((Sql_valueContext)_localctx).ID.getText():null));
+				                
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(230);
+				((Sql_valueContext)_localctx).t = match(ID);
+				setState(231);
+				match(T__4);
+				setState(232);
+				((Sql_valueContext)_localctx).a = match(ID);
+
+				                    ((Sql_valueContext)_localctx).sqlValue =  new SQLValue((((Sql_valueContext)_localctx).t!=null?((Sql_valueContext)_localctx).t.getText():null), (((Sql_valueContext)_localctx).a!=null?((Sql_valueContext)_localctx).a.getText():null));
+				                
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(234);
+				((Sql_valueContext)_localctx).value_single = value_single();
+
+				                    ((Sql_valueContext)_localctx).sqlValue =  new SQLValue(((Sql_valueContext)_localctx).value_single.value);
+				                
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class One_conditionContext extends ParserRuleContext {
+		public OneCondition oneCondition;
+		public Sql_valueContext l;
+		public Token op;
+		public Sql_valueContext r;
+		public List<Sql_valueContext> sql_value() {
+			return getRuleContexts(Sql_valueContext.class);
+		}
+		public Sql_valueContext sql_value(int i) {
+			return getRuleContext(Sql_valueContext.class,i);
+		}
+		public TerminalNode OP() { return getToken(SimpleSQLParser.OP, 0); }
+		public TerminalNode OPE() { return getToken(SimpleSQLParser.OPE, 0); }
+		public One_conditionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_one_condition; }
+	}
+
+	public final One_conditionContext one_condition() throws RecognitionException {
+		One_conditionContext _localctx = new One_conditionContext(_ctx, getState());
+		enterRule(_localctx, 28, RULE_one_condition);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(239);
+			((One_conditionContext)_localctx).l = sql_value();
+			setState(240);
+			((One_conditionContext)_localctx).op = _input.LT(1);
+			_la = _input.LA(1);
+			if ( !(_la==OP || _la==OPE) ) {
+				((One_conditionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
+			setState(241);
+			((One_conditionContext)_localctx).r = sql_value();
+
+			                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
+			                    switch((((One_conditionContext)_localctx).op!=null?((One_conditionContext)_localctx).op.getText():null)) {
+			                        case "=":
+			                            _op = WhereCondition.Operator.EQ;
+			                            break;
+			                        case ">":
+			                            _op = WhereCondition.Operator.GT;
+			                            break;
+			                        case ">=":
+			                            _op = WhereCondition.Operator.GEQ;
+			                            break;
+			                        case "<":
+			                            _op = WhereCondition.Operator.LT;
+			                            break;
+			                        case "<=":
+			                            _op = WhereCondition.Operator.LEQ;
+			                            break;
+			                    }
+			                    ((One_conditionContext)_localctx).oneCondition =  new OneCondition(((One_conditionContext)_localctx).l.sqlValue, ((One_conditionContext)_localctx).r.sqlValue, _op);
+			                
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class Where_listContext extends ParserRuleContext {
+		public WhereCondition whereCondition;
+		public One_conditionContext one_condition;
+		public Where_listContext where_list;
+		public One_conditionContext one_condition() {
+			return getRuleContext(One_conditionContext.class,0);
 		}
 		public TerminalNode AND() { return getToken(SimpleSQLParser.AND, 0); }
 		public Where_listContext where_list() {
 			return getRuleContext(Where_listContext.class,0);
 		}
-		public TerminalNode OP() { return getToken(SimpleSQLParser.OP, 0); }
-		public TerminalNode OPE() { return getToken(SimpleSQLParser.OPE, 0); }
 		public TerminalNode OR() { return getToken(SimpleSQLParser.OR, 0); }
 		public Where_listContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1121,154 +1265,51 @@ public class SimpleSQLParser extends Parser {
 
 	public final Where_listContext where_list() throws RecognitionException {
 		Where_listContext _localctx = new Where_listContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_where_list);
-		int _la;
+		enterRule(_localctx, 30, RULE_where_list);
 		try {
-			setState(243);
+			setState(257);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,16,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,17,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(224);
-				((Where_listContext)_localctx).ID = match(ID);
-				setState(225);
-				((Where_listContext)_localctx).op = _input.LT(1);
-				_la = _input.LA(1);
-				if ( !(_la==OP || _la==OPE) ) {
-					((Where_listContext)_localctx).op = (Token)_errHandler.recoverInline(this);
-				}
-				else {
-					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-					_errHandler.reportMatch(this);
-					consume();
-				}
-				setState(226);
-				((Where_listContext)_localctx).value_single = value_single();
-				setState(227);
+				setState(244);
+				((Where_listContext)_localctx).one_condition = one_condition();
+				setState(245);
 				match(AND);
-				setState(228);
+				setState(246);
 				((Where_listContext)_localctx).where_list = where_list();
 
 				                    ((Where_listContext)_localctx).whereCondition =  ((Where_listContext)_localctx).where_list.whereCondition;
-				                    WhereCondition.SQLValue _leftValue = _localctx.whereCondition.new SQLValue(null, (((Where_listContext)_localctx).ID!=null?((Where_listContext)_localctx).ID.getText():null));
-				                    WhereCondition.SQLValue _rightValue = _localctx.whereCondition.new SQLValue(((Where_listContext)_localctx).value_single.value);
-				                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-				                    switch((((Where_listContext)_localctx).op!=null?((Where_listContext)_localctx).op.getText():null)) {
-				                        case "=":
-				                            _op = WhereCondition.Operator.EQ;
-				                            break;
-				                        case ">":
-				                            _op = WhereCondition.Operator.GT;
-				                            break;
-				                        case ">=":
-				                            _op = WhereCondition.Operator.GEQ;
-				                            break;
-				                        case "<":
-				                            _op = WhereCondition.Operator.LT;
-				                            break;
-				                        case "<=":
-				                            _op = WhereCondition.Operator.LEQ;
-				                            break;
-				                    }
-				                    WhereCondition.OneCondition _oneCondition = _localctx.whereCondition.new OneCondition(_leftValue, _rightValue, _op);
 				                    WhereCondition.LogicConnection _logic = WhereCondition.LogicConnection.AND;
-				                    _localctx.whereCondition.AddCondition(_oneCondition, _logic);
+				                    _localctx.whereCondition.AddCondition(((Where_listContext)_localctx).one_condition.oneCondition, _logic);
 				                
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(231);
-				((Where_listContext)_localctx).ID = match(ID);
-				setState(232);
-				((Where_listContext)_localctx).op = _input.LT(1);
-				_la = _input.LA(1);
-				if ( !(_la==OP || _la==OPE) ) {
-					((Where_listContext)_localctx).op = (Token)_errHandler.recoverInline(this);
-				}
-				else {
-					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-					_errHandler.reportMatch(this);
-					consume();
-				}
-				setState(233);
-				((Where_listContext)_localctx).value_single = value_single();
-				setState(234);
+				setState(249);
+				((Where_listContext)_localctx).one_condition = one_condition();
+				setState(250);
 				match(OR);
-				setState(235);
+				setState(251);
 				((Where_listContext)_localctx).where_list = where_list();
 
 				                    ((Where_listContext)_localctx).whereCondition =  ((Where_listContext)_localctx).where_list.whereCondition;
-				                    WhereCondition.SQLValue _leftValue = _localctx.whereCondition.new SQLValue(null, (((Where_listContext)_localctx).ID!=null?((Where_listContext)_localctx).ID.getText():null));
-				                    WhereCondition.SQLValue _rightValue = _localctx.whereCondition.new SQLValue(((Where_listContext)_localctx).value_single.value);
-				                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-				                    switch((((Where_listContext)_localctx).op!=null?((Where_listContext)_localctx).op.getText():null)) {
-				                        case "=":
-				                            _op = WhereCondition.Operator.EQ;
-				                            break;
-				                        case ">":
-				                            _op = WhereCondition.Operator.GT;
-				                            break;
-				                        case ">=":
-				                            _op = WhereCondition.Operator.GEQ;
-				                            break;
-				                        case "<":
-				                            _op = WhereCondition.Operator.LT;
-				                            break;
-				                        case "<=":
-				                            _op = WhereCondition.Operator.LEQ;
-				                            break;
-				                    }
-				                    WhereCondition.OneCondition _oneCondition = _localctx.whereCondition.new OneCondition(_leftValue, _rightValue, _op);
 				                    WhereCondition.LogicConnection _logic = WhereCondition.LogicConnection.OR;
-				                    _localctx.whereCondition.AddCondition(_oneCondition, _logic);
+				                    _localctx.whereCondition.AddCondition(((Where_listContext)_localctx).one_condition.oneCondition, _logic);
 				                
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(238);
-				((Where_listContext)_localctx).ID = match(ID);
-				setState(239);
-				((Where_listContext)_localctx).op = _input.LT(1);
-				_la = _input.LA(1);
-				if ( !(_la==OP || _la==OPE) ) {
-					((Where_listContext)_localctx).op = (Token)_errHandler.recoverInline(this);
-				}
-				else {
-					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-					_errHandler.reportMatch(this);
-					consume();
-				}
-				setState(240);
-				((Where_listContext)_localctx).value_single = value_single();
+				setState(254);
+				((Where_listContext)_localctx).one_condition = one_condition();
 
 				                    ((Where_listContext)_localctx).whereCondition =  new WhereCondition();
-				                    WhereCondition.SQLValue _leftValue = _localctx.whereCondition.new SQLValue(null, (((Where_listContext)_localctx).ID!=null?((Where_listContext)_localctx).ID.getText():null));
-				                    WhereCondition.SQLValue _rightValue = _localctx.whereCondition.new SQLValue(((Where_listContext)_localctx).value_single.value);
-				                    WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-				                    switch((((Where_listContext)_localctx).op!=null?((Where_listContext)_localctx).op.getText():null)) {
-				                        case "=":
-				                            _op = WhereCondition.Operator.EQ;
-				                            break;
-				                        case ">":
-				                            _op = WhereCondition.Operator.GT;
-				                            break;
-				                        case ">=":
-				                            _op = WhereCondition.Operator.GEQ;
-				                            break;
-				                        case "<":
-				                            _op = WhereCondition.Operator.LT;
-				                            break;
-				                        case "<=":
-				                            _op = WhereCondition.Operator.LEQ;
-				                            break;
-				                    }
-				                    WhereCondition.OneCondition _oneCondition = _localctx.whereCondition.new OneCondition(_leftValue, _rightValue, _op);
-				                    _localctx.whereCondition.conditions.add(_oneCondition);
+				                    _localctx.whereCondition.conditions.add(((Where_listContext)_localctx).one_condition.oneCondition);
 				                
 				}
 				break;
@@ -1313,25 +1354,25 @@ public class SimpleSQLParser extends Parser {
 
 	public final Update_tableContext update_table() throws RecognitionException {
 		Update_tableContext _localctx = new Update_tableContext(_ctx, getState());
-		enterRule(_localctx, 28, RULE_update_table);
+		enterRule(_localctx, 32, RULE_update_table);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(245);
+			setState(259);
 			match(UPDATE);
-			setState(246);
+			setState(260);
 			((Update_tableContext)_localctx).t = match(ID);
-			setState(247);
+			setState(261);
 			match(SET);
-			setState(248);
+			setState(262);
 			((Update_tableContext)_localctx).a = match(ID);
-			setState(249);
+			setState(263);
 			match(OPE);
-			setState(250);
+			setState(264);
 			((Update_tableContext)_localctx).value_single = value_single();
-			setState(251);
+			setState(265);
 			match(WHERE);
-			setState(252);
+			setState(266);
 			((Update_tableContext)_localctx).where_list = where_list();
 
 			                    ((Update_tableContext)_localctx).updateSqlExec =  new UpdateSQLExecutor((((Update_tableContext)_localctx).t!=null?((Update_tableContext)_localctx).t.getText():null), (((Update_tableContext)_localctx).a!=null?((Update_tableContext)_localctx).a.getText():null), ((Update_tableContext)_localctx).value_single.value, ((Update_tableContext)_localctx).where_list.whereCondition);
@@ -1374,21 +1415,21 @@ public class SimpleSQLParser extends Parser {
 
 	public final Select_tableContext select_table() throws RecognitionException {
 		Select_tableContext _localctx = new Select_tableContext(_ctx, getState());
-		enterRule(_localctx, 30, RULE_select_table);
+		enterRule(_localctx, 34, RULE_select_table);
 		try {
-			setState(269);
+			setState(297);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,17,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,18,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(255);
+				setState(269);
 				match(SELECT);
-				setState(256);
+				setState(270);
 				((Select_tableContext)_localctx).attribute_list_select = attribute_list_select();
-				setState(257);
+				setState(271);
 				match(FROM);
-				setState(258);
+				setState(272);
 				((Select_tableContext)_localctx).table_list_select = table_list_select();
 
 				                    ((Select_tableContext)_localctx).selectSqlExec =  new SelectSQLExecutor();
@@ -1400,21 +1441,62 @@ public class SimpleSQLParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(261);
+				setState(275);
 				match(SELECT);
-				setState(262);
+				setState(276);
 				((Select_tableContext)_localctx).attribute_list_select = attribute_list_select();
-				setState(263);
+				setState(277);
 				match(FROM);
-				setState(264);
+				setState(278);
 				((Select_tableContext)_localctx).table_list_select = table_list_select();
-				setState(265);
+				setState(279);
 				match(WHERE);
-				setState(266);
+				setState(280);
 				((Select_tableContext)_localctx).where_list = where_list();
 
 				                    ((Select_tableContext)_localctx).selectSqlExec =  new SelectSQLExecutor();
 				                    _localctx.selectSqlExec.setAttributeList(((Select_tableContext)_localctx).attribute_list_select.attributeList);
+				                    _localctx.selectSqlExec.setTableJoin(((Select_tableContext)_localctx).table_list_select.tableJoin);
+				                    _localctx.selectSqlExec.setWhereCondition(((Select_tableContext)_localctx).where_list.whereCondition);
+				                
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(283);
+				match(SELECT);
+				setState(284);
+				match(T__5);
+				setState(285);
+				match(FROM);
+				setState(286);
+				((Select_tableContext)_localctx).table_list_select = table_list_select();
+
+				                    ((Select_tableContext)_localctx).selectSqlExec =  new SelectSQLExecutor();
+				                    _localctx.selectSqlExec.setSelectAll(true);
+				                    _localctx.selectSqlExec.setTableJoin(((Select_tableContext)_localctx).table_list_select.tableJoin);
+				                
+				}
+				break;
+			case 4:
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(289);
+				match(SELECT);
+				setState(290);
+				match(T__5);
+				setState(291);
+				match(FROM);
+				setState(292);
+				((Select_tableContext)_localctx).table_list_select = table_list_select();
+				setState(293);
+				match(WHERE);
+				setState(294);
+				((Select_tableContext)_localctx).where_list = where_list();
+
+				                    ((Select_tableContext)_localctx).selectSqlExec =  new SelectSQLExecutor();
+				                    _localctx.selectSqlExec.setSelectAll(true);
 				                    _localctx.selectSqlExec.setTableJoin(((Select_tableContext)_localctx).table_list_select.tableJoin);
 				                    _localctx.selectSqlExec.setWhereCondition(((Select_tableContext)_localctx).where_list.whereCondition);
 				                
@@ -1454,19 +1536,19 @@ public class SimpleSQLParser extends Parser {
 
 	public final Attribute_list_selectContext attribute_list_select() throws RecognitionException {
 		Attribute_list_selectContext _localctx = new Attribute_list_selectContext(_ctx, getState());
-		enterRule(_localctx, 32, RULE_attribute_list_select);
+		enterRule(_localctx, 36, RULE_attribute_list_select);
 		try {
-			setState(289);
+			setState(317);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,18,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,19,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(271);
+				setState(299);
 				((Attribute_list_selectContext)_localctx).ID = match(ID);
-				setState(272);
+				setState(300);
 				match(T__3);
-				setState(273);
+				setState(301);
 				((Attribute_list_selectContext)_localctx).attribute_list_select = attribute_list_select();
 
 				                            Pair<String, String> newAttr = new Pair<>(null, (((Attribute_list_selectContext)_localctx).ID!=null?((Attribute_list_selectContext)_localctx).ID.getText():null));
@@ -1478,15 +1560,15 @@ public class SimpleSQLParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(276);
+				setState(304);
 				((Attribute_list_selectContext)_localctx).t = match(ID);
-				setState(277);
+				setState(305);
 				match(T__4);
-				setState(278);
+				setState(306);
 				((Attribute_list_selectContext)_localctx).a = match(ID);
-				setState(279);
+				setState(307);
 				match(T__3);
-				setState(280);
+				setState(308);
 				((Attribute_list_selectContext)_localctx).attribute_list_select = attribute_list_select();
 
 				                            Pair<String, String> newAttr = new Pair<>((((Attribute_list_selectContext)_localctx).t!=null?((Attribute_list_selectContext)_localctx).t.getText():null), (((Attribute_list_selectContext)_localctx).a!=null?((Attribute_list_selectContext)_localctx).a.getText():null));
@@ -1498,7 +1580,7 @@ public class SimpleSQLParser extends Parser {
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(283);
+				setState(311);
 				((Attribute_list_selectContext)_localctx).ID = match(ID);
 
 				                            Pair<String, String> newAttr = new Pair<>(null, (((Attribute_list_selectContext)_localctx).ID!=null?((Attribute_list_selectContext)_localctx).ID.getText():null));
@@ -1510,11 +1592,11 @@ public class SimpleSQLParser extends Parser {
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(285);
+				setState(313);
 				((Attribute_list_selectContext)_localctx).t = match(ID);
-				setState(286);
+				setState(314);
 				match(T__4);
-				setState(287);
+				setState(315);
 				((Attribute_list_selectContext)_localctx).a = match(ID);
 
 				                            Pair<String, String> newAttr = new Pair<>((((Attribute_list_selectContext)_localctx).t!=null?((Attribute_list_selectContext)_localctx).t.getText():null), (((Attribute_list_selectContext)_localctx).a!=null?((Attribute_list_selectContext)_localctx).a.getText():null));
@@ -1560,35 +1642,35 @@ public class SimpleSQLParser extends Parser {
 
 	public final Table_list_selectContext table_list_select() throws RecognitionException {
 		Table_list_selectContext _localctx = new Table_list_selectContext(_ctx, getState());
-		enterRule(_localctx, 34, RULE_table_list_select);
+		enterRule(_localctx, 38, RULE_table_list_select);
 		try {
-			setState(305);
+			setState(333);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,19,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,20,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(291);
+				setState(319);
 				((Table_list_selectContext)_localctx).f = match(ID);
-				setState(292);
+				setState(320);
 				match(JOIN);
-				setState(293);
+				setState(321);
 				((Table_list_selectContext)_localctx).s = match(ID);
-				setState(294);
+				setState(322);
 				match(ON);
-				setState(295);
+				setState(323);
 				((Table_list_selectContext)_localctx).ft = match(ID);
-				setState(296);
+				setState(324);
 				match(T__4);
-				setState(297);
+				setState(325);
 				((Table_list_selectContext)_localctx).fa = match(ID);
-				setState(298);
+				setState(326);
 				match(OPE);
-				setState(299);
+				setState(327);
 				((Table_list_selectContext)_localctx).st = match(ID);
-				setState(300);
+				setState(328);
 				match(T__4);
-				setState(301);
+				setState(329);
 				((Table_list_selectContext)_localctx).sa = match(ID);
 
 				                            ((Table_list_selectContext)_localctx).tableJoin =  new TableJoin();
@@ -1596,10 +1678,10 @@ public class SimpleSQLParser extends Parser {
 				                            _localctx.tableJoin.firstTableName = (((Table_list_selectContext)_localctx).f!=null?((Table_list_selectContext)_localctx).f.getText():null);
 				                            _localctx.tableJoin.secondTableName = (((Table_list_selectContext)_localctx).s!=null?((Table_list_selectContext)_localctx).s.getText():null);
 				                            _localctx.tableJoin.onCondition = new WhereCondition();
-				                            WhereCondition.SQLValue _leftValue = _localctx.tableJoin.onCondition.new SQLValue((((Table_list_selectContext)_localctx).ft!=null?((Table_list_selectContext)_localctx).ft.getText():null), (((Table_list_selectContext)_localctx).fa!=null?((Table_list_selectContext)_localctx).fa.getText():null));
-				                            WhereCondition.SQLValue _rightValue = _localctx.tableJoin.onCondition.new SQLValue((((Table_list_selectContext)_localctx).st!=null?((Table_list_selectContext)_localctx).st.getText():null), (((Table_list_selectContext)_localctx).sa!=null?((Table_list_selectContext)_localctx).sa.getText():null));
+				                            SQLValue _leftValue = new SQLValue((((Table_list_selectContext)_localctx).ft!=null?((Table_list_selectContext)_localctx).ft.getText():null), (((Table_list_selectContext)_localctx).fa!=null?((Table_list_selectContext)_localctx).fa.getText():null));
+				                            SQLValue _rightValue = new SQLValue((((Table_list_selectContext)_localctx).st!=null?((Table_list_selectContext)_localctx).st.getText():null), (((Table_list_selectContext)_localctx).sa!=null?((Table_list_selectContext)_localctx).sa.getText():null));
 				                            WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-				                            WhereCondition.OneCondition _oneCondition = _localctx.tableJoin.onCondition.new OneCondition(_leftValue, _rightValue, _op);
+				                            OneCondition _oneCondition = new OneCondition(_leftValue, _rightValue, _op);
 				                            _localctx.tableJoin.onCondition.conditions.add(_oneCondition);
 				                        
 				}
@@ -1607,7 +1689,7 @@ public class SimpleSQLParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(303);
+				setState(331);
 				((Table_list_selectContext)_localctx).ID = match(ID);
 
 				                            ((Table_list_selectContext)_localctx).tableJoin =  new TableJoin();
@@ -1630,106 +1712,117 @@ public class SimpleSQLParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3*\u0136\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3+\u0152\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
-		"\4\23\t\23\3\2\3\2\3\2\3\2\3\2\3\2\7\2-\n\2\f\2\16\2\60\13\2\3\3\3\3\5"+
-		"\3\64\n\3\3\3\3\3\3\3\3\3\5\3:\n\3\3\3\3\3\3\3\3\3\5\3@\n\3\3\3\3\3\3"+
-		"\3\3\3\5\3F\n\3\3\3\3\3\3\3\3\3\5\3L\n\3\3\3\3\3\3\3\3\3\5\3R\n\3\3\3"+
-		"\3\3\3\3\3\3\5\3X\n\3\3\3\3\3\5\3\\\n\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3"+
-		"\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4o\n\4\3\5\3\5\3\5\3\5\3\5\3"+
+		"\4\23\t\23\4\24\t\24\4\25\t\25\3\2\3\2\3\2\3\2\3\2\3\2\7\2\61\n\2\f\2"+
+		"\16\2\64\13\2\3\3\3\3\5\38\n\3\3\3\3\3\3\3\3\3\5\3>\n\3\3\3\3\3\3\3\3"+
+		"\3\5\3D\n\3\3\3\3\3\3\3\3\3\5\3J\n\3\3\3\3\3\3\3\3\3\5\3P\n\3\3\3\3\3"+
+		"\3\3\3\3\5\3V\n\3\3\3\3\3\3\3\3\3\5\3\\\n\3\3\3\3\3\5\3`\n\3\3\4\3\4\3"+
+		"\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4s\n\4\3"+
 		"\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5"+
-		"\3\5\5\5\u0089\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7"+
-		"\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7\u00a0\n\7\3\b\3\b\3\b\3\b\3\b\3\t"+
-		"\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3"+
-		"\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\5\n\u00c1\n\n\3\13\3\13\3\13\3\13\3\13"+
-		"\3\13\3\13\5\13\u00ca\n\13\3\f\3\f\3\f\3\f\5\f\u00d0\n\f\3\r\3\r\3\r\3"+
-		"\r\3\r\3\r\3\r\3\r\5\r\u00da\n\r\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3"+
-		"\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3"+
-		"\17\3\17\3\17\3\17\3\17\5\17\u00f6\n\17\3\20\3\20\3\20\3\20\3\20\3\20"+
-		"\3\20\3\20\3\20\3\20\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21"+
-		"\3\21\3\21\3\21\3\21\5\21\u0110\n\21\3\22\3\22\3\22\3\22\3\22\3\22\3\22"+
-		"\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22\5\22\u0124\n\22"+
+		"\3\5\3\5\3\5\3\5\3\5\3\5\5\5\u008d\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6"+
+		"\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7\u00a4\n\7\3\b"+
+		"\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3"+
+		"\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\5\n\u00c5\n\n\3\13"+
+		"\3\13\3\13\3\13\3\13\3\13\3\13\5\13\u00ce\n\13\3\f\3\f\3\f\3\f\5\f\u00d4"+
+		"\n\f\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u00de\n\r\3\16\3\16\3\16\3\16"+
+		"\3\16\3\16\3\16\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\5\17\u00f0"+
+		"\n\17\3\20\3\20\3\20\3\20\3\20\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21"+
+		"\3\21\3\21\3\21\3\21\3\21\5\21\u0104\n\21\3\22\3\22\3\22\3\22\3\22\3\22"+
+		"\3\22\3\22\3\22\3\22\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23"+
 		"\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23"+
-		"\5\23\u0134\n\23\3\23\2\2\24\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \""+
-		"$\2\4\3\2#&\3\2\'(\2\u0144\2&\3\2\2\2\4[\3\2\2\2\6n\3\2\2\2\b\u0088\3"+
-		"\2\2\2\n\u008a\3\2\2\2\f\u009f\3\2\2\2\16\u00a1\3\2\2\2\20\u00a6\3\2\2"+
-		"\2\22\u00c0\3\2\2\2\24\u00c9\3\2\2\2\26\u00cf\3\2\2\2\30\u00d9\3\2\2\2"+
-		"\32\u00db\3\2\2\2\34\u00f5\3\2\2\2\36\u00f7\3\2\2\2 \u010f\3\2\2\2\"\u0123"+
-		"\3\2\2\2$\u0133\3\2\2\2&\'\b\2\1\2\'(\5\4\3\2(.\b\2\1\2)*\5\4\3\2*+\b"+
-		"\2\1\2+-\3\2\2\2,)\3\2\2\2-\60\3\2\2\2.,\3\2\2\2./\3\2\2\2/\3\3\2\2\2"+
-		"\60.\3\2\2\2\61\63\5\6\4\2\62\64\7\3\2\2\63\62\3\2\2\2\63\64\3\2\2\2\64"+
-		"\65\3\2\2\2\65\66\b\3\1\2\66\\\3\2\2\2\679\5\16\b\28:\7\3\2\298\3\2\2"+
-		"\29:\3\2\2\2:;\3\2\2\2;<\b\3\1\2<\\\3\2\2\2=?\5\20\t\2>@\7\3\2\2?>\3\2"+
-		"\2\2?@\3\2\2\2@A\3\2\2\2AB\b\3\1\2B\\\3\2\2\2CE\5\22\n\2DF\7\3\2\2ED\3"+
-		"\2\2\2EF\3\2\2\2FG\3\2\2\2GH\b\3\1\2H\\\3\2\2\2IK\5\32\16\2JL\7\3\2\2"+
-		"KJ\3\2\2\2KL\3\2\2\2LM\3\2\2\2MN\b\3\1\2N\\\3\2\2\2OQ\5\36\20\2PR\7\3"+
-		"\2\2QP\3\2\2\2QR\3\2\2\2RS\3\2\2\2ST\b\3\1\2T\\\3\2\2\2UW\5 \21\2VX\7"+
-		"\3\2\2WV\3\2\2\2WX\3\2\2\2XY\3\2\2\2YZ\b\3\1\2Z\\\3\2\2\2[\61\3\2\2\2"+
-		"[\67\3\2\2\2[=\3\2\2\2[C\3\2\2\2[I\3\2\2\2[O\3\2\2\2[U\3\2\2\2\\\5\3\2"+
-		"\2\2]^\7\b\2\2^_\7\t\2\2_`\7)\2\2`a\7\4\2\2ab\5\b\5\2bc\7\5\2\2cd\b\4"+
-		"\1\2do\3\2\2\2ef\7\b\2\2fg\7\t\2\2gh\7)\2\2hi\7\4\2\2ij\5\b\5\2jk\5\n"+
-		"\6\2kl\7\5\2\2lm\b\4\1\2mo\3\2\2\2n]\3\2\2\2ne\3\2\2\2o\7\3\2\2\2pq\7"+
-		")\2\2qr\5\f\7\2rs\7\6\2\2st\5\b\5\2tu\b\5\1\2u\u0089\3\2\2\2vw\7)\2\2"+
-		"wx\5\f\7\2xy\7\17\2\2yz\7\20\2\2z{\7\6\2\2{|\5\b\5\2|}\b\5\1\2}\u0089"+
-		"\3\2\2\2~\177\7)\2\2\177\u0080\5\f\7\2\u0080\u0081\b\5\1\2\u0081\u0089"+
-		"\3\2\2\2\u0082\u0083\7)\2\2\u0083\u0084\5\f\7\2\u0084\u0085\7\17\2\2\u0085"+
-		"\u0086\7\20\2\2\u0086\u0087\b\5\1\2\u0087\u0089\3\2\2\2\u0088p\3\2\2\2"+
-		"\u0088v\3\2\2\2\u0088~\3\2\2\2\u0088\u0082\3\2\2\2\u0089\t\3\2\2\2\u008a"+
-		"\u008b\7\6\2\2\u008b\u008c\7\21\2\2\u008c\u008d\7\22\2\2\u008d\u008e\7"+
-		"\4\2\2\u008e\u008f\7)\2\2\u008f\u0090\7\5\2\2\u0090\u0091\b\6\1\2\u0091"+
-		"\13\3\2\2\2\u0092\u0093\7\n\2\2\u0093\u00a0\b\7\1\2\u0094\u0095\7\13\2"+
-		"\2\u0095\u00a0\b\7\1\2\u0096\u0097\7\f\2\2\u0097\u00a0\b\7\1\2\u0098\u0099"+
-		"\7\r\2\2\u0099\u00a0\b\7\1\2\u009a\u009b\7\16\2\2\u009b\u009c\7\4\2\2"+
-		"\u009c\u009d\7%\2\2\u009d\u009e\7\5\2\2\u009e\u00a0\b\7\1\2\u009f\u0092"+
-		"\3\2\2\2\u009f\u0094\3\2\2\2\u009f\u0096\3\2\2\2\u009f\u0098\3\2\2\2\u009f"+
-		"\u009a\3\2\2\2\u00a0\r\3\2\2\2\u00a1\u00a2\7\23\2\2\u00a2\u00a3\7\t\2"+
-		"\2\u00a3\u00a4\7)\2\2\u00a4\u00a5\b\b\1\2\u00a5\17\3\2\2\2\u00a6\u00a7"+
-		"\7\24\2\2\u00a7\u00a8\7\t\2\2\u00a8\u00a9\7)\2\2\u00a9\u00aa\b\t\1\2\u00aa"+
-		"\21\3\2\2\2\u00ab\u00ac\7\25\2\2\u00ac\u00ad\7\26\2\2\u00ad\u00ae\7)\2"+
-		"\2\u00ae\u00af\7\27\2\2\u00af\u00b0\7\4\2\2\u00b0\u00b1\5\30\r\2\u00b1"+
-		"\u00b2\7\5\2\2\u00b2\u00b3\b\n\1\2\u00b3\u00c1\3\2\2\2\u00b4\u00b5\7\25"+
-		"\2\2\u00b5\u00b6\7\26\2\2\u00b6\u00b7\7)\2\2\u00b7\u00b8\7\4\2\2\u00b8"+
-		"\u00b9\5\24\13\2\u00b9\u00ba\7\5\2\2\u00ba\u00bb\7\27\2\2\u00bb\u00bc"+
-		"\7\4\2\2\u00bc\u00bd\5\30\r\2\u00bd\u00be\7\5\2\2\u00be\u00bf\b\n\1\2"+
-		"\u00bf\u00c1\3\2\2\2\u00c0\u00ab\3\2\2\2\u00c0\u00b4\3\2\2\2\u00c1\23"+
-		"\3\2\2\2\u00c2\u00c3\7)\2\2\u00c3\u00c4\7\6\2\2\u00c4\u00c5\5\24\13\2"+
-		"\u00c5\u00c6\b\13\1\2\u00c6\u00ca\3\2\2\2\u00c7\u00c8\7)\2\2\u00c8\u00ca"+
-		"\b\13\1\2\u00c9\u00c2\3\2\2\2\u00c9\u00c7\3\2\2\2\u00ca\25\3\2\2\2\u00cb"+
-		"\u00cc\t\2\2\2\u00cc\u00d0\b\f\1\2\u00cd\u00ce\7\"\2\2\u00ce\u00d0\b\f"+
-		"\1\2\u00cf\u00cb\3\2\2\2\u00cf\u00cd\3\2\2\2\u00d0\27\3\2\2\2\u00d1\u00d2"+
-		"\5\26\f\2\u00d2\u00d3\7\6\2\2\u00d3\u00d4\5\30\r\2\u00d4\u00d5\b\r\1\2"+
-		"\u00d5\u00da\3\2\2\2\u00d6\u00d7\5\26\f\2\u00d7\u00d8\b\r\1\2\u00d8\u00da"+
-		"\3\2\2\2\u00d9\u00d1\3\2\2\2\u00d9\u00d6\3\2\2\2\u00da\31\3\2\2\2\u00db"+
-		"\u00dc\7\30\2\2\u00dc\u00dd\7\31\2\2\u00dd\u00de\7)\2\2\u00de\u00df\7"+
-		"\32\2\2\u00df\u00e0\5\34\17\2\u00e0\u00e1\b\16\1\2\u00e1\33\3\2\2\2\u00e2"+
-		"\u00e3\7)\2\2\u00e3\u00e4\t\3\2\2\u00e4\u00e5\5\26\f\2\u00e5\u00e6\7 "+
-		"\2\2\u00e6\u00e7\5\34\17\2\u00e7\u00e8\b\17\1\2\u00e8\u00f6\3\2\2\2\u00e9"+
-		"\u00ea\7)\2\2\u00ea\u00eb\t\3\2\2\u00eb\u00ec\5\26\f\2\u00ec\u00ed\7!"+
-		"\2\2\u00ed\u00ee\5\34\17\2\u00ee\u00ef\b\17\1\2\u00ef\u00f6\3\2\2\2\u00f0"+
-		"\u00f1\7)\2\2\u00f1\u00f2\t\3\2\2\u00f2\u00f3\5\26\f\2\u00f3\u00f4\b\17"+
-		"\1\2\u00f4\u00f6\3\2\2\2\u00f5\u00e2\3\2\2\2\u00f5\u00e9\3\2\2\2\u00f5"+
-		"\u00f0\3\2\2\2\u00f6\35\3\2\2\2\u00f7\u00f8\7\33\2\2\u00f8\u00f9\7)\2"+
-		"\2\u00f9\u00fa\7\34\2\2\u00fa\u00fb\7)\2\2\u00fb\u00fc\7(\2\2\u00fc\u00fd"+
-		"\5\26\f\2\u00fd\u00fe\7\32\2\2\u00fe\u00ff\5\34\17\2\u00ff\u0100\b\20"+
-		"\1\2\u0100\37\3\2\2\2\u0101\u0102\7\35\2\2\u0102\u0103\5\"\22\2\u0103"+
-		"\u0104\7\31\2\2\u0104\u0105\5$\23\2\u0105\u0106\b\21\1\2\u0106\u0110\3"+
-		"\2\2\2\u0107\u0108\7\35\2\2\u0108\u0109\5\"\22\2\u0109\u010a\7\31\2\2"+
-		"\u010a\u010b\5$\23\2\u010b\u010c\7\32\2\2\u010c\u010d\5\34\17\2\u010d"+
-		"\u010e\b\21\1\2\u010e\u0110\3\2\2\2\u010f\u0101\3\2\2\2\u010f\u0107\3"+
-		"\2\2\2\u0110!\3\2\2\2\u0111\u0112\7)\2\2\u0112\u0113\7\6\2\2\u0113\u0114"+
-		"\5\"\22\2\u0114\u0115\b\22\1\2\u0115\u0124\3\2\2\2\u0116\u0117\7)\2\2"+
-		"\u0117\u0118\7\7\2\2\u0118\u0119\7)\2\2\u0119\u011a\7\6\2\2\u011a\u011b"+
-		"\5\"\22\2\u011b\u011c\b\22\1\2\u011c\u0124\3\2\2\2\u011d\u011e\7)\2\2"+
-		"\u011e\u0124\b\22\1\2\u011f\u0120\7)\2\2\u0120\u0121\7\7\2\2\u0121\u0122"+
-		"\7)\2\2\u0122\u0124\b\22\1\2\u0123\u0111\3\2\2\2\u0123\u0116\3\2\2\2\u0123"+
-		"\u011d\3\2\2\2\u0123\u011f\3\2\2\2\u0124#\3\2\2\2\u0125\u0126\7)\2\2\u0126"+
-		"\u0127\7\36\2\2\u0127\u0128\7)\2\2\u0128\u0129\7\37\2\2\u0129\u012a\7"+
-		")\2\2\u012a\u012b\7\7\2\2\u012b\u012c\7)\2\2\u012c\u012d\7(\2\2\u012d"+
-		"\u012e\7)\2\2\u012e\u012f\7\7\2\2\u012f\u0130\7)\2\2\u0130\u0134\b\23"+
-		"\1\2\u0131\u0132\7)\2\2\u0132\u0134\b\23\1\2\u0133\u0125\3\2\2\2\u0133"+
-		"\u0131\3\2\2\2\u0134%\3\2\2\2\26.\639?EKQW[n\u0088\u009f\u00c0\u00c9\u00cf"+
-		"\u00d9\u00f5\u010f\u0123\u0133";
+		"\3\23\3\23\3\23\3\23\5\23\u012c\n\23\3\24\3\24\3\24\3\24\3\24\3\24\3\24"+
+		"\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\5\24\u0140\n\24"+
+		"\3\25\3\25\3\25\3\25\3\25\3\25\3\25\3\25\3\25\3\25\3\25\3\25\3\25\3\25"+
+		"\5\25\u0150\n\25\3\25\2\2\26\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \""+
+		"$&(\2\4\3\2$\'\3\2()\2\u0162\2*\3\2\2\2\4_\3\2\2\2\6r\3\2\2\2\b\u008c"+
+		"\3\2\2\2\n\u008e\3\2\2\2\f\u00a3\3\2\2\2\16\u00a5\3\2\2\2\20\u00aa\3\2"+
+		"\2\2\22\u00c4\3\2\2\2\24\u00cd\3\2\2\2\26\u00d3\3\2\2\2\30\u00dd\3\2\2"+
+		"\2\32\u00df\3\2\2\2\34\u00ef\3\2\2\2\36\u00f1\3\2\2\2 \u0103\3\2\2\2\""+
+		"\u0105\3\2\2\2$\u012b\3\2\2\2&\u013f\3\2\2\2(\u014f\3\2\2\2*+\b\2\1\2"+
+		"+,\5\4\3\2,\62\b\2\1\2-.\5\4\3\2./\b\2\1\2/\61\3\2\2\2\60-\3\2\2\2\61"+
+		"\64\3\2\2\2\62\60\3\2\2\2\62\63\3\2\2\2\63\3\3\2\2\2\64\62\3\2\2\2\65"+
+		"\67\5\6\4\2\668\7\3\2\2\67\66\3\2\2\2\678\3\2\2\289\3\2\2\29:\b\3\1\2"+
+		":`\3\2\2\2;=\5\16\b\2<>\7\3\2\2=<\3\2\2\2=>\3\2\2\2>?\3\2\2\2?@\b\3\1"+
+		"\2@`\3\2\2\2AC\5\20\t\2BD\7\3\2\2CB\3\2\2\2CD\3\2\2\2DE\3\2\2\2EF\b\3"+
+		"\1\2F`\3\2\2\2GI\5\22\n\2HJ\7\3\2\2IH\3\2\2\2IJ\3\2\2\2JK\3\2\2\2KL\b"+
+		"\3\1\2L`\3\2\2\2MO\5\32\16\2NP\7\3\2\2ON\3\2\2\2OP\3\2\2\2PQ\3\2\2\2Q"+
+		"R\b\3\1\2R`\3\2\2\2SU\5\"\22\2TV\7\3\2\2UT\3\2\2\2UV\3\2\2\2VW\3\2\2\2"+
+		"WX\b\3\1\2X`\3\2\2\2Y[\5$\23\2Z\\\7\3\2\2[Z\3\2\2\2[\\\3\2\2\2\\]\3\2"+
+		"\2\2]^\b\3\1\2^`\3\2\2\2_\65\3\2\2\2_;\3\2\2\2_A\3\2\2\2_G\3\2\2\2_M\3"+
+		"\2\2\2_S\3\2\2\2_Y\3\2\2\2`\5\3\2\2\2ab\7\t\2\2bc\7\n\2\2cd\7*\2\2de\7"+
+		"\4\2\2ef\5\b\5\2fg\7\5\2\2gh\b\4\1\2hs\3\2\2\2ij\7\t\2\2jk\7\n\2\2kl\7"+
+		"*\2\2lm\7\4\2\2mn\5\b\5\2no\5\n\6\2op\7\5\2\2pq\b\4\1\2qs\3\2\2\2ra\3"+
+		"\2\2\2ri\3\2\2\2s\7\3\2\2\2tu\7*\2\2uv\5\f\7\2vw\7\6\2\2wx\5\b\5\2xy\b"+
+		"\5\1\2y\u008d\3\2\2\2z{\7*\2\2{|\5\f\7\2|}\7\20\2\2}~\7\21\2\2~\177\7"+
+		"\6\2\2\177\u0080\5\b\5\2\u0080\u0081\b\5\1\2\u0081\u008d\3\2\2\2\u0082"+
+		"\u0083\7*\2\2\u0083\u0084\5\f\7\2\u0084\u0085\b\5\1\2\u0085\u008d\3\2"+
+		"\2\2\u0086\u0087\7*\2\2\u0087\u0088\5\f\7\2\u0088\u0089\7\20\2\2\u0089"+
+		"\u008a\7\21\2\2\u008a\u008b\b\5\1\2\u008b\u008d\3\2\2\2\u008ct\3\2\2\2"+
+		"\u008cz\3\2\2\2\u008c\u0082\3\2\2\2\u008c\u0086\3\2\2\2\u008d\t\3\2\2"+
+		"\2\u008e\u008f\7\6\2\2\u008f\u0090\7\22\2\2\u0090\u0091\7\23\2\2\u0091"+
+		"\u0092\7\4\2\2\u0092\u0093\7*\2\2\u0093\u0094\7\5\2\2\u0094\u0095\b\6"+
+		"\1\2\u0095\13\3\2\2\2\u0096\u0097\7\13\2\2\u0097\u00a4\b\7\1\2\u0098\u0099"+
+		"\7\f\2\2\u0099\u00a4\b\7\1\2\u009a\u009b\7\r\2\2\u009b\u00a4\b\7\1\2\u009c"+
+		"\u009d\7\16\2\2\u009d\u00a4\b\7\1\2\u009e\u009f\7\17\2\2\u009f\u00a0\7"+
+		"\4\2\2\u00a0\u00a1\7&\2\2\u00a1\u00a2\7\5\2\2\u00a2\u00a4\b\7\1\2\u00a3"+
+		"\u0096\3\2\2\2\u00a3\u0098\3\2\2\2\u00a3\u009a\3\2\2\2\u00a3\u009c\3\2"+
+		"\2\2\u00a3\u009e\3\2\2\2\u00a4\r\3\2\2\2\u00a5\u00a6\7\24\2\2\u00a6\u00a7"+
+		"\7\n\2\2\u00a7\u00a8\7*\2\2\u00a8\u00a9\b\b\1\2\u00a9\17\3\2\2\2\u00aa"+
+		"\u00ab\7\25\2\2\u00ab\u00ac\7\n\2\2\u00ac\u00ad\7*\2\2\u00ad\u00ae\b\t"+
+		"\1\2\u00ae\21\3\2\2\2\u00af\u00b0\7\26\2\2\u00b0\u00b1\7\27\2\2\u00b1"+
+		"\u00b2\7*\2\2\u00b2\u00b3\7\30\2\2\u00b3\u00b4\7\4\2\2\u00b4\u00b5\5\30"+
+		"\r\2\u00b5\u00b6\7\5\2\2\u00b6\u00b7\b\n\1\2\u00b7\u00c5\3\2\2\2\u00b8"+
+		"\u00b9\7\26\2\2\u00b9\u00ba\7\27\2\2\u00ba\u00bb\7*\2\2\u00bb\u00bc\7"+
+		"\4\2\2\u00bc\u00bd\5\24\13\2\u00bd\u00be\7\5\2\2\u00be\u00bf\7\30\2\2"+
+		"\u00bf\u00c0\7\4\2\2\u00c0\u00c1\5\30\r\2\u00c1\u00c2\7\5\2\2\u00c2\u00c3"+
+		"\b\n\1\2\u00c3\u00c5\3\2\2\2\u00c4\u00af\3\2\2\2\u00c4\u00b8\3\2\2\2\u00c5"+
+		"\23\3\2\2\2\u00c6\u00c7\7*\2\2\u00c7\u00c8\7\6\2\2\u00c8\u00c9\5\24\13"+
+		"\2\u00c9\u00ca\b\13\1\2\u00ca\u00ce\3\2\2\2\u00cb\u00cc\7*\2\2\u00cc\u00ce"+
+		"\b\13\1\2\u00cd\u00c6\3\2\2\2\u00cd\u00cb\3\2\2\2\u00ce\25\3\2\2\2\u00cf"+
+		"\u00d0\t\2\2\2\u00d0\u00d4\b\f\1\2\u00d1\u00d2\7#\2\2\u00d2\u00d4\b\f"+
+		"\1\2\u00d3\u00cf\3\2\2\2\u00d3\u00d1\3\2\2\2\u00d4\27\3\2\2\2\u00d5\u00d6"+
+		"\5\26\f\2\u00d6\u00d7\7\6\2\2\u00d7\u00d8\5\30\r\2\u00d8\u00d9\b\r\1\2"+
+		"\u00d9\u00de\3\2\2\2\u00da\u00db\5\26\f\2\u00db\u00dc\b\r\1\2\u00dc\u00de"+
+		"\3\2\2\2\u00dd\u00d5\3\2\2\2\u00dd\u00da\3\2\2\2\u00de\31\3\2\2\2\u00df"+
+		"\u00e0\7\31\2\2\u00e0\u00e1\7\32\2\2\u00e1\u00e2\7*\2\2\u00e2\u00e3\7"+
+		"\33\2\2\u00e3\u00e4\5 \21\2\u00e4\u00e5\b\16\1\2\u00e5\33\3\2\2\2\u00e6"+
+		"\u00e7\7*\2\2\u00e7\u00f0\b\17\1\2\u00e8\u00e9\7*\2\2\u00e9\u00ea\7\7"+
+		"\2\2\u00ea\u00eb\7*\2\2\u00eb\u00f0\b\17\1\2\u00ec\u00ed\5\26\f\2\u00ed"+
+		"\u00ee\b\17\1\2\u00ee\u00f0\3\2\2\2\u00ef\u00e6\3\2\2\2\u00ef\u00e8\3"+
+		"\2\2\2\u00ef\u00ec\3\2\2\2\u00f0\35\3\2\2\2\u00f1\u00f2\5\34\17\2\u00f2"+
+		"\u00f3\t\3\2\2\u00f3\u00f4\5\34\17\2\u00f4\u00f5\b\20\1\2\u00f5\37\3\2"+
+		"\2\2\u00f6\u00f7\5\36\20\2\u00f7\u00f8\7!\2\2\u00f8\u00f9\5 \21\2\u00f9"+
+		"\u00fa\b\21\1\2\u00fa\u0104\3\2\2\2\u00fb\u00fc\5\36\20\2\u00fc\u00fd"+
+		"\7\"\2\2\u00fd\u00fe\5 \21\2\u00fe\u00ff\b\21\1\2\u00ff\u0104\3\2\2\2"+
+		"\u0100\u0101\5\36\20\2\u0101\u0102\b\21\1\2\u0102\u0104\3\2\2\2\u0103"+
+		"\u00f6\3\2\2\2\u0103\u00fb\3\2\2\2\u0103\u0100\3\2\2\2\u0104!\3\2\2\2"+
+		"\u0105\u0106\7\34\2\2\u0106\u0107\7*\2\2\u0107\u0108\7\35\2\2\u0108\u0109"+
+		"\7*\2\2\u0109\u010a\7)\2\2\u010a\u010b\5\26\f\2\u010b\u010c\7\33\2\2\u010c"+
+		"\u010d\5 \21\2\u010d\u010e\b\22\1\2\u010e#\3\2\2\2\u010f\u0110\7\36\2"+
+		"\2\u0110\u0111\5&\24\2\u0111\u0112\7\32\2\2\u0112\u0113\5(\25\2\u0113"+
+		"\u0114\b\23\1\2\u0114\u012c\3\2\2\2\u0115\u0116\7\36\2\2\u0116\u0117\5"+
+		"&\24\2\u0117\u0118\7\32\2\2\u0118\u0119\5(\25\2\u0119\u011a\7\33\2\2\u011a"+
+		"\u011b\5 \21\2\u011b\u011c\b\23\1\2\u011c\u012c\3\2\2\2\u011d\u011e\7"+
+		"\36\2\2\u011e\u011f\7\b\2\2\u011f\u0120\7\32\2\2\u0120\u0121\5(\25\2\u0121"+
+		"\u0122\b\23\1\2\u0122\u012c\3\2\2\2\u0123\u0124\7\36\2\2\u0124\u0125\7"+
+		"\b\2\2\u0125\u0126\7\32\2\2\u0126\u0127\5(\25\2\u0127\u0128\7\33\2\2\u0128"+
+		"\u0129\5 \21\2\u0129\u012a\b\23\1\2\u012a\u012c\3\2\2\2\u012b\u010f\3"+
+		"\2\2\2\u012b\u0115\3\2\2\2\u012b\u011d\3\2\2\2\u012b\u0123\3\2\2\2\u012c"+
+		"%\3\2\2\2\u012d\u012e\7*\2\2\u012e\u012f\7\6\2\2\u012f\u0130\5&\24\2\u0130"+
+		"\u0131\b\24\1\2\u0131\u0140\3\2\2\2\u0132\u0133\7*\2\2\u0133\u0134\7\7"+
+		"\2\2\u0134\u0135\7*\2\2\u0135\u0136\7\6\2\2\u0136\u0137\5&\24\2\u0137"+
+		"\u0138\b\24\1\2\u0138\u0140\3\2\2\2\u0139\u013a\7*\2\2\u013a\u0140\b\24"+
+		"\1\2\u013b\u013c\7*\2\2\u013c\u013d\7\7\2\2\u013d\u013e\7*\2\2\u013e\u0140"+
+		"\b\24\1\2\u013f\u012d\3\2\2\2\u013f\u0132\3\2\2\2\u013f\u0139\3\2\2\2"+
+		"\u013f\u013b\3\2\2\2\u0140\'\3\2\2\2\u0141\u0142\7*\2\2\u0142\u0143\7"+
+		"\37\2\2\u0143\u0144\7*\2\2\u0144\u0145\7 \2\2\u0145\u0146\7*\2\2\u0146"+
+		"\u0147\7\7\2\2\u0147\u0148\7*\2\2\u0148\u0149\7)\2\2\u0149\u014a\7*\2"+
+		"\2\u014a\u014b\7\7\2\2\u014b\u014c\7*\2\2\u014c\u0150\b\25\1\2\u014d\u014e"+
+		"\7*\2\2\u014e\u0150\b\25\1\2\u014f\u0141\3\2\2\2\u014f\u014d\3\2\2\2\u0150"+
+		")\3\2\2\2\27\62\67=CIOU[_r\u008c\u00a3\u00c4\u00cd\u00d3\u00dd\u00ef\u0103"+
+		"\u012b\u013f\u014f";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -85,11 +85,18 @@ public class JDBGUI extends JFrame {
         gl.setVerticalGroup(gl.createParallelGroup().addComponent(this.tablePane));
     }
 
-    private void fillInTable(SQLResult result) {
+    private void clearTable() {
         int rowCount = this.tableModel.getRowCount();
         for(int i = 0; i < rowCount; ++i) {
             this.tableModel.removeRow(0);
         }
+        String[] newColumns = new String[1];
+        newColumns[0] = "";
+        this.tableModel.setColumnIdentifiers(newColumns);
+    }
+
+    private void fillInTable(SQLResult result) {
+        clearTable();
         if(result.getResultType() == 1) {
             ArrayList<String> columnNames = result.getAttributeName();
             String[] newColumns = new String[columnNames.size()];
@@ -144,9 +151,9 @@ public class JDBGUI extends JFrame {
         }
     }
 
-    private void reportSuccResult() {
+    private void reportSuccResult(double costTime) {
 //        System.out.println("SUCCESS~");
-        this.status.setText("Success.");
+        this.status.setText("Success. Cost " + costTime + "ms");
     }
 
     private void reportFailResult(SQLResult result) {
@@ -170,21 +177,26 @@ public class JDBGUI extends JFrame {
         int resultLen = results.size();
         boolean isSelectResult = false;
         boolean isFailResult = false;
+        double costTime = 0;
+        for(int i = 0; i < resultLen; ++i) {
+            costTime += results.get(i).getCostTime();
+        }
         for(int i = resultLen - 1; i >= 0; --i) {
             SQLResult result = results.get(i);
             if(result.getResultType() == 1 || result.getResultType() == 2) {
                 fillInTable(result);
-                reportSuccResult();
+                reportSuccResult(costTime);
                 isSelectResult = true;
                 break;
             } else if(result.getResultType() == -2 || result.getResultType() == -1) {
+                clearTable();
                 reportFailResult(result);
                 isFailResult = true;
                 break;
             }
         }
         if(!isSelectResult && !isFailResult) {
-            reportSuccResult();
+            reportSuccResult(costTime);
         }
     }
 

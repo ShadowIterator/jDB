@@ -35,7 +35,7 @@ public class jDBServer extends Thread{
             try {
                 sqlResults = this.executeSql(sql);
             } catch (Exception e) {
-//                e.printStackTrace();
+                e.printStackTrace();
                 System.out.println(e.getMessage());
                 sqlResults = new ArrayList<SQLResult>();
                 sqlResults.add(new SQLResult(-2, e.getMessage()));
@@ -75,7 +75,11 @@ public class jDBServer extends Thread{
         ArrayList<SQLExecutor> sqlExecutorList = ((SimpleSQLParser.CommandsContext)tree).sqlExecutorList;
         ArrayList<SQLResult> results = new ArrayList<>();
         for(SQLExecutor sqlExecutor: sqlExecutorList) {
+            long beginTime = System.nanoTime();
             SQLResult sqlResult = sqlExecutor.execute(jDBServer.mgr);
+            long endTime = System.nanoTime();
+            double costTime = (endTime - beginTime) / 1000000.0;
+            sqlResult.setCostTime(costTime);
             results.add(sqlResult);
         }
         return results;

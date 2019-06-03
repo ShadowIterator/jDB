@@ -5,12 +5,14 @@ public class SelectSQLExecutor extends SQLExecutor {
     private ArrayList<Pair<String, String> > attributeList;
     private TableJoin tableJoin;
     private WhereCondition whereCondition;
+    private boolean isSelectAll;
 
     public SelectSQLExecutor() {
         this.type = sqlType.SELECT;
-        attributeList = null;
-        tableJoin = null;
-        whereCondition = null;
+        this.attributeList = new ArrayList<Pair<String, String> >();
+        this.tableJoin = null;
+        this.whereCondition = null;
+        this.isSelectAll = false;
     }
 
     public void setAttributeList(ArrayList<Pair<String, String>> attributeList) {
@@ -22,6 +24,7 @@ public class SelectSQLExecutor extends SQLExecutor {
     public void setWhereCondition(WhereCondition whereCondition) {
         this.whereCondition = whereCondition;
     }
+    public void setSelectAll(boolean isAll) { this.isSelectAll = isAll; }
 
     @Override
     public void printExecutor() {
@@ -52,16 +55,18 @@ public class SelectSQLExecutor extends SQLExecutor {
 
     public boolean isLegal() {
         boolean result = true;
-        result &= this.attributeList.size() != 0;
         result &= this.tableJoin.firstTableName != null;
-        if(this.tableJoin.secondTableName != null) {
+        if (this.tableJoin.secondTableName != null) {
             result &= this.tableJoin.onCondition != null;
             result &= this.tableJoin.onCondition.isLegal();
         }
-        for(Pair<String, String> attrPair: this.attributeList) {
-            String tableName = attrPair.getKey();
-            if(tableName != null) {
-                result &= (tableName.equals(this.tableJoin.firstTableName) || tableName.equals(this.tableJoin.secondTableName));
+        if(!this.isSelectAll) {
+            result &= this.attributeList.size() != 0;
+            for (Pair<String, String> attrPair : this.attributeList) {
+                String tableName = attrPair.getKey();
+                if (tableName != null) {
+                    result &= (tableName.equals(this.tableJoin.firstTableName) || tableName.equals(this.tableJoin.secondTableName));
+                }
             }
         }
         result &= this.whereCondition == null ? true : this.whereCondition.isLegal();
@@ -112,8 +117,15 @@ public class SelectSQLExecutor extends SQLExecutor {
                         sqlResult.addTuple(tuple);
                     }
                 }
-                for(Pair<String, String> attrPair: this.attributeList) {
-                    sqlResult.addAttributeInfo(0, attrPair.getValue(), desc.getIDByName(attrPair.getValue()));
+                if(this.isSelectAll) {
+                    int attrCount = desc.getAttr_count();
+                    for(int i = 0; i < attrCount; ++i) {
+                        sqlResult.addAttributeInfo(0, desc.getAttr_name(i), i);
+                    }
+                } else {
+                    for (Pair<String, String> attrPair : this.attributeList) {
+                        sqlResult.addAttributeInfo(0, attrPair.getValue(), desc.getIDByName(attrPair.getValue()));
+                    }
                 }
                 return sqlResult;
             } else {
@@ -166,9 +178,20 @@ public class SelectSQLExecutor extends SQLExecutor {
                 this.fillInTableName(descs, tableNames);
                 sqlResult.setTableName(0, firstTableName);
                 sqlResult.setTableName(1, secondTableName);
-                for(Pair<String, String> attrPair: this.attributeList) {
-                    int tableIdx = attrPair.getKey().equals(firstTableName) ? 0 : 1;
-                    sqlResult.addAttributeInfo(tableIdx, attrPair.getValue(), descs.get(tableIdx).getIDByName(attrPair.getValue()));
+                if(this.isSelectAll) {
+                    int firstAttrCount = firstDesc.getAttr_count();
+                    int secondAttrCount = secondDesc.getAttr_count();
+                    for(int i = 0; i < firstAttrCount; ++i) {
+                        sqlResult.addAttributeInfo(0, firstDesc.getAttr_name(i), i);
+                    }
+                    for(int i = 0; i < secondAttrCount; ++i) {
+                        sqlResult.addAttributeInfo(1, secondDesc.getAttr_name(i), i);
+                    }
+                } else {
+                    for (Pair<String, String> attrPair : this.attributeList) {
+                        int tableIdx = attrPair.getKey().equals(firstTableName) ? 0 : 1;
+                        sqlResult.addAttributeInfo(tableIdx, attrPair.getValue(), descs.get(tableIdx).getIDByName(attrPair.getValue()));
+                    }
                 }
                 return sqlResult;
             }
