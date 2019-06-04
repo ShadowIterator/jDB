@@ -45,6 +45,7 @@ public class MetadataManager {
 
     boolean createDatabase(String db_name) throws Exception{
         AbstractTuple.AbstractTupleDesc desc = database_meta.getTupleDesc();
+        // TODO: no database name length limit
         if(db_name.length() != ((String) desc.getAttr_example(0)).length())
             return false;
         String db_file_name = getDBFileName(db_name);

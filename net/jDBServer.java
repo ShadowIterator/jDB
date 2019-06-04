@@ -29,6 +29,10 @@ public class jDBServer extends Thread{
                 sql = dis.readUTF();
             } catch (IOException e) {
                 e.printStackTrace();
+                os.close();
+                is.close();
+                this.soc.close();
+                return;
             }
             System.out.println("Query: " + sql);
             ArrayList<SQLResult> sqlResults = null;
@@ -88,6 +92,7 @@ public class jDBServer extends Thread{
     private static void server(int port) {
         try {
             jDBServer.mgr = new MetadataManager();
+            // TODO: should not init every time, test if reopen is right
             jDBServer.mgr.init("data_meta.jDB");
             jDBServer.mgr.createDatabase("defaultdb1");
             jDBServer.mgr.checkoutDatabase("defaultdb1");

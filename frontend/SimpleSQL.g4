@@ -41,7 +41,68 @@ sql returns [SQLExecutor sqlExecutor]
                 {
                     $sqlExecutor = $select_table.selectSqlExec;
                 }
+              | create_db (';')?
+                {
+                    $sqlExecutor = $create_db.createDBExec;
+                }
+              | drop_db (';')?
+                {
+                    $sqlExecutor = $drop_db.dropDBExec;
+                }
+              | use_db (';')?
+                {
+                    $sqlExecutor = $use_db.useDBExec;
+                }
+              | show_databases (';')?
+                {
+                    $sqlExecutor = $show_databases.showAllExec;
+                }
+              | show_database (';')?
+                {
+                    $sqlExecutor = $show_database.showDBExec;
+                }
               ;
+
+// // CREATE DATABASE
+create_db returns [CreateDBExecutor createDBExec]
+              : CREATE DATABASE ID
+                {
+                    $createDBExec = new CreateDBExecutor($ID.text);
+                }
+              ;
+
+// // DROP DATABASE
+drop_db returns [DropDBExecutor dropDBExec]
+              : DROP DATABASE ID
+                {
+                    $dropDBExec = new DropDBExecutor($ID.text);
+                }
+              ;
+
+// // USE DATABASE
+use_db returns [UseDBExecutor useDBExec]
+              : USE DATABASE ID
+                {
+                    $useDBExec = new UseDBExecutor($ID.text);
+                }
+              ;
+
+// // SHOW DATABASES
+show_databases returns [ShowAllDBExecutor showAllExec]
+              : SHOW DATABASES
+                {
+                    $showAllExec = new ShowAllDBExecutor();
+                }
+              ;
+
+// // SHOW DATABASE
+show_database returns [ShowDBExecutor showDBExec]
+              : SHOW DATABASE ID
+                {
+                    $showDBExec = new ShowDBExecutor($ID.text);
+                }
+              ;
+
 // // CREATE TABLE
 create_table returns [CreateSQLExecutor createSqlExec]
               : CREATE TABLE ID '(' attribute_list ')'
@@ -368,6 +429,9 @@ JOIN       : J O I N;
 ON         : O N;
 AND        : A N D;
 OR         : O R;
+DATABASE   : D A T A B A S E;
+USE        : U S E;
+DATABASES  : D A T A B A S E S;
 
 TEXT       : (SINQ | DOUQ);
 NUMFLOAT   : DIGIT+ [.] (DIGIT+)?;
