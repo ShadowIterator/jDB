@@ -80,7 +80,7 @@ public class JDBGUI extends JFrame {
     }
 
     public JDBGUI() {
-//        this.client = new jDBClient("127.0.0.1", 10086);
+        this.client = new jDBClient("127.0.0.1", 10086);
         this.leftPane = new JPanel();
         this.rightPane = new JPanel();
         prepareLeft();
@@ -109,7 +109,7 @@ public class JDBGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         jsp.setDividerLocation(0.5);
-        this.loginManager = new LoginDialog(this, "Login");
+//        this.loginManager = new LoginDialog(this, "Login");
     }
 
     private void prepareLeft() {

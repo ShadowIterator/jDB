@@ -148,16 +148,16 @@ public class jDBServer extends Thread{
 
     private static void server(int port) {
         try {
-            // should not init every time, test if reopen is right
-            File file = new File("data_meta.jDB");
-            if(file.exists()) {
-                jDBServer.mgr.open("data_meta.jDB");
-                jDBServer.mgr.checkoutDatabase("default");
-            } else {
+//            // should not init every time, test if reopen is right
+//            File file = new File("data_meta.jDB");
+//            if(file.exists()) {
+//                jDBServer.mgr.open("data_meta.jDB");
+//                jDBServer.mgr.checkoutDatabase("default");
+//            } else {
                 jDBServer.mgr.init("data_meta.jDB");
                 jDBServer.mgr.createDatabase("default");
                 jDBServer.mgr.checkoutDatabase("default");
-            }
+//            }
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("JDB Server running on port " + port);
             while(true) {
