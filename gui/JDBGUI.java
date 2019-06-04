@@ -1,3 +1,5 @@
+import com.sun.codemodel.internal.fmt.JTextFile;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -17,13 +19,68 @@ public class JDBGUI extends JFrame {
     private JScrollPane tablePane;
     private JLabel status;
     private JMenuItem open;
+    private JMenuItem connectDialog;
 
     private jDBClient client;
+    LoginDialog loginManager;
 
+    private class LoginDialog extends JDialog {
+        JTextField ip;
+        JTextField port;
+        JLabel errorMsg;
+        String title;
+        JButton connect;
+
+        @Override
+        public String getTitle() {
+            return this.title;
+        }
+
+        public LoginDialog(Frame owner, String _title) {
+            super(owner, _title);
+            setLayout(new FlowLayout());
+            this.ip = new JTextField(16);
+            this.port = new JTextField(16);
+            this.connect = new JButton("Connect");
+            this.errorMsg = new JLabel();
+            this.connect.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    errorMsg.setText("");
+                    String _ip = ip.getText();
+                    String _port = port.getText();
+                    int port = -1;
+                    try {
+                        port = Integer.parseInt(_port);
+                    } catch(Exception ex) {
+                        errorMsg.setText("Port need to be an integer.");
+                        return;
+                    }
+                    client = new jDBClient(_ip, port);
+                    try {
+                        client.tryConnection();
+                    } catch (Exception ex) {
+                        errorMsg.setText("Cannot connect to server.");
+                        client = null;
+                        return;
+                    }
+                    setVisible(false);
+                }
+            });
+            add(new JLabel("Server IP"));
+            add(this.ip);
+            add(new JLabel("Server Port"));
+            add(this.port);
+            add(this.errorMsg);
+            add(this.connect);
+            setBounds(100, 100, 300, 150);
+            setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            setVisible(true);
+        }
+    }
 
     public JDBGUI() {
-        this.client = new jDBClient("127.0.0.1", 10086);
-
+//        this.client = new jDBClient("127.0.0.1", 10086);
         this.leftPane = new JPanel();
         this.rightPane = new JPanel();
         prepareLeft();
@@ -40,16 +97,19 @@ public class JDBGUI extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         menuBar.add(fileMenu);
+        this.connectDialog = new JMenuItem("Connect to server");
+        this.connectDialog.addActionListener(new ConnectMonitor());
+        fileMenu.add(this.connectDialog);
         this.open = new JMenuItem("Import SQL Script");
         this.open.addActionListener(new ImportMonitor());
         fileMenu.add(this.open);
         setJMenuBar(menuBar);
-
         setTitle("JDB Client");
         setSize(800, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         jsp.setDividerLocation(0.5);
+        this.loginManager = new LoginDialog(this, "Login");
     }
 
     private void prepareLeft() {
@@ -177,6 +237,7 @@ public class JDBGUI extends JFrame {
             results = client.query(sql);
         } catch(Exception ex) {
             ex.printStackTrace();
+            reportFailResult(new SQLResult(-1, ex.getMessage()));
             return;
         }
         int resultLen = results.size();
@@ -212,6 +273,10 @@ public class JDBGUI extends JFrame {
     private class SubmitMonitor implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            if(client == null) {
+                JOptionPane.showConfirmDialog(null, "Please connect to server first.", "No connection.", JOptionPane.YES_OPTION);
+                return;
+            }
             System.out.println(sqlArea.getText());
             execute(sqlArea.getText());
         }
@@ -221,6 +286,10 @@ public class JDBGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
 //            System.out.println("clicked import~");
+            if(client == null) {
+                JOptionPane.showConfirmDialog(null, "Please connect to server first.", "No connection.", JOptionPane.YES_OPTION);
+                return;
+            }
             JFileChooser jfc = new JFileChooser();
             jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
             jfc.showDialog(new JLabel(), "Choose SQL Script");
@@ -246,6 +315,13 @@ public class JDBGUI extends JFrame {
             String sql = buffer.toString();
             sqlArea.setText(sql);
             execute(sql);
+        }
+    }
+
+    private class ConnectMonitor implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            loginManager.setVisible(true);
         }
     }
 }
