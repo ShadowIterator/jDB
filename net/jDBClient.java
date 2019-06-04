@@ -30,7 +30,7 @@ public class jDBClient {
         jDBClient client = new jDBClient("127.0.0.1", 10086);
 
         String sql =
-//                "creat table defaulttable2 (id long, name string(8), grade int, primary key(id))\n" +
+//                "create table defaulttable2 (id long, name string(8), grade int, primary key(id))\n" +
 //                "show databases\n" +
                 "show database default\n" +
 //                "create database DB1\n" +
