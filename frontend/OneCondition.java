@@ -19,6 +19,15 @@ public class OneCondition {
         if(this.leftValue.type == WhereCondition.SQLValueType.DIRECT && this.rightValue.type == WhereCondition.SQLValueType.DIRECT) {
             return false;
         }
+        if(this.leftValue.type == WhereCondition.SQLValueType.DIRECT) {
+            SQLValue tmp = this.leftValue;
+            this.leftValue = this.rightValue;
+            this.rightValue = tmp;
+            if(this.operator == WhereCondition.Operator.LEQ) this.operator = WhereCondition.Operator.GEQ;
+            else if(this.operator == WhereCondition.Operator.LT) this.operator = WhereCondition.Operator.GT;
+            else if(this.operator == WhereCondition.Operator.GEQ) this.operator = WhereCondition.Operator.LEQ;
+            else if(this.operator == WhereCondition.Operator.GT) this.operator = WhereCondition.Operator.LT;
+        }
         return true;
     }
 

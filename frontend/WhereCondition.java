@@ -83,6 +83,69 @@ public class WhereCondition {
         return result;
     }
 
+    public void inference(String tableName, AbstractTuple.AbstractTupleDesc desc) throws Exception {
+        for(OneCondition cond: this.conditions) {
+            if(cond.leftValue.type == SQLValueType.ATTRIBUTE) {
+                if(desc.getIDByName(cond.leftValue.attributeName) != -1) {
+                    cond.leftValue.tableName = tableName;
+                } else {
+                    throw new Exception("No attribute " + cond.leftValue.attributeName + " in table " + tableName);
+                }
+            }
+            if(cond.rightValue.type == SQLValueType.ATTRIBUTE) {
+                if(desc.getIDByName(cond.rightValue.attributeName) != -1) {
+                    cond.rightValue.tableName = tableName;
+                } else {
+                    throw new Exception("No attribute " + cond.rightValue.attributeName + " in table " + tableName);
+                }
+            }
+        }
+    }
+
+    public void inference(ArrayList<String> tableNames, ArrayList<AbstractTuple.AbstractTupleDesc> descs) throws Exception {
+        for(OneCondition cond: this.conditions) {
+            int tableCount = tableNames.size();
+            for(int i = 0; i < tableCount; ++i) {
+                String tableName = tableNames.get(i);
+                AbstractTuple.AbstractTupleDesc desc = descs.get(i);
+                if(cond.leftValue.type == SQLValueType.ATTRIBUTE) {
+                    if(cond.leftValue.tableName == null) {
+                        if(desc.getIDByName(cond.leftValue.attributeName) != -1) {
+                            cond.leftValue.tableName = tableName;
+                        } else {
+                            if(i == tableCount - 1) {
+                                throw new Exception("No attribute " + cond.leftValue.attributeName + " in all related tables");
+                            }
+                        }
+                    } else {
+                        if (cond.leftValue.tableName.equals(tableName)) {
+                            if (desc.getIDByName(cond.leftValue.attributeName) == -1) {
+                                throw new Exception("No attribute " + cond.leftValue.attributeName + " in table " + tableName);
+                            }
+                        }
+                    }
+                }
+                if(cond.rightValue.type == SQLValueType.ATTRIBUTE) {
+                    if(cond.rightValue.tableName == null) {
+                        if(desc.getIDByName(cond.rightValue.attributeName) != -1) {
+                            cond.rightValue.tableName = tableName;
+                        } else {
+                            if(i == tableCount - 1) {
+                                throw new Exception("No attribute " + cond.rightValue.attributeName + " in all related tables");
+                            }
+                        }
+                    } else {
+                        if (cond.rightValue.tableName.equals(tableName)) {
+                            if (desc.getIDByName(cond.rightValue.attributeName) == -1) {
+                                throw new Exception("No attribute " + cond.rightValue.attributeName + " in table " + tableName);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private String isPKCondition(OneCondition cond, String tableName, String pkName) {
         if(cond.rightValue.type == SQLValueType.ATTRIBUTE) {
             SQLValue tmp = cond.leftValue;
@@ -298,5 +361,4 @@ public class WhereCondition {
         }
         return new Pair<Comparable, Comparable>(start, end);
     }
-
 }

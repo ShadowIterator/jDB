@@ -159,7 +159,11 @@ public class JDBGUI extends JFrame {
     private void reportFailResult(SQLResult result) {
 //        System.out.println("RESULT TYPE: " + result.getResultType());
 //        System.out.println(result.getResultInfo());
-        this.status.setText(result.getResultInfo());
+        if(result.getResultInfo() == null) {
+            this.status.setText("Some Unknown Error.");
+        } else {
+            this.status.setText("Error: " + result.getResultInfo());
+        }
     }
 
     private void importFail(String filename) {
@@ -167,6 +171,7 @@ public class JDBGUI extends JFrame {
     }
 
     private void execute(String sql) {
+        this.status.setText("Executing...");
         ArrayList<SQLResult> results = null;
         try {
             results = client.query(sql);

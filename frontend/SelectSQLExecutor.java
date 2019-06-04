@@ -107,16 +107,14 @@ public class SelectSQLExecutor extends SQLExecutor {
                     return new SQLResult(-1, "Cannot find the table " + tableName);
                 }
                 AbstractTuple.AbstractTupleDesc desc = table.getTupleDesc();
-                for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
-                    AbstractTuple tuple = it.getTuple();
-                    if(this.whereCondition != null) {
-                        if (this.whereCondition.NaiveJudge(tuple, desc)) {
-                            sqlResult.addTuple(tuple);
-                        }
-                    } else {
-                        sqlResult.addTuple(tuple);
+                if(this.whereCondition != null) {
+                    try {
+                        this.whereCondition.inference(tableName, desc);
+                    } catch (Exception e) {
+                        return new SQLResult(-1, e.getMessage());
                     }
                 }
+
                 if(this.isSelectAll) {
                     int attrCount = desc.getAttr_count();
                     for(int i = 0; i < attrCount; ++i) {
@@ -125,6 +123,34 @@ public class SelectSQLExecutor extends SQLExecutor {
                 } else {
                     for (Pair<String, String> attrPair : this.attributeList) {
                         sqlResult.addAttributeInfo(0, attrPair.getValue(), desc.getIDByName(attrPair.getValue()));
+                    }
+                }
+
+                BPlusTree.Cursor rit = table.new Cursor();
+                if(this.whereCondition != null) {
+                    int pkId = desc.getPrimary_key_id();
+                    String pkName = desc.getAttr_name(pkId);
+                    Object pkExample = desc.getAttr_example(pkId);
+                    Pair<Comparable, Comparable> pkRange = this.whereCondition.findPKRange(tableName, pkName, pkExample);
+                    if (pkRange == null) {
+                        return sqlResult;
+                    }
+                    if (pkRange.getKey() != null) {
+                        rit.setRange(pkRange.getKey(), pkRange.getValue());
+                    } else {
+                        rit.keyEnd = pkRange.getValue();
+                    }
+                }
+//                for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
+                for(; !rit.isEnd(); rit.moveNext()) {
+//                    AbstractTuple tuple = it.getTuple();
+                    AbstractTuple tuple = rit.getTuple();
+                    if(this.whereCondition != null) {
+                        if (this.whereCondition.NaiveJudge(tuple, desc)) {
+                            sqlResult.addTuple(tuple);
+                        }
+                    } else {
+                        sqlResult.addTuple(tuple);
                     }
                 }
                 return sqlResult;
@@ -153,28 +179,15 @@ public class SelectSQLExecutor extends SQLExecutor {
                 ArrayList<String> tableNames = new ArrayList<String>();
                 tableNames.add(firstTableName);
                 tableNames.add(secondTableName);
-                for(BPlusTree.Cursor firstIt = firstTable.new Cursor(); !firstIt.isEnd(); firstIt.moveNext()) {
-                    for(BPlusTree.Cursor secondIt = secondTable.new Cursor(); !secondIt.isEnd(); secondIt.moveNext()) {
-                        ArrayList<AbstractTuple> tuples = new ArrayList<AbstractTuple>();
-                        tuples.add(firstIt.getTuple());
-                        tuples.add(secondIt.getTuple());
-                        if(this.tableJoin.onCondition != null) {
-                            if(!this.tableJoin.onCondition.JoinNaiveJudge(tuples, descs, tableNames)) {
-                                continue;
-                            }
-                        }
-                        if(this.whereCondition != null) {
-                            if(this.whereCondition.JoinNaiveJudge(tuples, descs, tableNames)) {
-                                sqlResult.addTuple(firstIt.getTuple());
-                                sqlResult.addSecondTuple(secondIt.getTuple());
-                            }
-                        } else {
-                            sqlResult.addTuple(firstIt.getTuple());
-                            sqlResult.addSecondTuple(secondIt.getTuple());
-                        }
 
+                if(this.whereCondition != null) {
+                    try {
+                        this.whereCondition.inference(tableNames, descs);
+                    } catch (Exception e) {
+                        return new SQLResult(-1, e.getMessage());
                     }
                 }
+
                 this.fillInTableName(descs, tableNames);
                 sqlResult.setTableName(0, firstTableName);
                 sqlResult.setTableName(1, secondTableName);
@@ -191,6 +204,64 @@ public class SelectSQLExecutor extends SQLExecutor {
                     for (Pair<String, String> attrPair : this.attributeList) {
                         int tableIdx = attrPair.getKey().equals(firstTableName) ? 0 : 1;
                         sqlResult.addAttributeInfo(tableIdx, attrPair.getValue(), descs.get(tableIdx).getIDByName(attrPair.getValue()));
+                    }
+                }
+
+                BPlusTree.Cursor firstRangeIt = firstTable.new Cursor();
+
+                if(this.whereCondition != null) {
+                    int firstPkId = firstDesc.getPrimary_key_id();
+                    String firstPkName = firstDesc.getAttr_name(firstPkId);
+                    Object firstPkExample = firstDesc.getAttr_example(firstPkId);
+                    Pair<Comparable, Comparable> firstPkRange = whereCondition.findPKRange(firstTableName, firstPkName, firstPkExample);
+
+                    if (firstPkRange == null) {
+                        return sqlResult;
+                    }
+
+                    if (firstPkRange.getKey() != null) {
+                        firstRangeIt.setRange(firstPkRange.getKey(), firstPkRange.getValue());
+                    } else {
+                        firstRangeIt.keyEnd = firstPkRange.getValue();
+                    }
+                }
+
+                int secondPkId = secondDesc.getPrimary_key_id();
+                String secondPkName = secondDesc.getAttr_name(secondPkId);
+                Object secondPkExample = secondDesc.getAttr_example(secondPkId);
+                Pair<Comparable, Comparable> secondPkRange = null;
+                if(this.whereCondition != null) {
+                    secondPkRange = whereCondition.findPKRange(secondTableName, secondPkName, secondPkExample);
+                }
+//                for(BPlusTree.Cursor firstIt = firstTable.new Cursor(); !firstIt.isEnd(); firstIt.moveNext()) {
+//                    for(BPlusTree.Cursor secondIt = secondTable.new Cursor(); !secondIt.isEnd(); secondIt.moveNext()) {
+                for (; !firstRangeIt.isEnd(); firstRangeIt.moveNext()) {
+                    BPlusTree.Cursor secondRangeIt = secondTable.new Cursor();
+                    if(secondPkRange != null) {
+                        if (secondPkRange.getKey() != null) {
+                            secondRangeIt.setRange(secondPkRange.getKey(), secondPkRange.getValue());
+                        } else {
+                            secondRangeIt.keyEnd = secondPkRange.getValue();
+                        }
+                    }
+                    for(; !secondRangeIt.isEnd(); secondRangeIt.moveNext()) {
+                        ArrayList<AbstractTuple> tuples = new ArrayList<AbstractTuple>();
+                        tuples.add(firstRangeIt.getTuple());
+                        tuples.add(secondRangeIt.getTuple());
+                        if(this.tableJoin.onCondition != null) {
+                            if(!this.tableJoin.onCondition.JoinNaiveJudge(tuples, descs, tableNames)) {
+                                continue;
+                            }
+                        }
+                        if(this.whereCondition != null) {
+                            if(this.whereCondition.JoinNaiveJudge(tuples, descs, tableNames)) {
+                                sqlResult.addTuple(firstRangeIt.getTuple());
+                                sqlResult.addSecondTuple(secondRangeIt.getTuple());
+                            }
+                        } else {
+                            sqlResult.addTuple(firstRangeIt.getTuple());
+                            sqlResult.addSecondTuple(secondRangeIt.getTuple());
+                        }
                     }
                 }
                 return sqlResult;
