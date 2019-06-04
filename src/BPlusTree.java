@@ -336,6 +336,36 @@ public class BPlusTree extends  AbstractRecordManager{
 
         boolean isrEnd() throws Exception {
             return idInNode < 0 && prevId < 0;
+//            if(keyStart == null)
+//            {
+//                if(idInNode < 0)
+//                {
+//                    return true;
+//                }
+//                else
+//                {
+//                    return false;
+//                }
+//            }
+//            else
+//            {
+//                if(idInNode<0)
+//                {
+//                    return true;
+//                }
+//                else
+//                {
+//                    Comparable currentKey = currentNode.getEntries().get(idInNode).getKey();
+//                    if(currentKey.compareTo(keyStart)>=0)
+//                    {
+//                        return false;
+//                    }
+//                    else
+//                    {
+//                        return true;
+//                    }
+//                }
+//            }
         }
 
         AbstractTuple getTuple() throws Exception {
