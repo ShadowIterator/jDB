@@ -25,7 +25,12 @@ public class ShowAllDBExecutor extends SQLExecutor {
                 result.addAttributeInfo(0, this.show_attr_name[i], i);
             }
             ArrayList<String> dbNames = new ArrayList<>();
-            // TODO: get all database names
+            // get all database names
+            BPlusTree db_meta = mgr.database_meta;
+            for(BPlusTree.Cursor it = db_meta.new Cursor(); !it.isEnd(); it.moveNext()) {
+                String dbName = (String)(it.getTuple().getAttr(0));
+                dbNames.add(dbName);
+            }
             for(String dbName: dbNames) {
                 SITuple tuple = new SITuple(this.show_desc);
                 tuple.setAttr(0, dbName);

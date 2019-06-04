@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.Arrays;
 
 public class MetadataManager {
 
@@ -7,6 +8,7 @@ public class MetadataManager {
     public BPlusTree table_meta;
     public BPlusTree[] tables;
     NaivePager cur_db_pager;
+    NaivePager cur_dbmeta_pager;
     SITuple.SITupleDesc database_meta_desc;
     SITuple.SITupleDesc table_meta_desc;
 
@@ -21,14 +23,18 @@ public class MetadataManager {
     void init(String file_name) throws Exception {
         FileUtils.delFile(file_name);
         NaivePager pager = new NaivePager();
+        cur_dbmeta_pager = pager;
         pager.open(file_name);
         //hardcoding metadata desc.
         int attr_count = 2;
         Object[] attr_example = new Object[attr_count];
         String[] attr_name = new String[attr_count];
         byte[] constraint_list = new byte[attr_count];
-        attr_example[0] = "default_db";
-        attr_example[1] = "default_filename";
+        char[] tmp = new char[128];
+        Arrays.fill(tmp, '\0');
+        String defaultName = new String(tmp);
+        attr_example[0] = defaultName;
+        attr_example[1] = getDBFileName(defaultName);
         attr_name[0] = "db_name";
         attr_name[1] = "db_file_name";
         SITuple.SITupleDesc desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
@@ -39,15 +45,15 @@ public class MetadataManager {
     void open(String file_name) throws Exception {
         NaivePager pager = new NaivePager();
         pager.open(file_name);
+        cur_dbmeta_pager = pager;
 
         database_meta = new BPlusTree(pager, 0);
     }
 
     boolean createDatabase(String db_name) throws Exception{
         AbstractTuple.AbstractTupleDesc desc = database_meta.getTupleDesc();
-        // TODO: no database name length limit
-        if(db_name.length() != ((String) desc.getAttr_example(0)).length())
-            return false;
+//        if(db_name.length() != ((String) desc.getAttr_example(0)).length())
+//            return false;
         String db_file_name = getDBFileName(db_name);
 
         System.out.println(desc.getAttr_example(0) + " " + desc.getAttr_example(1));
@@ -75,7 +81,10 @@ public class MetadataManager {
         Object[] attr_example = new Object[attr_count];
         String[] attr_name = new String[attr_count];
         byte[] constraint_list = new byte[attr_count];
-        attr_example[0] = "default_table";
+        char[] tmp = new char[128];
+        Arrays.fill(tmp, '\0');
+        String defaultName = new String(tmp);
+        attr_example[0] = defaultName;
         attr_example[1] = (int)-1;
         attr_name[0] = "table_name";
         attr_name[1] = "info_page_id";
@@ -130,6 +139,11 @@ public class MetadataManager {
         table_meta.insertTuple(tuple);
 //        table_meta.close();
 //        loadTables();
+    }
+
+    void close() throws Exception {
+        cur_dbmeta_pager.close();
+        cur_db_pager.close();
     }
 
     boolean dropTable(String table_name) throws Exception {
@@ -312,6 +326,8 @@ public class MetadataManager {
         for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
             it.getTuple().print();
         }
+
+        mgr.close();
 
     }
 

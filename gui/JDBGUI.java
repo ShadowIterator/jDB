@@ -167,7 +167,12 @@ public class JDBGUI extends JFrame {
             for(AbstractTuple tuple: tuples) {
                 Vector<String> newRow = new Vector<String>();
                 for(Integer id: attributeId) {
-                    newRow.add(tuple.getAttr(id).toString());
+                    Object obj = tuple.getAttr(id);
+                    if(obj == null) {
+                        newRow.add("NULL");
+                    } else {
+                        newRow.add(obj.toString());
+                    }
                 }
                 this.tableModel.addRow(newRow);
             }
