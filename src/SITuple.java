@@ -208,7 +208,7 @@ public class SITuple extends AbstractTuple implements Serializable {
             desc_size = serialize().length;
         }
 
-        int getIDByName(String attrName) {
+        int getIDByName(String attrName) { //TODO: optimize time complexity
             int attrSize = this.attr_name.length;
             for(int i = 0; i < attrSize; ++i) {
                 if(this.attr_name[i].equals(attrName)) {

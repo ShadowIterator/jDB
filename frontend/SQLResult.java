@@ -21,6 +21,8 @@ public class SQLResult implements Serializable {
     private int resultType;
     private String resultInfo = "";
 
+    private double costTime;
+
     public SQLResult(int _resultType) {
         this.resultType = _resultType;
         if(_resultType == -1) {
@@ -83,7 +85,16 @@ public class SQLResult implements Serializable {
     public boolean addSecondTuple(AbstractTuple tup) { return this.secondTuples.add(tup); }
 
     public ArrayList<AbstractTuple> getTuples() { return this.tuples; }
-    public ArrayList<AbstractTuple> getSecondTuple() { return this.secondTuples; }
+    public ArrayList<AbstractTuple> getSecondTuples() { return this.secondTuples; }
+    public ArrayList<String> getAttributeName() { return this.attributeName; }
+    public ArrayList<String> getSecondAttributeName() { return this.secondAttributeName; }
+    public String getFirstTableName() { return this.firstTableName; }
+    public String getSecondTableName() { return this.secondTableName; }
+    public ArrayList<Integer> getAttributeId() { return this.attributeId; }
+    public ArrayList<Integer> getSecondAttributeId() { return this.secondAttributeId; }
+
+    public void setCostTime(double time) { this.costTime = time; }
+    public double getCostTime() { return this.costTime; }
 
     private static void printResultTuple(AbstractTuple tuple, ArrayList<Integer> ids) {
         for(int id: ids) {
@@ -93,10 +104,12 @@ public class SQLResult implements Serializable {
     }
 
     public void print() throws Exception {
+//        System.out.println(" ");
         String result = "Result Type: " + this.resultType;
         if(this.resultType == -1 || this.resultType == -2) {
             result += "\n" + this.resultInfo;
         }
+
         System.out.println(result);
         if(this.resultType == 1) {
             for(String attrName: this.attributeName) {

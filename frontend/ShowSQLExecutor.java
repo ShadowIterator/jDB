@@ -17,8 +17,8 @@ public class ShowSQLExecutor extends SQLExecutor {
         this.show_attr_name = new String[show_attr_count];
         this.show_constraint_list = new byte[show_attr_count];
         show_attr_example[0] = (int)0;
-        show_attr_example[1] = "thisisthenameoftheattr"; // length : 22
-        show_attr_example[2] = "thisisthetypeofthedata"; // length : 22
+        show_attr_example[1] = "thisisthenameoftheattranditslengthis38";
+        show_attr_example[2] = "thisisthetypeofthedataanditslengthis38";
         show_attr_example[3] = (int)0;
         show_attr_example[4] = (int)0;
         show_attr_name[0] = "Attribute ID";
@@ -83,8 +83,8 @@ public class ShowSQLExecutor extends SQLExecutor {
                 } else {
                     data_type = "STRING(" + ((String)attribute_example).length() + ")";
                 }
-                attribute_name = this.fillString(attribute_name, 22);
-                data_type = this.fillString(data_type, 22);
+//                attribute_name = this.fillString(attribute_name, 22);
+//                data_type = this.fillString(data_type, 22);
                 tuple.setAttr(0, i);
                 tuple.setAttr(1, attribute_name);
                 tuple.setAttr(2, data_type);
