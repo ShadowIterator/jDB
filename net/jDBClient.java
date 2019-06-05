@@ -32,20 +32,24 @@ public class jDBClient {
         String sql =
 //                "create table defaulttable2 (id long, name string(8), grade int, primary key(id))\n" +
 //                "show databases\n" +
-                "show database default\n" +
+//                "show database default\n" +
 //                "create database DB1\n" +
 //                "create database DB2\n" +
-//                "use database DB1 \n" +
-                "create table defaulttable2 (id long, name string(8), grade int, primary key(id))\n" +
+                "use database DB1 \n" +
+//                "create table tablepp (id long, name string(8), grade int)\n" +
                 "show database DB1\n" +
-                "show databases\n" +
+//                "show databases\n" +
 
 //                "show table defaulttable2\n" +
-//                "insert into defaulttable2 values (2000, 'laoshi01', 2)\n" +
+//                "insert into defaulttable2 values (2000, 'laoshi01', 6)\n" +
 //                "insert into defaulttable2 values (2001, 'laoshi02', 3)\n" +
 //                "insert into defaulttable2 values (2002, 'laoshi03', 3)\n" +
 //                "insert into defaulttable2 values (2003, 'laoshi04', 4)\n" +
-                "select id, name, grade from defaulttable2" +
+                "insert into tablepp values (2000, 'laoshi01', 6)\n" +
+                "insert into tablepp values (2001, 'laoshi02', 3)\n" +
+                "insert into tablepp values (2002, 'laoshi03', 0)\n" +
+                "insert into tablepp values (2003, 'laoshi04', 4)\n" +
+                "select id, name, grade from tablepp" +
                 " ";
         try {
             ArrayList<SQLResult> sqlResults = client.query(sql);
