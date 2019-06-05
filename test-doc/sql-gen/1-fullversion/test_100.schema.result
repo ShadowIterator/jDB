@@ -1,0 +1,44 @@
+
+show databases;: 
+Result Type: 1
+dbName	
+default	
+
+create database DB1;: 
+Result Type: 0
+
+create database DB2;: 
+Result Type: 0
+
+use database DB1;: 
+Result Type: 0
+
+create table table1(id long, name string(8), gpa double, group int, primary key(id));: 
+Result Type: 0
+
+insert into table1 values(6, 'xy', 2.103159677781864, 20): 
+Result Type: 0
+
+insert into table1 values(7, '_', 3.7275192302079203, 45): 
+Result Type: 0
+
+insert into table1 values(10, 'm_fx5', 1.1997946470220895, 23): 
+Result Type: 0
+
+insert into table1 values(11, '@', 1.897209787326597, 23): 
+Result Type: 0
+
+insert into table1 values(15, ' _%k', 1.47897574583209, 42): 
+Result Type: 0
+
+insert into table1 values(17, 'r4hpnrx', 3.258895562834398, 22): 
+Result Type: 0
+
+insert into table1 values(20, '6&!)*', 1.0833490573302798, 37): 
+Result Type: 0
+
+insert into table1 values(21, 'xq2**^v', 1.7067031454263388, 47): 
+Result Type: -1
+Some Storage Error.
+
+insert into table1 values(24, 'g@', 2.2934913843874325, 43): 

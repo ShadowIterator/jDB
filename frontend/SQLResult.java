@@ -104,7 +104,7 @@ public class SQLResult implements Serializable {
     }
 
     public void print() throws Exception {
-        System.out.println(" ");
+//        System.out.println(" ");
         String result = "Result Type: " + this.resultType;
         if(this.resultType == -1 || this.resultType == -2) {
             result += "\n" + this.resultInfo;

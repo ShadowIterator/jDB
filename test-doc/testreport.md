@@ -65,4 +65,8 @@ expected result:
   2004
   ```
 
-  
+
+## 5
+
+只能`insert`8个`tuple`. (see `test-doc\sql-gen\1`)
+
