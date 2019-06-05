@@ -52,7 +52,7 @@ public class jDBClient {
 //                "insert into tablepp values (2003, 'laoshi04', 4)\n" +
 //                "select id, name, grade from tablepp" +
 //                " ";
-        String file_prefix = "test-doc/sql-gen/";
+        String file_prefix = "test-doc/sql-gen/1/";
         String file_name = file_prefix + "test_100.schema";
         String out_file_name = file_name + ".result";
         PrintStream ps=new PrintStream(new FileOutputStream(out_file_name));

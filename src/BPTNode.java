@@ -428,16 +428,26 @@ public class BPTNode {
         pager.delPage(selfPageId);
     }
 
-    public boolean insertOrUpdate(Comparable key, AbstractTuple tuple, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
+//    public boolean insertOrUpdate(Comparable key, AbstractTuple tuple, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
+    public boolean insertOrUpdate(Comparable key, AbstractTuple tuple, boolean isInsert, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer order = tree.getOrder();
         boolean succeed = false;
         if(isLeaf)
         {
             // 叶子节点直接插入或更新
-            if(!contain(key))
+            boolean keyExisted = contain(key);
+            if((!keyExisted) && isInsert)
             {
                 tree.incCount();
+            }
+            else if(keyExisted && isInsert)
+            {
+                throw new Exception("Insert an existed key");
+            }
+            else if(!keyExisted)
+            {
+                throw new Exception("No tuple with matched key to update");
             }
             if(contain(key)||entries.size()<order)
             {
@@ -505,13 +515,13 @@ public class BPTNode {
             {
                 // BPTNode chNode = fromPage(pager.get(children.get(0)));
                 BPTNode chNode = new BPTNode(pager, desc, children.get(0));
-                succeed = chNode.insertOrUpdate(key, tuple, tree, pager, desc);
+                succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
             }
             else if(key.compareTo(entries.get(entries.size()-1).getKey())>=0)
             {
                 // BPTNode chNode = fromPage(pager.get(children.get(children.size()-1)));
                 BPTNode chNode = new BPTNode(pager, desc, children.get(children.size()-1));
-                succeed = chNode.insertOrUpdate(key, tuple, tree, pager, desc);
+                succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
             }
             else
             {
@@ -521,7 +531,7 @@ public class BPTNode {
                     {
                         // BPTNode chNode = fromPage(pager.get(children.get(i)));
                         BPTNode chNode = new BPTNode(pager, desc, children.get(i));
-                        succeed = chNode.insertOrUpdate(key, tuple, tree, pager, desc);
+                        succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
                         break;
                     }
                 }
@@ -739,8 +749,9 @@ public class BPTNode {
         boolean succeed = false;
         if(isLeaf)
         {
-            if(!contain(key))
-                return false;
+            if(!contain(key)) {
+                throw new Exception("No tuple with matched key to delete");
+            }
             tree.decCount();
             if(isRoot)
             {
@@ -895,7 +906,6 @@ public class BPTNode {
             if(entries.get(i).getKey().compareTo(key)==0)
             {
                 entries.get(i).setValue(info);
-                // TODO: 检查新值和原值是否相同
                 return true;
             }
             else if(entries.get(i).getKey().compareTo(key)>0)

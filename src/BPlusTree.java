@@ -185,16 +185,18 @@ public class BPlusTree extends  AbstractRecordManager{
 //        System.out.println("insert tuple  ");
 //        tuple.print();
         Comparable key = (Comparable) tuple.getAttr(desc.getPrimary_key_id());
-        return root.insertOrUpdate(key, tuple, this, pager, desc);
+
+        return root.insertOrUpdate(key, tuple, true,this, pager, desc);
     }
 
     public boolean setTuple(Comparable key, AbstractTuple tuple) throws Exception
     {
         Comparable keyInTuple = (Comparable) tuple.getAttr(desc.getPrimary_key_id());
         if(keyInTuple.compareTo(key) == 0)
-            return root.insertOrUpdate(key, tuple, this, pager, desc);
+            return root.insertOrUpdate(key, tuple, false, this, pager, desc);
         else
             return false;
+
     }
 
     public boolean removeTuple(Comparable key) throws Exception
@@ -233,7 +235,7 @@ public class BPlusTree extends  AbstractRecordManager{
         tuples[2].setAttr(1, 1.7);
         testTree.setTuple(15, tuples[2]);
         AbstractTuple sampleTuple = testTree.getTuple(15);
-        testTree.removeTuple(19);
+        testTree.removeTuple(3);
         sampleTuple = testTree.getTuple(19);
         testTree.close();
     }
