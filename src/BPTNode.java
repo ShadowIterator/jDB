@@ -543,8 +543,8 @@ public class BPTNode {
             // 需要分裂
             // BPTNode left = new BPTNode(true, false);
             // BPTNode right = new BPTNode(true, false);
-            BPTNode left = new BPTNode(true, false, keyType, pager);
-            BPTNode right = new BPTNode(true, false, keyType, pager);
+            BPTNode left = new BPTNode(false, false, keyType, pager);
+            BPTNode right = new BPTNode(false, false, keyType, pager);
             Integer leftSize = (order+1)/2+(order+1)%2;
             Integer rightSize = (order+1)/2;
             for(int i=0; i<leftSize; i++)
