@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 public class UpdateSQLExecutor extends SQLExecutor {
     private String tableName;
     private String attributeName;
@@ -59,8 +61,18 @@ public class UpdateSQLExecutor extends SQLExecutor {
             } catch (Exception e) {
                 return new SQLResult(-1, "Update: New value's type does not match the expected data type.");
             }
-            for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
-                AbstractTuple tuple = it.getTuple();
+            BPlusTree.CursorRange crange = table.new CursorRange();
+            String pkName = desc.getAttr_name(pkId);
+            Object pkExample = desc.getAttr_example(pkId);
+            Pair<Comparable, Comparable> pkRange = this.whereCondition.findPKRange(tableName, pkName, pkExample);
+            if (pkRange == null) {
+                return new SQLResult(0);
+            }
+            crange.setRange(pkRange.getKey(), pkRange.getValue());
+            for(; !crange.isEnd(); crange.moveNext()) {
+                AbstractTuple tuple = crange.getTuple();
+//            for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
+//                AbstractTuple tuple = it.getTuple();
                 if(this.whereCondition.NaiveJudge(tuple, desc)) {
                     tuple.setAttr(changeId, newObj);
                     Object obj = tuple.getAttr(pkId);

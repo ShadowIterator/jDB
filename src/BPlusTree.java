@@ -246,6 +246,44 @@ public class BPlusTree extends  AbstractRecordManager{
         testTree.close();
     }
 
+    public class CursorRange {
+        Cursor start;
+        Cursor end;
+        boolean visitedEnd;
+
+        public CursorRange() throws Exception {
+
+        }
+
+        public CursorRange(Comparable keyStart, Comparable keyEnd) throws Exception {
+            this.start = new Cursor();
+            this.start.setKey(keyStart);
+            this.end = new Cursor();
+            this.end.setKey(keyEnd);
+            this.visitedEnd = false;
+        }
+
+        public void setRange(Comparable keyStart, Comparable keyEnd) throws Exception {
+
+        }
+
+        public boolean isEnd() {
+            return visitedEnd;
+        }
+
+        public void moveNext() throws Exception {
+            if(!this.start.isEqual(this.end)) {
+                this.start.moveNext();
+            } else {
+                this.visitedEnd = true;
+            }
+        }
+
+        public AbstractTuple getTuple() throws Exception {
+            return this.start.getTuple();
+        }
+    }
+
     public class Cursor extends AbstractRecordManager.AbstractCursor
     {
         Comparable keyStart;
@@ -281,6 +319,7 @@ public class BPlusTree extends  AbstractRecordManager{
 //            prevId = info[3];
 //            nextId = info[4];
 //        }
+
         public void setKey(Comparable initKey) throws Exception
         {
             int[] info = root.getKeyPos(initKey, pager, desc);
