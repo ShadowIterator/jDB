@@ -42,6 +42,9 @@ src/test.java
 *.jDB
 *.iml
 
+#lib
+lib/
+
 # mac
 .DS_Store
 

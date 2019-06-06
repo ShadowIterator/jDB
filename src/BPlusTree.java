@@ -185,24 +185,18 @@ public class BPlusTree extends  AbstractRecordManager{
 //        System.out.println("insert tuple  ");
 //        tuple.print();
         Comparable key = (Comparable) tuple.getAttr(desc.getPrimary_key_id());
-//<<<<<<< HEAD
-        return root.insertOrUpdate(key, tuple, this, pager, desc);
-//=======
+        return root.insertOrUpdate(key, tuple, true,this, pager, desc);
+
 //        root.insertOrUpdate(key, tuple, true,this, pager, desc);
-//>>>>>>> executor
     }
 
     public boolean setTuple(Comparable key, AbstractTuple tuple) throws Exception
     {
-//<<<<<<< HEAD
         Comparable keyInTuple = (Comparable) tuple.getAttr(desc.getPrimary_key_id());
         if(keyInTuple.compareTo(key) == 0)
-            return root.insertOrUpdate(key, tuple, this, pager, desc);
+            return root.insertOrUpdate(key, tuple, false, this, pager, desc);
         else
             return false;
-//=======
-//        root.insertOrUpdate(key, tuple, false, this, pager, desc);
-//>>>>>>> executor
     }
 
     public boolean removeTuple(Comparable key) throws Exception
@@ -286,8 +280,8 @@ public class BPlusTree extends  AbstractRecordManager{
 
     public class Cursor extends AbstractRecordManager.AbstractCursor
     {
-        Comparable keyStart;
-        Comparable keyEnd;
+//        Comparable keyStart;
+//        Comparable keyEnd;
 //        BPTNode currentNode;
         Integer nodeId;
         Integer idInNode;
@@ -303,8 +297,8 @@ public class BPlusTree extends  AbstractRecordManager{
             prevId = -1;
             idInNode = 0;
             entryNum = 0;
-            keyStart = null;
-            keyEnd = null;
+//            keyStart = null;
+//            keyEnd = null;
         }
 
 //        public void setRange(Comparable start, Comparable end) throws Exception
@@ -319,6 +313,40 @@ public class BPlusTree extends  AbstractRecordManager{
 //            prevId = info[3];
 //            nextId = info[4];
 //        }
+        public void setToStart() throws Exception
+        {
+            nodeId = head;
+            BPTNode headNode = new BPTNode(pager, desc, head);
+            nextId = headNode.getNext();
+            prevId = headNode.getPrevious();
+            idInNode = 0;
+            entryNum = headNode.getEntries().size();
+        }
+
+        public void setToEnd() throws Exception
+        {
+            BPTNode lastNode = new BPTNode(pager, desc, head);
+            while (lastNode.getNext()>=0)
+            {
+                lastNode = new BPTNode(pager, desc, lastNode.getNext());
+            }
+            nodeId = lastNode.getId();
+            nextId = lastNode.getNext();
+            prevId = lastNode.getPrevious();
+            entryNum = lastNode.getEntries().size();
+            idInNode = entryNum-1;
+        }
+
+        public Comparable getCurrentKey() throws Exception
+        {
+            BPTNode currentNode = new BPTNode(pager, desc, nodeId);
+            if(idInNode>=0 && idInNode < entryNum)
+            {
+                return currentNode.getEntries().get(idInNode).getKey();
+            }
+            else
+                return null;
+        }
 
         public void setKey(Comparable initKey) throws Exception
         {
@@ -383,6 +411,36 @@ public class BPlusTree extends  AbstractRecordManager{
 
         boolean isrEnd() throws Exception {
             return idInNode < 0 && prevId < 0;
+//            if(keyStart == null)
+//            {
+//                if(idInNode < 0)
+//                {
+//                    return true;
+//                }
+//                else
+//                {
+//                    return false;
+//                }
+//            }
+//            else
+//            {
+//                if(idInNode<0)
+//                {
+//                    return true;
+//                }
+//                else
+//                {
+//                    Comparable currentKey = currentNode.getEntries().get(idInNode).getKey();
+//                    if(currentKey.compareTo(keyStart)>=0)
+//                    {
+//                        return false;
+//                    }
+//                    else
+//                    {
+//                        return true;
+//                    }
+//                }
+//            }
         }
 
         AbstractTuple getTuple() throws Exception {
