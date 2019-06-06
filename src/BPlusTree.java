@@ -180,22 +180,26 @@ public class BPlusTree extends  AbstractRecordManager{
         return root.get(key, pager, desc);
     }
 
-    public void insertTuple(AbstractTuple tuple) throws Exception
+    public boolean insertTuple(AbstractTuple tuple) throws Exception
     {
 //        System.out.println("insert tuple  ");
 //        tuple.print();
         Comparable key = (Comparable) tuple.getAttr(desc.getPrimary_key_id());
-        root.insertOrUpdate(key, tuple, this, pager, desc);
+        return root.insertOrUpdate(key, tuple, this, pager, desc);
     }
 
-    public void setTuple(Comparable key, AbstractTuple tuple) throws Exception
+    public boolean setTuple(Comparable key, AbstractTuple tuple) throws Exception
     {
-        root.insertOrUpdate(key, tuple, this, pager, desc);
+        Comparable keyInTuple = (Comparable) tuple.getAttr(desc.getPrimary_key_id());
+        if(keyInTuple.compareTo(key) == 0)
+            return root.insertOrUpdate(key, tuple, this, pager, desc);
+        else
+            return false;
     }
 
-    public void removeTuple(Comparable key) throws Exception
+    public boolean removeTuple(Comparable key) throws Exception
     {
-        root.remove(key, this, pager, desc);
+        return root.remove(key, this, pager, desc);
     }
 
     public static void main(String[] args) throws Exception
@@ -238,35 +242,60 @@ public class BPlusTree extends  AbstractRecordManager{
     {
         Comparable keyStart;
         Comparable keyEnd;
-        BPTNode currentNode;
+//        BPTNode currentNode;
+        Integer nodeId;
         Integer idInNode;
+        Integer entryNum;
+        Integer nextId;
+        Integer prevId;
 
         Cursor() throws Exception
         {
-            currentNode = new BPTNode(pager, desc, head);
+//            currentNode = new BPTNode(pager, desc, head);
+            nodeId = -1;
+            nextId = -1;
+            prevId = -1;
             idInNode = 0;
+            entryNum = 0;
             keyStart = null;
             keyEnd = null;
         }
 
-        public void setRange(Comparable start, Comparable end) throws Exception
+//        public void setRange(Comparable start, Comparable end) throws Exception
+//        {
+//            keyStart = start;
+//            keyEnd = end;
+//            int[] info = root.getKeyPos(start, pager, desc);
+////            currentNode = new BPTNode(pager, desc, info[0]);
+//            nodeId = info[0];
+//            idInNode = info[1];
+//            entryNum = info[2];
+//            prevId = info[3];
+//            nextId = info[4];
+//        }
+        public void setKey(Comparable initKey) throws Exception
         {
-            keyStart = start;
-            keyEnd = end;
-            int[] info = root.getKeyPos(start, pager, desc);
-            currentNode = new BPTNode(pager, desc, info[0]);
+            int[] info = root.getKeyPos(initKey, pager, desc);
+            nodeId = info[0];
             idInNode = info[1];
+            entryNum = info[2];
+            prevId = info[3];
+            nextId = info[4];
         }
 
         void moveNext() throws Exception {
-            if(idInNode<currentNode.getEntries().size()-1)
+            if(idInNode<entryNum-1)
             {
                 idInNode++;
             }
-            else if(currentNode.getNext()>=0)
+            else if(nextId>=0)
             {
-                currentNode = new BPTNode(pager, desc, currentNode.getNext());
+                BPTNode nextNode = new BPTNode(pager, desc, nextId);
+                prevId = nodeId;
+                nodeId = nextId;
+                nextId = nextNode.getNext();
                 idInNode = 0;
+                entryNum = nextNode.getEntries().size();
             }
             else
             {
@@ -279,10 +308,14 @@ public class BPlusTree extends  AbstractRecordManager{
             {
                 idInNode--;
             }
-            else if(currentNode.getPrevious()>=0)
+            else if(prevId>=0)
             {
-                currentNode = new BPTNode(pager, desc, currentNode.getPrevious());
-                idInNode = currentNode.getEntries().size()-1;
+                BPTNode prevNode = new BPTNode(pager, desc, prevId);
+                nextId = nodeId;
+                nodeId = prevId;
+                prevId = prevNode.getPrevious();
+                idInNode = prevNode.getEntries().size()-1;
+                entryNum = prevNode.getEntries().size();
             }
             else
             {
@@ -290,77 +323,23 @@ public class BPlusTree extends  AbstractRecordManager{
             }
         }
 
-        boolean setPosition(int pos) throws Exception {
-
-            return true;
+        public boolean isEqual(Cursor another)
+        {
+            if(nodeId.intValue() == another.nodeId.intValue() && idInNode.intValue() == another.idInNode.intValue())
+                return true;
+            return false;
         }
 
         boolean isEnd() throws Exception {
-            if(keyEnd == null)
-            {
-                if(idInNode >= currentNode.getEntries().size())
-                {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            else
-            {
-                if(idInNode >= currentNode.getEntries().size())
-                {
-                    return true;
-                }
-                else
-                {
-                    Comparable currentKey = currentNode.getEntries().get(idInNode).getKey();
-                    if(currentKey.compareTo(keyEnd)<=0)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
+            return idInNode >= entryNum && nextId < 0;
         }
 
         boolean isrEnd() throws Exception {
-            if(keyStart == null)
-            {
-                if(idInNode < 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if(idInNode<0)
-                {
-                    return true;
-                }
-                else
-                {
-                    Comparable currentKey = currentNode.getEntries().get(idInNode).getKey();
-                    if(currentKey.compareTo(keyStart)>=0)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
+            return idInNode < 0 && prevId < 0;
         }
 
         AbstractTuple getTuple() throws Exception {
+            BPTNode currentNode = new BPTNode(pager, desc, nodeId);
             return currentNode.getEntries().get(idInNode).getValue();
         }
     }
