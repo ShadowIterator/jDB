@@ -1546,6 +1546,8 @@ public class SimpleSQLParser extends Parser {
 			                        case "<=":
 			                            _op = WhereCondition.Operator.LEQ;
 			                            break;
+			                        case "<>":
+			                            _op = WhereCondition.Operator.NQ;
 			                    }
 			                    ((One_conditionContext)_localctx).oneCondition =  new OneCondition(((One_conditionContext)_localctx).l.sqlValue, ((One_conditionContext)_localctx).r.sqlValue, _op);
 			                

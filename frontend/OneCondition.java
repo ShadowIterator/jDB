@@ -118,8 +118,10 @@ public class OneCondition {
             return relation >= 0;
         } else if(this.operator == WhereCondition.Operator.LT) {
             return relation == -1;
-        } else /* if(this.operator == Operator.LEQ) */ {
+        } else if(this.operator == WhereCondition.Operator.LEQ) {
             return relation <= 0;
+        } else /* if(this.operator == WhereCondition.Operator.NQ) */ {
+            return relation != 0;
         }
     }
 
@@ -198,8 +200,10 @@ public class OneCondition {
             return relation >= 0;
         } else if(this.operator == WhereCondition.Operator.LT) {
             return relation == -1;
-        } else /* if(this.operator == Operator.LEQ) */ {
+        } else if(this.operator == WhereCondition.Operator.LEQ) {
             return relation <= 0;
+        } else /* if(this.operator == WhereCondition.Operator.NQ) */ {
+            return relation != 0;
         }
     }
 }

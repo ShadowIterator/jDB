@@ -261,6 +261,8 @@ one_condition returns [OneCondition oneCondition]
                         case "<=":
                             _op = WhereCondition.Operator.LEQ;
                             break;
+                        case "<>":
+                            _op = WhereCondition.Operator.NQ;
                     }
                     $oneCondition = new OneCondition($l.sqlValue, $r.sqlValue, _op);
                 }
