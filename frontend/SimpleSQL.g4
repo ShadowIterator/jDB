@@ -401,8 +401,7 @@ table_list_select returns [TableJoin tableJoin]
                         }
                       | '(' select_table ')' AS ID
                         {
-                            $tableJoin = new SubSelectTable($select_table.selectSqlExec);
-                            $tableJoin.tmpName = $ID.text;
+                            $tableJoin = new SubSelectTable($select_table.selectSqlExec, $ID.text);
                         }
                       ;
 

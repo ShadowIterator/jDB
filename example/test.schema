@@ -14,4 +14,4 @@ show table student
 delete from student where score <= 90.0
 update student set score = 100.0 where name = 'jiege01'
 select id, score from student where gpa>=3.9 and id<2000 or name='jiege'
-select student.id, teacher.grade from student join teacher on student.grade = teacher.grade where gpa > 3.9 or score > 90.0
+select student.id, teacher.grade from student join teacher on student.grade = teacher.grade

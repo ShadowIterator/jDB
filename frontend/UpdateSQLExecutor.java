@@ -71,8 +71,6 @@ public class UpdateSQLExecutor extends SQLExecutor {
             crange.setRange(pkRange.getKey(), pkRange.getValue());
             for(; !crange.isEnd(); crange.moveNext()) {
                 AbstractTuple tuple = crange.getTuple();
-//            for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
-//                AbstractTuple tuple = it.getTuple();
                 if(this.whereCondition.NaiveJudge(tuple, desc)) {
                     tuple.setAttr(changeId, newObj);
                     Object obj = tuple.getAttr(pkId);
@@ -86,7 +84,12 @@ public class UpdateSQLExecutor extends SQLExecutor {
             }
             return new SQLResult(0);
         } catch (Exception e) {
-            return new SQLResult(-1, "Update: Some Storage Error.");
+            e.printStackTrace();
+            String errMsg = "Some Storage Error.";
+            if(e.getMessage() != null) {
+                errMsg = e.getMessage();
+            }
+            return new SQLResult(-1, "Update: " + errMsg);
         }
     }
 }

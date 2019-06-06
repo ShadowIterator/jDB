@@ -7,11 +7,11 @@ public class Frontend {
     public static void main(String[] args) throws IOException, Exception {
         MetadataManager mgr = new MetadataManager();
         mgr.init("data_meta.jDB");
-        mgr.createDatabase("defaultdb1");
-        mgr.checkoutDatabase("defaultdb1");
+        mgr.createDatabase("default");
+        mgr.checkoutDatabase("default");
         ParseTree tree;
         try {
-            InputStream is = new FileInputStream("example/naive_test.schema");
+            InputStream is = new FileInputStream("example/test.schema");
             ANTLRInputStream input = new ANTLRInputStream(is);
             SimpleSQLLexer lexer = new SimpleSQLLexer(input);
             lexer.removeErrorListeners();
@@ -31,9 +31,9 @@ public class Frontend {
         }
 
         ArrayList<SQLExecutor> sqlExecutorList = ((SimpleSQLParser.CommandsContext)tree).sqlExecutorList;
-        for(SQLExecutor sqlExecutor: sqlExecutorList) {
-            sqlExecutor.printExecutor();
-        }
+//        for(SQLExecutor sqlExecutor: sqlExecutorList) {
+//            sqlExecutor.printExecutor();
+//        }
         System.out.println("------------------- Execute Result -------------------");
         for(SQLExecutor sqlExecutor: sqlExecutorList) {
             SQLResult sqlResult = sqlExecutor.execute(mgr);

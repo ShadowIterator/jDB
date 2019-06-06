@@ -2128,8 +2128,7 @@ public class SimpleSQLParser extends Parser {
 				setState(429);
 				((Table_list_selectContext)_localctx).ID = match(ID);
 
-				                            ((Table_list_selectContext)_localctx).tableJoin =  new SubSelectTable(((Table_list_selectContext)_localctx).select_table.selectSqlExec);
-				                            _localctx.tableJoin.tmpName = (((Table_list_selectContext)_localctx).ID!=null?((Table_list_selectContext)_localctx).ID.getText():null);
+				                            ((Table_list_selectContext)_localctx).tableJoin =  new SubSelectTable(((Table_list_selectContext)_localctx).select_table.selectSqlExec, (((Table_list_selectContext)_localctx).ID!=null?((Table_list_selectContext)_localctx).ID.getText():null));
 				                        
 				}
 				break;

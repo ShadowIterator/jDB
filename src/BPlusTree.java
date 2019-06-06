@@ -246,19 +246,28 @@ public class BPlusTree extends  AbstractRecordManager{
         boolean visitedEnd;
 
         public CursorRange() throws Exception {
-
-        }
-
-        public CursorRange(Comparable keyStart, Comparable keyEnd) throws Exception {
             this.start = new Cursor();
-            this.start.setKey(keyStart);
+            this.start.setToStart();
             this.end = new Cursor();
-            this.end.setKey(keyEnd);
+            this.end.setToEnd();
             this.visitedEnd = false;
         }
 
-        public void setRange(Comparable keyStart, Comparable keyEnd) throws Exception {
+//        public CursorRange(Comparable keyStart, Comparable keyEnd) throws Exception {
+//            this.start = new Cursor();
+//            this.start.setKey(keyStart);
+//            this.end = new Cursor();
+//            this.end.setKey(keyEnd);
+//            this.visitedEnd = false;
+//        }
 
+        public void setRange(Comparable keyStart, Comparable keyEnd) throws Exception {
+            if(keyStart != null) {
+                this.start.setKey(keyStart);
+            }
+            if(keyEnd != null) {
+                this.end.setKey(keyEnd);
+            }
         }
 
         public boolean isEnd() {

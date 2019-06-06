@@ -436,11 +436,11 @@ public class BPTNode {
         {
             // 叶子节点直接插入或更新
             boolean keyExisted = contain(key);
-            if((!keyExisted))// && isInsert)
+            if((!keyExisted) && isInsert)
             {
                 tree.incCount();
             }
-            else if(keyExisted)// && isInsert)
+            else if(keyExisted && isInsert)
             {
                 throw new Exception("Insert an existed key");
             }
