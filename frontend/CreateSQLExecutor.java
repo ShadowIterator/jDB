@@ -57,7 +57,12 @@ public class CreateSQLExecutor extends SQLExecutor {
             SITuple.SITupleDesc table_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, pk_id);
             mgr.createTable(this.tableName, table_desc);
         } catch(Exception e) {
-            return new SQLResult(-1, "Some Storage Error.");
+            e.printStackTrace();
+            String errMsg = "Some Storage Error.";
+            if(e.getMessage() != null) {
+                errMsg = e.getMessage();
+            }
+            return new SQLResult(-1, "Create: " + errMsg);
         }
 
         return new SQLResult(0);

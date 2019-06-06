@@ -9,10 +9,14 @@ public class DropDBExecutor extends SQLExecutor {
     public SQLResult execute(MetadataManager mgr) throws Exception {
         try {
             mgr.deleteDatabase(this.dbName);
+            return new SQLResult(0);
         } catch(Exception e) {
             e.printStackTrace();
-            return new SQLResult(-1, "Drop database " + this.dbName + " failed.");
+            String errMsg = "Some Storage Error.";
+            if(e.getMessage() != null) {
+                errMsg = e.getMessage();
+            }
+            return new SQLResult(-1, "Drop Database: " + errMsg);
         }
-        return new SQLResult(0);
     }
 }

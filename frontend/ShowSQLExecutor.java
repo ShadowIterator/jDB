@@ -94,7 +94,12 @@ public class ShowSQLExecutor extends SQLExecutor {
             }
             return result;
         } catch (Exception e) {
-            return new SQLResult(-1, "Show: Some Storage Error.");
+            e.printStackTrace();
+            String errMsg = "Some Storage Error.";
+            if(e.getMessage() != null) {
+                errMsg = e.getMessage();
+            }
+            return new SQLResult(-1, "Show: " + errMsg);
         }
     }
 }

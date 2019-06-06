@@ -15,9 +15,14 @@ public class DropSQLExecutor extends SQLExecutor {
     public SQLResult execute(MetadataManager mgr) throws Exception {
         try {
             mgr.dropTable(this.tableName);
+            return new SQLResult(0);
         } catch (Exception e) {
-            return new SQLResult(-1, "Drop: Some Storage Error.");
+            e.printStackTrace();
+            String errMsg = "Some Storage Error.";
+            if(e.getMessage() != null) {
+                errMsg = e.getMessage();
+            }
+            return new SQLResult(-1, "Drop: " + errMsg);
         }
-        return new SQLResult(0);
     }
 }

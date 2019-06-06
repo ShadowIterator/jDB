@@ -170,7 +170,12 @@ public class InsertSQLExecutor extends SQLExecutor {
             }
             return new SQLResult(0);
         } catch (Exception e) {
-            return new SQLResult(-1, "Some Storage Error.");
+            e.printStackTrace();
+            String errMsg = "Some Storage Error.";
+            if(e.getMessage() != null) {
+                errMsg = e.getMessage();
+            }
+            return new SQLResult(-1, "Insert: " + errMsg);
         }
     }
 }

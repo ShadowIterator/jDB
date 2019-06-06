@@ -38,7 +38,12 @@ public class ShowAllDBExecutor extends SQLExecutor {
             }
             return result;
         } catch(Exception e) {
-            return new SQLResult(-1, "Show Databases: Some storage error.");
+            e.printStackTrace();
+            String errMsg = "Some storage error";
+            if(e.getMessage() != null) {
+                errMsg = e.getMessage();
+            }
+            return new SQLResult(-1, "Show Databases: " + errMsg);
         }
     }
 }

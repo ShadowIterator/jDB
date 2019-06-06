@@ -46,7 +46,12 @@ public class ShowDBExecutor extends SQLExecutor {
             }
             return result;
         } catch (Exception e) {
-            return new SQLResult(-1, "Show Database: Some storage error when showing tables in database " + this.dbName);
+            e.printStackTrace();
+            String errMsg = "Some storage error when showing tables in database" + this.dbName;
+            if(e.getMessage() != null) {
+                errMsg = e.getMessage();
+            }
+            return new SQLResult(-1, "Show Database: " + errMsg);
         }
     }
 }
