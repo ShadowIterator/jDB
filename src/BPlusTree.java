@@ -185,8 +185,9 @@ public class BPlusTree extends  AbstractRecordManager{
 //        System.out.println("insert tuple  ");
 //        tuple.print();
         Comparable key = (Comparable) tuple.getAttr(desc.getPrimary_key_id());
-
         return root.insertOrUpdate(key, tuple, true,this, pager, desc);
+
+//        root.insertOrUpdate(key, tuple, true,this, pager, desc);
     }
 
     public boolean setTuple(Comparable key, AbstractTuple tuple) throws Exception
@@ -196,7 +197,6 @@ public class BPlusTree extends  AbstractRecordManager{
             return root.insertOrUpdate(key, tuple, false, this, pager, desc);
         else
             return false;
-
     }
 
     public boolean removeTuple(Comparable key) throws Exception
@@ -240,10 +240,48 @@ public class BPlusTree extends  AbstractRecordManager{
         testTree.close();
     }
 
+    public class CursorRange {
+        Cursor start;
+        Cursor end;
+        boolean visitedEnd;
+
+        public CursorRange() throws Exception {
+
+        }
+
+        public CursorRange(Comparable keyStart, Comparable keyEnd) throws Exception {
+            this.start = new Cursor();
+            this.start.setKey(keyStart);
+            this.end = new Cursor();
+            this.end.setKey(keyEnd);
+            this.visitedEnd = false;
+        }
+
+        public void setRange(Comparable keyStart, Comparable keyEnd) throws Exception {
+
+        }
+
+        public boolean isEnd() {
+            return visitedEnd;
+        }
+
+        public void moveNext() throws Exception {
+            if(!this.start.isEqual(this.end)) {
+                this.start.moveNext();
+            } else {
+                this.visitedEnd = true;
+            }
+        }
+
+        public AbstractTuple getTuple() throws Exception {
+            return this.start.getTuple();
+        }
+    }
+
     public class Cursor extends AbstractRecordManager.AbstractCursor
     {
-        Comparable keyStart;
-        Comparable keyEnd;
+//        Comparable keyStart;
+//        Comparable keyEnd;
 //        BPTNode currentNode;
         Integer nodeId;
         Integer idInNode;
@@ -259,8 +297,8 @@ public class BPlusTree extends  AbstractRecordManager{
             prevId = -1;
             idInNode = 0;
             entryNum = 0;
-            keyStart = null;
-            keyEnd = null;
+//            keyStart = null;
+//            keyEnd = null;
         }
 
 //        public void setRange(Comparable start, Comparable end) throws Exception
@@ -275,6 +313,41 @@ public class BPlusTree extends  AbstractRecordManager{
 //            prevId = info[3];
 //            nextId = info[4];
 //        }
+        public void setToStart() throws Exception
+        {
+            nodeId = head;
+            BPTNode headNode = new BPTNode(pager, desc, head);
+            nextId = headNode.getNext();
+            prevId = headNode.getPrevious();
+            idInNode = 0;
+            entryNum = headNode.getEntries().size();
+        }
+
+        public void setToEnd() throws Exception
+        {
+            BPTNode lastNode = new BPTNode(pager, desc, head);
+            while (lastNode.getNext()>=0)
+            {
+                lastNode = new BPTNode(pager, desc, lastNode.getNext());
+            }
+            nodeId = lastNode.getId();
+            nextId = lastNode.getNext();
+            prevId = lastNode.getPrevious();
+            entryNum = lastNode.getEntries().size();
+            idInNode = entryNum-1;
+        }
+
+        public Comparable getCurrentKey() throws Exception
+        {
+            BPTNode currentNode = new BPTNode(pager, desc, nodeId);
+            if(idInNode>=0 && idInNode < entryNum)
+            {
+                return currentNode.getEntries().get(idInNode).getKey();
+            }
+            else
+                return null;
+        }
+
         public void setKey(Comparable initKey) throws Exception
         {
             int[] info = root.getKeyPos(initKey, pager, desc);

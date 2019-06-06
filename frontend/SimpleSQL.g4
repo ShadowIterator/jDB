@@ -261,6 +261,8 @@ one_condition returns [OneCondition oneCondition]
                         case "<=":
                             _op = WhereCondition.Operator.LEQ;
                             break;
+                        case "<>":
+                            _op = WhereCondition.Operator.NQ;
                     }
                     $oneCondition = new OneCondition($l.sqlValue, $r.sqlValue, _op);
                 }
@@ -363,6 +365,34 @@ table_list_select returns [TableJoin tableJoin]
                             OneCondition _oneCondition = new OneCondition(_leftValue, _rightValue, _op);
                             $tableJoin.onCondition.conditions.add(_oneCondition);
                         }
+                      | f=ID LEFT OUTER JOIN s=ID ON ft=ID '.' fa=ID '=' st=ID '.' sa=ID
+                        {
+                            $tableJoin = new TableJoin();
+                            $tableJoin.isJoin = true;
+                            $tableJoin.firstTableName = $f.text;
+                            $tableJoin.secondTableName = $s.text;
+                            $tableJoin.onCondition = new WhereCondition();
+                            $tableJoin.setJoinType(0);
+                            SQLValue _leftValue = new SQLValue($ft.text, $fa.text);
+                            SQLValue _rightValue = new SQLValue($st.text, $sa.text);
+                            WhereCondition.Operator _op = WhereCondition.Operator.EQ;
+                            OneCondition _oneCondition = new OneCondition(_leftValue, _rightValue, _op);
+                            $tableJoin.onCondition.conditions.add(_oneCondition);
+                          }
+                      | f=ID RIGHT OUTER JOIN s=ID ON ft=ID '.' fa=ID '=' st=ID '.' sa=ID
+                        {
+                            $tableJoin = new TableJoin();
+                            $tableJoin.isJoin = true;
+                            $tableJoin.firstTableName = $f.text;
+                            $tableJoin.secondTableName = $s.text;
+                            $tableJoin.onCondition = new WhereCondition();
+                            $tableJoin.setJoinType(1);
+                            SQLValue _leftValue = new SQLValue($ft.text, $fa.text);
+                            SQLValue _rightValue = new SQLValue($st.text, $sa.text);
+                            WhereCondition.Operator _op = WhereCondition.Operator.EQ;
+                            OneCondition _oneCondition = new OneCondition(_leftValue, _rightValue, _op);
+                            $tableJoin.onCondition.conditions.add(_oneCondition);
+                        }
                       | ID
                         {
                             $tableJoin = new TableJoin();
@@ -432,6 +462,9 @@ OR         : O R;
 DATABASE   : D A T A B A S E;
 USE        : U S E;
 DATABASES  : D A T A B A S E S;
+OUTER      : O U T E R;
+LEFT       : L E F T;
+RIGHT      : R I G H T;
 
 TEXT       : (SINQ | DOUQ);
 NUMFLOAT   : DIGIT+ [.] (DIGIT+)?;

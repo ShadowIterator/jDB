@@ -428,7 +428,6 @@ public class BPTNode {
         pager.delPage(selfPageId);
     }
 
-//    public boolean insertOrUpdate(Comparable key, AbstractTuple tuple, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     public boolean insertOrUpdate(Comparable key, AbstractTuple tuple, boolean isInsert, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         Integer order = tree.getOrder();
@@ -437,11 +436,11 @@ public class BPTNode {
         {
             // 叶子节点直接插入或更新
             boolean keyExisted = contain(key);
-            if((!keyExisted) && isInsert)
+            if((!keyExisted))// && isInsert)
             {
                 tree.incCount();
             }
-            else if(keyExisted && isInsert)
+            else if(keyExisted)// && isInsert)
             {
                 throw new Exception("Insert an existed key");
             }
@@ -522,6 +521,7 @@ public class BPTNode {
                 // BPTNode chNode = fromPage(pager.get(children.get(children.size()-1)));
                 BPTNode chNode = new BPTNode(pager, desc, children.get(children.size()-1));
                 succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
+
             }
             else
             {
@@ -532,6 +532,7 @@ public class BPTNode {
                         // BPTNode chNode = fromPage(pager.get(children.get(i)));
                         BPTNode chNode = new BPTNode(pager, desc, children.get(i));
                         succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
+
                         break;
                     }
                 }
