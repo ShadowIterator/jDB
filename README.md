@@ -29,6 +29,7 @@ This is going to be the 6th best java database (right after HSQLDB) which only s
 - [x] 实现网络部分
 - [x] 实现一个前端
 - [ ] 改用新的Cursor
+- [ ] 添加不等号的实现
 
 ## 加分项TODO
 
