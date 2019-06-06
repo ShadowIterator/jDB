@@ -428,16 +428,29 @@ public class BPTNode {
         pager.delPage(selfPageId);
     }
 
+//<<<<<<< HEAD
     public boolean insertOrUpdate(Comparable key, AbstractTuple tuple, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
+//=======
+//    public void insertOrUpdate(Comparable key, AbstractTuple tuple, boolean isInsert, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
+//>>>>>>> executor
     {
         Integer order = tree.getOrder();
         boolean succeed = false;
         if(isLeaf)
         {
             // 叶子节点直接插入或更新
-            if(!contain(key))
+            boolean keyExisted = contain(key);
+            if((!keyExisted))// && isInsert)
             {
                 tree.incCount();
+            }
+            else if(keyExisted)// && isInsert)
+            {
+                throw new Exception("Insert an existed key");
+            }
+            else if(!keyExisted)
+            {
+                throw new Exception("No tuple with matched key to update");
             }
             if(contain(key)||entries.size()<order)
             {
@@ -505,13 +518,21 @@ public class BPTNode {
             {
                 // BPTNode chNode = fromPage(pager.get(children.get(0)));
                 BPTNode chNode = new BPTNode(pager, desc, children.get(0));
+//<<<<<<< HEAD
                 succeed = chNode.insertOrUpdate(key, tuple, tree, pager, desc);
+//=======
+//                chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
+//>>>>>>> executor
             }
             else if(key.compareTo(entries.get(entries.size()-1).getKey())>=0)
             {
                 // BPTNode chNode = fromPage(pager.get(children.get(children.size()-1)));
                 BPTNode chNode = new BPTNode(pager, desc, children.get(children.size()-1));
+//<<<<<<< HEAD
                 succeed = chNode.insertOrUpdate(key, tuple, tree, pager, desc);
+//=======
+//                chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
+//>>>>>>> executor
             }
             else
             {
@@ -521,7 +542,11 @@ public class BPTNode {
                     {
                         // BPTNode chNode = fromPage(pager.get(children.get(i)));
                         BPTNode chNode = new BPTNode(pager, desc, children.get(i));
+//<<<<<<< HEAD
                         succeed = chNode.insertOrUpdate(key, tuple, tree, pager, desc);
+//=======
+//                        chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
+//>>>>>>> executor
                         break;
                     }
                 }
@@ -540,8 +565,8 @@ public class BPTNode {
             // 需要分裂
             // BPTNode left = new BPTNode(true, false);
             // BPTNode right = new BPTNode(true, false);
-            BPTNode left = new BPTNode(true, false, keyType, pager);
-            BPTNode right = new BPTNode(true, false, keyType, pager);
+            BPTNode left = new BPTNode(false, false, keyType, pager);
+            BPTNode right = new BPTNode(false, false, keyType, pager);
             Integer leftSize = (order+1)/2+(order+1)%2;
             Integer rightSize = (order+1)/2;
             for(int i=0; i<leftSize; i++)
@@ -739,8 +764,14 @@ public class BPTNode {
         boolean succeed = false;
         if(isLeaf)
         {
+//<<<<<<< HEAD
             if(!contain(key))
                 return false;
+//=======
+//            if(!contain(key)) {
+//                throw new Exception("No tuple with matched key to delete");
+//            }
+//>>>>>>> executor
             tree.decCount();
             if(isRoot)
             {
@@ -895,8 +926,13 @@ public class BPTNode {
             if(entries.get(i).getKey().compareTo(key)==0)
             {
                 entries.get(i).setValue(info);
+//<<<<<<< HEAD
                 // TODO: 检查新值和原值是否相同
                 return true;
+//=======
+//                return;
+//
+//>>>>>>> executor
             }
             else if(entries.get(i).getKey().compareTo(key)>0)
             {

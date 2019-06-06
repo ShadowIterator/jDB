@@ -7,14 +7,14 @@ This is going to be the 6th best java database (right after HSQLDB) which only s
 
 - <s>一个初始化的接口</s>
 - <s>创建表的接口</s>
-- 删除表的接口
+- <s>删除表的接口</s>
 - <s>数据库实例的切换</s>
 
 ### 查询所需要的接口 (TableManager/Table)
 
 - <s>查询某个表的基本信息（属性名称，是否非空，主键）</s>
 - <s>获得遍历所有数据的迭代器</s>
-- 获得主键在某个区间的数据的迭代器
+- <s>获得主键在某个区间的数据的迭代器</s>
 - <s>迭代器返回的一个tuple的数据结构（parser怎么实现待讨论）</s>
 - <s>插入一个tuple的接口（序列化方法待讨论）</s>
 - <s>删除一个tuple的接口</s>
@@ -27,12 +27,12 @@ This is going to be the 6th best java database (right after HSQLDB) which only s
 - [x] 实现上述接口
 - [x] 实现executor
 - [x] 实现网络部分
-- [ ] 实现一个前端
+- [x] 实现一个前端
+- [ ] 改用新的Cursor
+- [ ] 添加不等号的实现
 
 ## 加分项TODO
 
-- [ ] 支持查询优化
-- [ ] 支持多个属性作为主键
 - [ ] 支持三张及以上表join操作
-- [ ] 支持outer join操作
-- [ ] 支持select语句中的子查询语句
+- [ ] 支持outer/inner/natural join操作
+

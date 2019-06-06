@@ -21,6 +21,8 @@ public class SQLResult implements Serializable {
     private int resultType;
     private String resultInfo = "";
 
+    private double costTime;
+
     public SQLResult(int _resultType) {
         this.resultType = _resultType;
         if(_resultType == -1) {
@@ -90,6 +92,9 @@ public class SQLResult implements Serializable {
     public String getSecondTableName() { return this.secondTableName; }
     public ArrayList<Integer> getAttributeId() { return this.attributeId; }
     public ArrayList<Integer> getSecondAttributeId() { return this.secondAttributeId; }
+
+    public void setCostTime(double time) { this.costTime = time; }
+    public double getCostTime() { return this.costTime; }
 
     private static void printResultTuple(AbstractTuple tuple, ArrayList<Integer> ids) {
         for(int id: ids) {

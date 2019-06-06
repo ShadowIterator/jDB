@@ -17,8 +17,8 @@ public class ShowSQLExecutor extends SQLExecutor {
         this.show_attr_name = new String[show_attr_count];
         this.show_constraint_list = new byte[show_attr_count];
         show_attr_example[0] = (int)0;
-        show_attr_example[1] = "thisisthenameoftheattr"; // length : 22
-        show_attr_example[2] = "thisisthetypeofthedata"; // length : 22
+        show_attr_example[1] = "thisisthenameoftheattranditslengthis38";
+        show_attr_example[2] = "thisisthetypeofthedataanditslengthis38";
         show_attr_example[3] = (int)0;
         show_attr_example[4] = (int)0;
         show_attr_name[0] = "Attribute ID";

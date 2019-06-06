@@ -4,17 +4,74 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 
+class Shutdown {
+    private Thread thread = null;
+
+    public Shutdown() {
+        thread = new Thread("Sample thread") {
+            public void run() {
+                while (true) {
+                    System.out.println("[Sample thread] Sample thread speaking...");
+                    try {
+                        Thread.currentThread().sleep(1000);
+                    } catch (InterruptedException ie) {
+                        break;
+                    }
+                }
+                System.out.println("[Sample thread] Stopped");
+            }
+        };
+        thread.start();
+    }
+
+    public void stopThread() {
+        thread.interrupt();
+    }
+}
+
+
+// The ShutdownThread is the thread we pass to the
+// addShutdownHook method
+class ShutdownThread extends Thread {
+
+    public ShutdownThread() {
+        super();
+    }
+
+    public void run() {
+        System.out.println("[Shutdown thread] Shutting down");
+        try {
+            jDBServer.mgr.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("[Shutdown thread] Shutdown complete");
+    }
+}
+
 public class jDBServer extends Thread{
     private Socket soc;
-    private static MetadataManager mgr;
+    public static MetadataManager mgr;
 
     private jDBServer(Socket s) {
         this.soc = s;
     }
 
     public static void main(String[] args) throws Exception {
+//        Shutdown shutdown = new Shutdown();
+        jDBServer.mgr = new MetadataManager();
+        try {
+            Runtime.getRuntime().addShutdownHook(new ShutdownThread());
+            System.out.println("[Main thread] Shutdown hook added");
+        } catch (Throwable t) {
+            // we get here when the program is run with java
+            // version 1.2.2 or older
+            System.out.println("[Main thread] Could not add Shutdown hook");
+        }
+
         int port = 10086;
         server(port);
+//        System.exit(0);
     }
 
     @Override
@@ -29,13 +86,17 @@ public class jDBServer extends Thread{
                 sql = dis.readUTF();
             } catch (IOException e) {
                 e.printStackTrace();
+                os.close();
+                is.close();
+                this.soc.close();
+                return;
             }
             System.out.println("Query: " + sql);
             ArrayList<SQLResult> sqlResults = null;
             try {
                 sqlResults = this.executeSql(sql);
             } catch (Exception e) {
-//                e.printStackTrace();
+                e.printStackTrace();
                 System.out.println(e.getMessage());
                 sqlResults = new ArrayList<SQLResult>();
                 sqlResults.add(new SQLResult(-2, e.getMessage()));
@@ -75,7 +136,11 @@ public class jDBServer extends Thread{
         ArrayList<SQLExecutor> sqlExecutorList = ((SimpleSQLParser.CommandsContext)tree).sqlExecutorList;
         ArrayList<SQLResult> results = new ArrayList<>();
         for(SQLExecutor sqlExecutor: sqlExecutorList) {
+            long beginTime = System.nanoTime();
             SQLResult sqlResult = sqlExecutor.execute(jDBServer.mgr);
+            long endTime = System.nanoTime();
+            double costTime = (endTime - beginTime) / 1000000.0;
+            sqlResult.setCostTime(costTime);
             results.add(sqlResult);
         }
         return results;
@@ -83,10 +148,16 @@ public class jDBServer extends Thread{
 
     private static void server(int port) {
         try {
-            jDBServer.mgr = new MetadataManager();
-            jDBServer.mgr.init("data_meta.jDB");
-            jDBServer.mgr.createDatabase("defaultdb1");
-            jDBServer.mgr.checkoutDatabase("defaultdb1");
+            // should not init every time, test if reopen is right
+            File file = new File("data_meta.jDB");
+            if(file.exists()) {
+                jDBServer.mgr.open("data_meta.jDB");
+                jDBServer.mgr.checkoutDatabase("default");
+            } else {
+                jDBServer.mgr.init("data_meta.jDB");
+                jDBServer.mgr.createDatabase("default");
+                jDBServer.mgr.checkoutDatabase("default");
+            }
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("JDB Server running on port " + port);
             while(true) {

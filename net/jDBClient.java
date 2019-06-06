@@ -9,6 +9,12 @@ public class jDBClient {
         this.ip = _ip;
         this.port = _port;
     }
+
+    public void tryConnection() throws Exception {
+        Socket s = new Socket(this.ip, this.port);
+        s.close();
+    }
+
     public ArrayList<SQLResult> query(String sql) throws Exception {
         Socket s = new Socket(this.ip, this.port);
         DataOutputStream dos = new DataOutputStream(s.getOutputStream());
