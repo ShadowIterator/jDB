@@ -18,6 +18,8 @@ public class SQLResult implements Serializable {
     private ArrayList<Integer> secondAttributeId;
     private String firstTableName;
     private String secondTableName;
+    private AbstractTuple.AbstractTupleDesc firstDesc;
+    private AbstractTuple.AbstractTupleDesc secondDesc;
 
     private int resultType;
     private String resultInfo = "";
@@ -81,6 +83,11 @@ public class SQLResult implements Serializable {
             this.secondTableName = name;
         }
     }
+
+    public void setFirstDesc(AbstractTuple.AbstractTupleDesc desc) { this.firstDesc = desc; }
+    public void setSecondDesc(AbstractTuple.AbstractTupleDesc desc) { this.secondDesc = desc; }
+    public AbstractTuple.AbstractTupleDesc getFirstDesc() { return this.firstDesc; }
+    public AbstractTuple.AbstractTupleDesc getSecondDesc() { return this.secondDesc; }
 
     public boolean addTuple(AbstractTuple tup) { return this.tuples.add(tup); }
     public boolean addSecondTuple(AbstractTuple tup) { return this.secondTuples.add(tup); }

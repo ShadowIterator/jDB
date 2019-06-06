@@ -1,5 +1,4 @@
 public class TableJoin {
-    public boolean isSub;
     public boolean isJoin;
     public String firstTableName;
     public String secondTableName;
@@ -14,11 +13,14 @@ public class TableJoin {
     }
 
     public TableJoin() {
-        this.isSub = false;
         this.isJoin = false;
         this.firstTableName = null;
         this.secondTableName = null;
         this.onCondition = null;
         this.joinType = -1;
+    }
+
+    public boolean isSub() {
+        return false;
     }
 }

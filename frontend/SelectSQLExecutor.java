@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import javafx.util.Pair;
 
@@ -55,19 +56,19 @@ public class SelectSQLExecutor extends SQLExecutor {
 
     public boolean isLegal() {
         boolean result = true;
-        if(!tableJoin.isSub) {
+        if(!(this.tableJoin.isSub())) {
             result &= this.tableJoin.firstTableName != null;
             if (this.tableJoin.secondTableName != null) {
                 result &= this.tableJoin.onCondition != null;
                 result &= this.tableJoin.onCondition.isLegal();
             }
-        }
-        if(!this.isSelectAll) {
-            result &= this.attributeList.size() != 0;
-            for (Pair<String, String> attrPair : this.attributeList) {
-                String tableName = attrPair.getKey();
-                if (tableName != null) {
-                    result &= (tableName.equals(this.tableJoin.firstTableName) || tableName.equals(this.tableJoin.secondTableName));
+            if (!this.isSelectAll) {
+                result &= this.attributeList.size() != 0;
+                for (Pair<String, String> attrPair : this.attributeList) {
+                    String tableName = attrPair.getKey();
+                    if (tableName != null) {
+                        result &= (tableName.equals(this.tableJoin.firstTableName) || tableName.equals(this.tableJoin.secondTableName));
+                    }
                 }
             }
         }
@@ -94,11 +95,120 @@ public class SelectSQLExecutor extends SQLExecutor {
 
     private SQLResult ExecSubSelect(MetadataManager mgr) throws Exception {
         SQLResult subResult = ((SubSelectTable)(this.tableJoin)).selectSQLExec.execute(mgr);
+        String tmpName = ((SubSelectTable)(this.tableJoin)).tmpName;
         if(subResult.getResultType() != 1 && subResult.getResultType() != 2) {
-            throw new Exception("Sub query should be a select query.");
+            throw new Exception("Subquery should be a select query.");
         }
         SQLResult result = new SQLResult(1);
+        int attr_count = -1;
+        Object[] attr_example;
+        String[] attr_name;
+        byte[] constraint_list;
+        int pk_id = 0;
+        if(subResult.getResultType() == 1) {
+            attr_count = subResult.getAttributeName().size();
+        } else {
+            attr_count = subResult.getAttributeName().size() + subResult.getSecondAttributeName().size();
+        }
+        attr_example = new Object[attr_count];
+        attr_name = new String[attr_count];
+        constraint_list = new byte[attr_count];
+        if(subResult.getResultType() == 1) {
+//            BPlusTree table = mgr.getTableBPlusTreeByName(subResult.getFirstTableName());
+//            AbstractTuple.AbstractTupleDesc desc = table.getTupleDesc();
+            AbstractTuple.AbstractTupleDesc desc = subResult.getFirstDesc();
+            ArrayList<Integer> attrIds = subResult.getAttributeId();
+            int count = 0;
+            for(Integer i: attrIds) {
+                attr_example[count] = desc.getAttr_example(i);
+                attr_name[count] = desc.getAttr_name(i);
+                constraint_list[count] = desc.getAttr_constraint(i);
+                if(this.isSelectAll) {
+                    result.addAttributeInfo(0, desc.getAttr_name(i), count);
+                }
+                count += 1;
+            }
+        } else {
+//            BPlusTree firstTable = mgr.getTableBPlusTreeByName(subResult.getFirstTableName());
+//            BPlusTree secondTable = mgr.getTableBPlusTreeByName(subResult.getSecondTableName());
+//            AbstractTuple.AbstractTupleDesc firstDesc = firstTable.getTupleDesc();
+//            AbstractTuple.AbstractTupleDesc secondDesc = secondTable.getTupleDesc();
+            AbstractTuple.AbstractTupleDesc firstDesc = subResult.getFirstDesc();
+            AbstractTuple.AbstractTupleDesc secondDesc = subResult.getSecondDesc();
+            ArrayList<Integer> firstAttrIds = subResult.getAttributeId();
+            ArrayList<Integer> secondAttrIds = subResult.getSecondAttributeId();
+            int count = 0;
+            for(Integer i: firstAttrIds) {
+                attr_example[count] = firstDesc.getAttr_example(i);
+                attr_name[count] = firstDesc.getAttr_name(i);
+                constraint_list[count] = firstDesc.getAttr_constraint(i);
+                if(this.isSelectAll) {
+                    result.addAttributeInfo(0, firstDesc.getAttr_name(i), count);
+                }
+                count += 1;
+            }
+            for(Integer i: secondAttrIds) {
+                attr_example[count] = secondDesc.getAttr_example(i);
+                attr_name[count] = secondDesc.getAttr_name(i);
+                constraint_list[count] = secondDesc.getAttr_constraint(i);
+                if(this.isSelectAll) {
+                    result.addAttributeInfo(0, secondDesc.getAttr_name(i), count);
+                }
+                count += 1;
+            }
+        }
 
+        if(!this.isSelectAll) {
+            for(Pair<String, String> attr: this.attributeList) {
+                if(attr.getKey() != null && !attr.getKey().equals(tmpName)) {
+                    return new SQLResult(-1, "Select: no relation named " + attr.getValue());
+                }
+                for (int i = 0; i < attr_count; ++i) {
+                    if (attr_name[i].equals(attr.getValue())) {
+                        result.addAttributeInfo(0, attr_name[i], i);
+                    }
+                }
+            }
+        }
+
+        AbstractTuple.AbstractTupleDesc newDesc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, pk_id);
+
+        result.setTableName(0, tmpName);
+        result.setFirstDesc(newDesc);
+
+        int tupleCount = subResult.getTuples().size();
+        ArrayList<AbstractTuple> firstTuples = subResult.getTuples();
+        ArrayList<AbstractTuple> secondTuples = subResult.getSecondTuples();
+        ArrayList<Integer> firstAttrIds = subResult.getAttributeId();
+        ArrayList<Integer> secondAttrIds = subResult.getSecondAttributeId();
+        for(int i = 0; i < tupleCount; ++i) {
+            SITuple tuple = new SITuple(newDesc);
+            if(subResult.getResultType() == 1) {
+                AbstractTuple firstTuple = firstTuples.get(i);
+                for(int j = 0; j < attr_count; ++j) {
+                    tuple.setAttr(j, firstTuple.getAttr(firstAttrIds.get(j)));
+                }
+            } else {
+                AbstractTuple firstTuple = firstTuples.get(i);
+                AbstractTuple secondTuple = secondTuples.get(i);
+                int firstCount = firstAttrIds.size();
+                int secondCount = secondAttrIds.size();
+                int j = 0;
+                for(; j < firstCount; ++j) {
+                    tuple.setAttr(j, firstTuple.getAttr(firstAttrIds.get(j)));
+                }
+                for(; j < firstCount + secondCount; ++j) {
+                    tuple.setAttr(j, secondTuple.getAttr(secondAttrIds.get(j - firstCount)));
+                }
+            }
+            if (this.whereCondition != null) {
+                if (this.whereCondition.NaiveJudge(tuple, newDesc)) {
+                    result.addTuple(tuple);
+                }
+            } else {
+                result.addTuple(tuple);
+            }
+        }
         return result;
     }
 
@@ -108,7 +218,7 @@ public class SelectSQLExecutor extends SQLExecutor {
             return new SQLResult(-1, "Illegal Select Expression.");
         }
         try {
-            if(tableJoin.isSub) {
+            if(this.tableJoin.isSub()) {
                 return this.ExecSubSelect(mgr);
             } else {
                 if (tableJoin.secondTableName == null) {
@@ -140,6 +250,8 @@ public class SelectSQLExecutor extends SQLExecutor {
                             sqlResult.addAttributeInfo(0, attrPair.getValue(), desc.getIDByName(attrPair.getValue()));
                         }
                     }
+                    sqlResult.setTableName(0, tableName);
+                    sqlResult.setFirstDesc(desc);
 
 //                BPlusTree.Cursor rit = table.new Cursor();
                     BPlusTree.CursorRange crange = table.new CursorRange();
@@ -230,6 +342,8 @@ public class SelectSQLExecutor extends SQLExecutor {
                             sqlResult.addAttributeInfo(tableIdx, attrPair.getValue(), descs.get(tableIdx).getIDByName(attrPair.getValue()));
                         }
                     }
+                    sqlResult.setFirstDesc(firstDesc);
+                    sqlResult.setSecondDesc(secondDesc);
 
                     BPlusTree.CursorRange firstRangeIt = firstTable.new CursorRange();
                     if (this.whereCondition != null) {
@@ -319,6 +433,7 @@ public class SelectSQLExecutor extends SQLExecutor {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             String errMsg = "Some Storage Error.";
             if(e.getMessage() != null) {
                 errMsg = e.getMessage();

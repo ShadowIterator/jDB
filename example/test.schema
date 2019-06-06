@@ -11,7 +11,9 @@ insert into student values (1003, 99.6, 3.96, 3, 'jiege04')
 insert into student values (1004, 99.5, 3.95, 3, 'jiege05')
 insert into student values (1005, 60.0, 2.7, 3, 'tuixue')
 show table student
-delete from student where score <= 90.0
 update student set score = 100.0 where name = 'jiege01'
 select id, score from student where gpa>=3.9 and id<2000 or name='jiege'
 select student.id, teacher.grade from student join teacher on student.grade = teacher.grade
+select * from (select * from student) as t
+select * from (select id, score from student where gpa >= 3.9) as t where id > 1001
+select id, gpa from (select * from student where score < 99.75) as t where t.id >= 1001
