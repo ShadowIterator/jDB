@@ -3,6 +3,7 @@ public abstract class AbstractPage {
     abstract void setContent(byte[] content);
     abstract int getPageID();
     abstract boolean setPageID(int page_id);
+    abstract int getPAGESIZE();
 //    abstract byte[] serialize();
 //    abstract AbstractPage deSerialize(byte[] bytes);
 }
