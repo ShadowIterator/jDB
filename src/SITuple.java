@@ -38,7 +38,7 @@ public class SITuple extends AbstractTuple implements Serializable {
         for(int k = 0; k < attrs.length; ++k) {
             byte[] tb;
             if (attrs[k] != null)
-                tb = objectToBytes(attrs[k]);
+                tb = SerializeUtil.objectToBytes(attrs[k]);
             else {
                 tb = new byte[1];
                 b[k / 8] |= (byte) (1 << (k % 8));
@@ -58,128 +58,12 @@ public class SITuple extends AbstractTuple implements Serializable {
             else {
                 byte[] tb = new byte[desc.getOffset(k + 1) - desc.getOffset(k)];
                 System.arraycopy(b, desc.getOffset(k), tb, 0, tb.length);
-                attrs[k] = bytesToObject(tb, sidesc.getAttr_example(k).getClass());
+                attrs[k] = SerializeUtil.bytesToObject(tb, sidesc.getAttr_example(k).getClass());
             }
         }
     }
 
-    static int bytesToInt(byte[] b) {
-//        int int_value;
-//        int t_value = (b[0] & 0xff) | (((int) b[1] & 0xff) << 8);
-        return (b[0] & 0xff) |
-                (((int) b[1] & 0xff) << 8) |
-                (((int) b[2] & 0xff) << 16) |
-                (((int) b[3] & 0xff) << 24);
-    }
 
-    static long bytesToLong(byte[] b) {
-        byte[] b_low = Arrays.copyOfRange(b, 0, 4);
-        byte[] b_high = Arrays.copyOfRange(b, 4, 8);
-//        long vlow =  bytesToInt(b_low);
-//        long vhigh = bytesToInt(b_high);
-//        long res = (vlow & 0xffffffffl) | (((long) vhigh & 0xffffffffl) << 32);
-        return ((long) bytesToInt(b_low) & 0xffffffffl) | (((long) bytesToInt(b_high) & 0xffffffffl) << 32);
-    }
-
-    static float bytesToFloat(byte[] b) {
-        int float_int_value = bytesToInt(b);
-        return Float.intBitsToFloat(float_int_value);
-    }
-
-    static double bytesToDouble(byte[] b) {
-        long double_long_value = bytesToLong(b);
-        return Double.longBitsToDouble(double_long_value);
-    }
-
-    static String bytesToString(byte[] b) {
-        return new String(b);
-    }
-
-    static Object stringShrink(String str) {
-        int k = str.indexOf(0);
-        return (Object) str.substring(0, k >= 0? k : str.length());
-    }
-
-    static Object bytesToObject(byte[] b, Class cls) {
-        Object obj;
-        if (cls == Integer.class) {
-            obj = bytesToInt(b);
-//            obj = int_value;
-        } else if (cls == Long.class) {
-            obj = bytesToLong(b);
-        } else if (cls == Float.class) {
-            obj = bytesToFloat(b);
-        } else if (cls == Double.class) {
-            obj = bytesToDouble(b);
-        } else /* if(cls == String.class) */ {
-            obj = stringShrink(bytesToString(b));
-//            obj = bytesToString(b);
-        }
-        return obj;
-    }
-
-    static byte[] intToBytes(int int_value) {
-        byte[] b = new byte[4];
-        b[0] = (byte) (int_value & 0xff);
-        b[1] = (byte) ((int_value >> 8) & 0xff);
-        b[2] = (byte) ((int_value >> 16) & 0xff);
-        b[3] = (byte) ((int_value >> 24) & 0xff);
-        return b;
-    }
-
-    static byte[] longToBytes(long long_value) {
-        byte[] b = new byte[8];
-//        b[0] = (byte)(long_value & 0xff);
-//        b[1] = (byte)((long_value >> 8) & 0xff);
-//        b[2] = (byte)((long_value >> 16) & 0xff);
-//        b[3] = (byte)((long_value >> 24) & 0xff);
-//        b[4] = (byte)((long_value >> 32 & 0xff);
-//        b[5] = (byte)((long_value >> 40) & 0xff);
-//        b[6] = (byte)((long_value >> 48) & 0xff);
-//        b[7] = (byte)((long_value >> 56) & 0xff);
-        byte[] b_low = intToBytes(((int) (long_value)) & 0xffffffff);
-        byte[] b_high = intToBytes(((int) (long_value >> 32)) & 0xffffffff);
-        System.arraycopy(b_low, 0, b, 0, b_low.length);
-        System.arraycopy(b_high, 0, b, b_low.length, b_high.length);
-        return b;
-    }
-
-    static byte[] floatToBytes(float float_value) {
-        int float_int_value = Float.floatToRawIntBits(float_value);
-        return intToBytes(float_int_value);
-    }
-
-    static byte[] doubleToBytes(double double_value) {
-        long double_long_value = Double.doubleToRawLongBits(double_value);
-        return longToBytes(double_long_value);
-    }
-
-    static byte[] stringToBytes(String string_value) {
-        return string_value.getBytes();
-    }
-
-    static byte[] objectToBytes(Object obj) throws Exception  {
-
-        byte[] b;
-
-        if (obj.getClass() == Integer.class) {
-            int int_obj = (int) obj;
-            b = intToBytes(int_obj);
-        } else if (obj.getClass() == Long.class) {
-            long long_obj = (long) obj;
-            b = longToBytes(long_obj);
-        } else if (obj.getClass() == Float.class) {
-            float float_obj = (float) obj;
-            b = floatToBytes(float_obj);
-        } else if (obj.getClass() == Double.class) {
-            double double_obj = (double) obj;
-            b = doubleToBytes(double_obj);
-        } else /* if(obj.getClass() == String.class) */ {
-            String string_obj = (String) obj;
-            b = stringToBytes(string_obj);
-        }
-        return b;
-    }
 
     public static class SITupleDesc extends AbstractTupleDesc implements java.io.Serializable {
         Object[] attr_example; //types,default_value
@@ -203,7 +87,7 @@ public class SITuple extends AbstractTuple implements Serializable {
             offset_list = new int[attr_count + 1];
             offset_list[0] = (attr_count + 7) / 8;
             for (int i = 0; i < attr_count; ++i) {
-                offset_list[i + 1] = offset_list[i] + SITuple.objectToBytes(attr_example[i]).length;
+                offset_list[i + 1] = offset_list[i] + SerializeUtil.objectToBytes(attr_example[i]).length;
             }
             desc_size = serialize().length;
         }
@@ -266,7 +150,7 @@ public class SITuple extends AbstractTuple implements Serializable {
             if(obj.getClass() == String.class) {
 //                String str = (String) obj;
 //                obj = str.substring(0, str.indexOf(0));
-                obj = stringShrink((String) obj);
+                obj = SerializeUtil.stringShrink((String) obj);
             }
             return obj;
         }

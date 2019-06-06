@@ -47,7 +47,7 @@ public class BPlusTree extends  AbstractRecordManager{
         Integer[] intInfo = new Integer[6];
         for(int i=0; i<intInfo.length; i++)
         {
-            intInfo[i] = SITuple.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
+            intInfo[i] = SerializeUtil.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
             readPos+=Integer.BYTES;
         }
         order = intInfo[0];
@@ -155,7 +155,7 @@ public class BPlusTree extends  AbstractRecordManager{
         byte[] part;
         for(int i=0; i<infoInt.length; i++)
         {
-            part = SITuple.intToBytes(infoInt[i]);
+            part = SerializeUtil.intToBytes(infoInt[i]);
             System.arraycopy(part, 0, infoBuffer, writePos, Integer.BYTES);
             writePos+=Integer.BYTES;
         }
