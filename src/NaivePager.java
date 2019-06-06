@@ -1,4 +1,5 @@
-import java.io.RandomAccessFile;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -185,13 +186,39 @@ public final class NaivePager extends AbstractPager {
         String str2 = "hello_2";
         NaivePager pager = new NaivePager();
         pager.open("hello.txt");
+        int ELE_NUM = 100000;
+        boolean[] used = new boolean[ELE_NUM * 2];
+        for(int i = 0; i < used.length; ++i)
+            used[i] = false;
+//        for(int i = 0 ; i < ELE_NUM / 25; ++i) {
+////            pager.newPage();
+//            pager.delPage(i);
+//        }
+
+
+        for(int i = 0; i < ELE_NUM / 15; ++i) {
+            System.out.println(pager.newPage().getPageID());
+        }
+
+        pager.close();
+
 //        NaivePage page1 = (NaivePage) pager.newPage();
 //        NaivePage page2 = (NaivePage) pager.newPage();
 //        pager.newPage();
-        NaivePage page = (NaivePage) pager.get(1);
-        page.data = str1.getBytes();
-        pager.write(page);
-        pager.close();
+//        for(int i = 1; i<=10000; ++i)
+//            pager.newPage();
+//        pager.delPage(23);
+//        pager.delPage(24);
+//        pager.delPage(44);
+//        for(int i = 100; i <= 2000; ++i) {
+//            pager.delPage(i * 2);
+//        }
+//        NaivePage npage = (NaivePage) pager.newPage();
+//
+//        NaivePage page = (NaivePage) pager.get(1);
+//        page.data = str1.getBytes();
+//        pager.write(page);
+//        pager.close();
 //
 //        int[] a = new int[10];
 //        int[] b = Arrays.copyOfRange(a, 4, 7);
@@ -205,6 +232,34 @@ public final class NaivePager extends AbstractPager {
 //        for(int i = 0; i < b.length; ++i) {
 //            System.out.print(b[i]);
 //        }
+
+//        String file_prefix = "test-doc\\sql-gen\\";
+//        String file_name = file_prefix + "test_100.schema";
+//        String out_file_name = file_name + ".result";
+//        PrintStream ps=new PrintStream(new FileOutputStream(out_file_name));
+//        System.setOut(ps);
+//
+//        File file = new File(file_name);
+//        InputStreamReader inputreader= new InputStreamReader(new FileInputStream(file));
+//        BufferedReader bf = new BufferedReader(inputreader);
+//        String cmd;
+//        try {
+//            ArrayList<SQLResult> sqlResults = client.query(sql);
+//            for (SQLResult sqlResult : sqlResults) {
+//                sqlResult.print();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        while((cmd = bf.readLine()) != null) {
+////            System.out.println("\n" + sql + ": ");
+//            ArrayList<SQLResult> sqlResults = client.query(sql);
+//            for(SQLResult res : sqlResults) {
+//                res.print();
+//            }
+//        }
+
+
 
     }
 
