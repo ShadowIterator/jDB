@@ -71,7 +71,7 @@ public class UpdateSQLExecutor extends SQLExecutor {
             crange.setRange(pkRange.getKey(), pkRange.getValue());
             for(; !crange.isEnd(); crange.moveNext()) {
                 AbstractTuple tuple = crange.getTuple();
-                if(this.whereCondition.NaiveJudge(tuple, desc)) {
+                if(this.whereCondition.NaiveJudge(tuple, desc, mgr)) {
                     tuple.setAttr(changeId, newObj);
                     Object obj = tuple.getAttr(pkId);
                     if(pkId == changeId) {

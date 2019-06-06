@@ -1,9 +1,9 @@
 create table student (id long, score double, gpa float, grade int, name string(128), primary key (id));
-create table teacher (id long, grade int, primary key (id));
-insert into teacher values (1000, 1)
-insert into teacher values (1001, 2)
-insert into teacher values (1002, 3)
-insert into teacher values (1003, 4)
+create table teacher (id long, grade int, tgrade int, primary key (id));
+insert into teacher values (1000, 1, 1)
+insert into teacher values (1001, 2, 2)
+insert into teacher values (1002, 3, 3)
+insert into teacher values (1003, 4, 4)
 insert into student values (1000, 99.9, 3.99, 3, 'jiege01')
 insert into student values (1001, 99.8, 3.98, 3, 'jiege02')
 insert into student values (1002, 99.7, 3.97, 3, 'jiege03')
@@ -17,3 +17,7 @@ select student.id, teacher.grade from student join teacher on student.grade = te
 select * from (select * from student) as t
 select * from (select id, score from student where gpa >= 3.9) as t where id > 1001
 select id, gpa from (select * from student where score < 99.75) as t where t.id >= 1001
+select id, gpa from student where not exist (select * from teacher where grade = 5)
+select * from student left outer join teacher on student.grade = teacher.grade
+select * from student right outer join teacher on student.grade = teacher.grade
+select * from teacher where exist (select * from student where grade = tgrade)

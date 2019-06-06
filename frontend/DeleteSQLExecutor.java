@@ -41,7 +41,7 @@ public class DeleteSQLExecutor extends SQLExecutor {
                 AbstractTuple tuple = crange.getTuple();
 //            for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
 //                AbstractTuple tuple = it.getTuple();
-                if(this.whereCondition.NaiveJudge(tuple, desc)) {
+                if(this.whereCondition.NaiveJudge(tuple, desc, mgr)) {
                     Object obj = tuple.getAttr(pkId);
                     table.removeTuple((Comparable)obj);
                 }

@@ -5,6 +5,13 @@ public class OneCondition {
     public SQLValue rightValue;
     public WhereCondition.Operator operator;
 
+    public OneCondition() {
+    }
+
+    public boolean isNotExist() {
+        return false;
+    }
+
     public OneCondition(SQLValue _leftValue, SQLValue _rightValue, WhereCondition.Operator _operator) {
         this.leftValue = _leftValue;
         this.rightValue = _rightValue;

@@ -7,6 +7,7 @@ public class SelectSQLExecutor extends SQLExecutor {
     private TableJoin tableJoin;
     private WhereCondition whereCondition;
     private boolean isSelectAll;
+    private boolean inferenced;
 
     public SelectSQLExecutor() {
         this.type = sqlType.SELECT;
@@ -14,6 +15,7 @@ public class SelectSQLExecutor extends SQLExecutor {
         this.tableJoin = null;
         this.whereCondition = null;
         this.isSelectAll = false;
+        this.inferenced = false;
     }
 
     public void setAttributeList(ArrayList<Pair<String, String>> attributeList) {
@@ -202,11 +204,96 @@ public class SelectSQLExecutor extends SQLExecutor {
                 }
             }
             if (this.whereCondition != null) {
-                if (this.whereCondition.NaiveJudge(tuple, newDesc)) {
+                if (this.whereCondition.NaiveJudge(tuple, newDesc, mgr)) {
                     result.addTuple(tuple);
                 }
             } else {
                 result.addTuple(tuple);
+            }
+        }
+        return result;
+    }
+
+    public SQLResult ContextExecute(ArrayList<AbstractTuple> tuples, ArrayList<AbstractTuple.AbstractTupleDesc> descs, MetadataManager mgr) throws Exception {
+        if(this.tableJoin.isSub() || this.whereCondition == null) {
+            return this.execute(mgr);
+        }
+        if(!this.inferenced) {
+            if (tableJoin.secondTableName == null) {
+                String tableName = this.tableJoin.firstTableName;
+                BPlusTree table;
+                try {
+                    table = mgr.getTableBPlusTreeByName(tableName);
+                } catch (Exception e) {
+                    return new SQLResult(-1, "Cannot find the table " + tableName);
+                }
+                AbstractTuple.AbstractTupleDesc firstDesc = table.getTupleDesc();
+                this.whereCondition.pureInference(tableName, firstDesc);
+            } else {
+                String firstTableName = this.tableJoin.firstTableName;
+                String secondTableName = this.tableJoin.secondTableName;
+                BPlusTree firstTable;
+                try {
+                    firstTable = mgr.getTableBPlusTreeByName(firstTableName);
+                } catch (Exception e) {
+                    return new SQLResult(-1, "Cannot find the table " + firstTableName);
+                }
+                BPlusTree secondTable;
+                try {
+                    secondTable = mgr.getTableBPlusTreeByName(secondTableName);
+                } catch (Exception e) {
+                    return new SQLResult(-1, "Cannot find the table " + secondTableName);
+                }
+                AbstractTuple.AbstractTupleDesc firstDesc = firstTable.getTupleDesc();
+                AbstractTuple.AbstractTupleDesc secondDesc = secondTable.getTupleDesc();
+                ArrayList<AbstractTuple.AbstractTupleDesc> _descs = new ArrayList<AbstractTuple.AbstractTupleDesc>();
+                _descs.add(firstDesc);
+                _descs.add(secondDesc);
+                ArrayList<String> tableNames = new ArrayList<String>();
+                tableNames.add(firstTableName);
+                tableNames.add(secondTableName);
+                this.whereCondition.pureInference(tableNames, _descs);
+            }
+        }
+        this.inferenced = true;
+        int tupleCount = tuples.size();
+        for(int i = 0; i < tupleCount; ++i) {
+            AbstractTuple tuple = tuples.get(i);
+            AbstractTuple.AbstractTupleDesc desc = descs.get(i);
+            for (OneCondition cond : this.whereCondition.conditions) {
+                if (cond.leftValue.type == WhereCondition.SQLValueType.ATTRIBUTE && cond.leftValue.tableName == null) {
+                    String attrName = cond.leftValue.attributeName;
+                    int id = desc.getIDByName(attrName);
+                    if (id == -1) {
+                        return new SQLResult(-1, "No attribute named " + attrName);
+                    }
+                    String newValue = tuple.getAttr(id).toString();
+                    cond.leftValue.isOuter = true;
+                    cond.leftValue.type = WhereCondition.SQLValueType.DIRECT;
+                    cond.leftValue.directValue = newValue;
+                }
+                if (cond.rightValue.type == WhereCondition.SQLValueType.ATTRIBUTE && cond.rightValue.tableName == null) {
+                    String attrName = cond.rightValue.attributeName;
+                    int id = desc.getIDByName(attrName);
+                    if (id == -1) {
+                        return new SQLResult(-1, "No attribute named " + attrName);
+                    }
+                    String newValue = tuple.getAttr(id).toString();
+                    cond.rightValue.isOuter = true;
+                    cond.rightValue.type = WhereCondition.SQLValueType.DIRECT;
+                    cond.rightValue.directValue = newValue;
+                }
+            }
+        }
+        SQLResult result = this.execute(mgr);
+        for(OneCondition cond: this.whereCondition.conditions) {
+            if(cond.leftValue.isOuter = true) {
+                cond.leftValue.type = WhereCondition.SQLValueType.ATTRIBUTE;
+                cond.leftValue.isOuter = false;
+            }
+            if(cond.rightValue.isOuter = true) {
+                cond.rightValue.type = WhereCondition.SQLValueType.ATTRIBUTE;
+                cond.rightValue.isOuter = false;
             }
         }
         return result;
@@ -277,7 +364,7 @@ public class SelectSQLExecutor extends SQLExecutor {
 //                    AbstractTuple tuple = rit.getTuple();
                         AbstractTuple tuple = crange.getTuple();
                         if (this.whereCondition != null) {
-                            if (this.whereCondition.NaiveJudge(tuple, desc)) {
+                            if (this.whereCondition.NaiveJudge(tuple, desc, mgr)) {
                                 sqlResult.addTuple(tuple);
                             }
                         } else {
@@ -376,12 +463,12 @@ public class SelectSQLExecutor extends SQLExecutor {
                                 tuples.add(firstRangeIt.getTuple());
                                 tuples.add(secondRangeIt.getTuple());
                                 if (this.tableJoin.onCondition != null) {
-                                    if (!this.tableJoin.onCondition.JoinNaiveJudge(tuples, descs, tableNames)) {
+                                    if (!this.tableJoin.onCondition.JoinNaiveJudge(tuples, descs, tableNames, mgr)) {
                                         continue;
                                     }
                                 }
                                 if (this.whereCondition != null) {
-                                    if (this.whereCondition.JoinNaiveJudge(tuples, descs, tableNames)) {
+                                    if (this.whereCondition.JoinNaiveJudge(tuples, descs, tableNames, mgr)) {
                                         sqlResult.addTuple(firstRangeIt.getTuple());
                                         sqlResult.addSecondTuple(secondRangeIt.getTuple());
                                     }
@@ -403,13 +490,13 @@ public class SelectSQLExecutor extends SQLExecutor {
                                 tuples.add(firstRangeIt.getTuple());
                                 tuples.add(secondRangeIt.getTuple());
                                 if (this.tableJoin.onCondition != null) {
-                                    if (!this.tableJoin.onCondition.JoinNaiveJudge(tuples, descs, tableNames)) {
+                                    if (!this.tableJoin.onCondition.JoinNaiveJudge(tuples, descs, tableNames, mgr)) {
                                         continue;
                                     }
                                 }
                                 hasMatch = true;
                                 if (this.whereCondition != null) {
-                                    if (this.whereCondition.JoinNaiveJudge(tuples, descs, tableNames)) {
+                                    if (this.whereCondition.JoinNaiveJudge(tuples, descs, tableNames, mgr)) {
                                         sqlResult.addTuple(firstRangeIt.getTuple());
                                         sqlResult.addSecondTuple(secondRangeIt.getTuple());
                                     }

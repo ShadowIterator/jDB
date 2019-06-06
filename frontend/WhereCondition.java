@@ -57,34 +57,108 @@ public class WhereCondition {
         return result;
     }
 
-    public boolean NaiveJudge(AbstractTuple tuple, AbstractTuple.AbstractTupleDesc desc) throws Exception {
-        boolean result = this.conditions.get(0).NaiveJudgeCondition(tuple, desc);
+    public boolean NaiveJudge(AbstractTuple tuple, AbstractTuple.AbstractTupleDesc desc, MetadataManager mgr) throws Exception {
+        ArrayList<AbstractTuple> tuples = new ArrayList<>();
+        tuples.add(tuple);
+        ArrayList<AbstractTuple.AbstractTupleDesc> descs = new ArrayList<>();
+        descs.add(desc);
+        boolean result;
+        if(this.conditions.get(0).isNotExist()) {
+            result = ((NotExistCondition)(this.conditions.get(0))).JudgeCondition(tuples, descs, mgr);
+        } else {
+            result = this.conditions.get(0).NaiveJudgeCondition(tuple, desc);
+        }
         int connectionSize = this.connections.size();
         for(int i = 0; i < connectionSize; ++i) {
-            if(this.connections.get(i) == LogicConnection.AND) {
-                result &= this.conditions.get(i+1).NaiveJudgeCondition(tuple, desc);
+            boolean tmpResult;
+            if(this.conditions.get(i+1).isNotExist()) {
+                tmpResult = ((NotExistCondition)(this.conditions.get(i+1))).JudgeCondition(tuples, descs, mgr);
             } else {
-                result |= this.conditions.get(i+1).NaiveJudgeCondition(tuple, desc);
+                tmpResult = this.conditions.get(i+1).NaiveJudgeCondition(tuple, desc);
+            }
+            if(this.connections.get(i) == LogicConnection.AND) {
+                result &= tmpResult;
+            } else {
+                result |= tmpResult;
             }
         }
         return result;
     }
 
-    public boolean JoinNaiveJudge(ArrayList<AbstractTuple> tuples, ArrayList<AbstractTuple.AbstractTupleDesc> descs, ArrayList<String> tableNames) throws Exception {
-        boolean result = this.conditions.get(0).JoinNaiveJudgeCondition(tuples, descs, tableNames);
+    public boolean JoinNaiveJudge(ArrayList<AbstractTuple> tuples, ArrayList<AbstractTuple.AbstractTupleDesc> descs, ArrayList<String> tableNames, MetadataManager mgr) throws Exception {
+        boolean result;
+        if(this.conditions.get(0).isNotExist()) {
+            result = ((NotExistCondition)(this.conditions.get(0))).JudgeCondition(tuples, descs, mgr);
+        } else {
+            result = this.conditions.get(0).JoinNaiveJudgeCondition(tuples, descs, tableNames);
+        }
         int connectionSize = this.connections.size();
         for(int i = 0; i < connectionSize; ++i) {
-            if(this.connections.get(i) == LogicConnection.AND) {
-                result &= this.conditions.get(i+1).JoinNaiveJudgeCondition(tuples, descs, tableNames);
+            boolean tmpResult;
+            if(this.conditions.get(i+1).isNotExist()) {
+                tmpResult = ((NotExistCondition)(this.conditions.get(i+1))).JudgeCondition(tuples, descs, mgr);
             } else {
-                result |= this.conditions.get(i+1).JoinNaiveJudgeCondition(tuples, descs, tableNames);
+                tmpResult = this.conditions.get(i+1).JoinNaiveJudgeCondition(tuples, descs, tableNames);
+            }
+            if(this.connections.get(i) == LogicConnection.AND) {
+                result &= tmpResult;
+            } else {
+                result |= tmpResult;
             }
         }
         return result;
+    }
+
+    public void pureInference(String tableName, AbstractTuple.AbstractTupleDesc desc) {
+        for (OneCondition cond : this.conditions) {
+            if (cond.isNotExist()) {
+                continue;
+            }
+            if (cond.leftValue.type == SQLValueType.ATTRIBUTE) {
+                if (cond.leftValue.tableName == null && desc.getIDByName(cond.leftValue.attributeName) != -1) {
+                    cond.leftValue.tableName = tableName;
+                }
+            }
+            if (cond.rightValue.type == SQLValueType.ATTRIBUTE) {
+                if (cond.rightValue.tableName == null && desc.getIDByName(cond.rightValue.attributeName) != -1) {
+                    cond.rightValue.tableName = tableName;
+                }
+            }
+        }
+    }
+
+    public void pureInference(ArrayList<String> tableNames, ArrayList<AbstractTuple.AbstractTupleDesc> descs){
+        for(OneCondition cond: this.conditions) {
+            if(cond.isNotExist()) {
+                continue;
+            }
+            int tableCount = tableNames.size();
+            for(int i = 0; i < tableCount; ++i) {
+                String tableName = tableNames.get(i);
+                AbstractTuple.AbstractTupleDesc desc = descs.get(i);
+                if(cond.leftValue.type == SQLValueType.ATTRIBUTE) {
+                    if(cond.leftValue.tableName == null) {
+                        if(desc.getIDByName(cond.leftValue.attributeName) != -1) {
+                            cond.leftValue.tableName = tableName;
+                        }
+                    }
+                }
+                if(cond.rightValue.type == SQLValueType.ATTRIBUTE) {
+                    if(cond.rightValue.tableName == null) {
+                        if(desc.getIDByName(cond.rightValue.attributeName) != -1) {
+                            cond.rightValue.tableName = tableName;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void inference(String tableName, AbstractTuple.AbstractTupleDesc desc) throws Exception {
         for(OneCondition cond: this.conditions) {
+            if(cond.isNotExist()) {
+                continue;
+            }
             if(cond.leftValue.type == SQLValueType.ATTRIBUTE) {
                 if(desc.getIDByName(cond.leftValue.attributeName) != -1) {
                     cond.leftValue.tableName = tableName;
@@ -104,6 +178,9 @@ public class WhereCondition {
 
     public void inference(ArrayList<String> tableNames, ArrayList<AbstractTuple.AbstractTupleDesc> descs) throws Exception {
         for(OneCondition cond: this.conditions) {
+            if(cond.isNotExist()) {
+                continue;
+            }
             int tableCount = tableNames.size();
             for(int i = 0; i < tableCount; ++i) {
                 String tableName = tableNames.get(i);
@@ -147,6 +224,9 @@ public class WhereCondition {
     }
 
     private String isPKCondition(OneCondition cond, String tableName, String pkName) {
+        if(cond.isNotExist()) {
+            return null;
+        }
         if(cond.rightValue.type == SQLValueType.ATTRIBUTE) {
             SQLValue tmp = cond.leftValue;
             cond.leftValue = cond.rightValue;

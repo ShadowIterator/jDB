@@ -266,6 +266,14 @@ one_condition returns [OneCondition oneCondition]
                     }
                     $oneCondition = new OneCondition($l.sqlValue, $r.sqlValue, _op);
                 }
+              | NOT EXIST '(' select_table ')'
+                {
+                    $oneCondition = new NotExistCondition($select_table.selectSqlExec, false);
+                }
+              | EXIST '(' select_table ')'
+                {
+                    $oneCondition = new NotExistCondition($select_table.selectSqlExec, true);
+                }
               ;
 
 where_list returns [WhereCondition whereCondition]
@@ -470,6 +478,7 @@ OUTER      : O U T E R;
 LEFT       : L E F T;
 RIGHT      : R I G H T;
 AS         : A S;
+EXIST      : E X I S T;
 
 TEXT       : (SINQ | DOUQ);
 NUMFLOAT   : DIGIT+ [.] (DIGIT+)?;
