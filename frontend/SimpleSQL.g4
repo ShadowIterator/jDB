@@ -399,6 +399,11 @@ table_list_select returns [TableJoin tableJoin]
                             $tableJoin.isJoin = false;
                             $tableJoin.firstTableName = $ID.text;
                         }
+                      | '(' select_table ')' AS ID
+                        {
+                            $tableJoin = new SubSelectTable($select_table.selectSqlExec);
+                            $tableJoin.tmpName = $ID.text;
+                        }
                       ;
 
 // Lexer Rules
@@ -465,6 +470,7 @@ DATABASES  : D A T A B A S E S;
 OUTER      : O U T E R;
 LEFT       : L E F T;
 RIGHT      : R I G H T;
+AS         : A S;
 
 TEXT       : (SINQ | DOUQ);
 NUMFLOAT   : DIGIT+ [.] (DIGIT+)?;

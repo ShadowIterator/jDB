@@ -8,6 +8,7 @@ import java.util.Hashtable;
 //   0: non-select
 //   1: select
 //   2: join on
+
 public class SQLResult implements Serializable {
     private ArrayList<AbstractTuple> tuples;
     private ArrayList<AbstractTuple> secondTuples;

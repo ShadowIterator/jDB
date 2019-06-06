@@ -29,10 +29,12 @@ This is going to be the 6th best java database (right after HSQLDB) which only s
 - [x] 实现网络部分
 - [x] 实现一个前端
 - [ ] 改用新的Cursor
-- [ ] 添加不等号的实现
+- [x] 添加不等号的实现
 
 ## 加分项TODO
 
 - [ ] 支持三张及以上表join操作
-- [ ] 支持outer/inner/natural join操作
+- [ ] 支持<s>outer/inner/</s>natural join操作
+- [ ] 支持嵌套查询
+- [ ] 支持not exist
 
