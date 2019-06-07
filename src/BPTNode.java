@@ -123,6 +123,7 @@ public class BPTNode {
                 BPTNode chNode = new BPTNode(pager, desc, children.get(i));
                 chNode.selfDestruct(pager, desc);
             }
+            pager.delPage(selfPageId);
         }
     }
 
@@ -163,7 +164,7 @@ public class BPTNode {
 //        part = serializeBool(isLeaf);
 //        System.arraycopy(part, 0, originContent, 1, 1);
         writePos += SerializeInplaceUtil.booleanToBytes(isLeaf, originContent, writePos);
-        writePos = 2;
+//        writePos = 2;
         Integer[] infoInt = {selfPageId, parent, previous, next, keyType, keySize, keyNum};
         for(int i=0; i<infoInt.length; i++)
         {
