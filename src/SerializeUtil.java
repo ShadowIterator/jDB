@@ -79,7 +79,12 @@ public class SerializeUtil {
     }
 
     static byte[] stringToBytes(String string_value) {
-        return string_value.getBytes();
+//        return string_value.getBytes();
+        byte[] ori = string_value.getBytes();
+        byte[] b = new byte[ori.length + 1];
+        System.arraycopy(ori, 0, b, 0, ori.length);
+        b[b.length - 1] = 0;
+        return b;
     }
 
     static byte[] objectToBytes(Object obj) throws Exception  {

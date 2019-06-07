@@ -147,8 +147,14 @@ public class MetadataManager {
 
     void close() throws Exception {
         System.out.println("Shutting down metadata manager");
-        cur_dbmeta_pager.close();
-        cur_db_pager.close();
+        if(cur_dbmeta_pager != null) {
+            cur_dbmeta_pager.close();
+            cur_dbmeta_pager = null;
+        }
+        if(cur_db_pager != null) {
+            cur_db_pager.close();
+            cur_db_pager = null;
+        }
     }
 
     boolean dropTable(String table_name) throws Exception {
@@ -172,10 +178,12 @@ public class MetadataManager {
 
     public static void main(String[] args) throws Exception {
         MetadataManager mgr = new MetadataManager();
-        mgr.init("data_meta.jDB");
-        mgr.createDatabase("defaultdb1");
-        mgr.createDatabase("defaultdb2");
-        mgr.checkoutDatabase("defaultdb1");
+        String db_file_name = "data_meta.jDB";
+
+        mgr.init(db_file_name);
+        mgr.createDatabase("default");
+        mgr.createDatabase("db1");
+        mgr.checkoutDatabase("db1");
 
 
         //--------------------table-1----------------------------------
@@ -191,8 +199,16 @@ public class MetadataManager {
         attr_name[2] = "attr3";
 
         SITuple.SITupleDesc table1_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
-        String table1_name = "defaulttable1";
+        String table1_name = "tb1";
         mgr.createTable(table1_name, table1_desc);
+        BPlusTree table = mgr.getTableBPlusTreeByName("tb1");
+
+        mgr.close();
+
+        mgr.open(db_file_name);
+        mgr.checkoutDatabase("db1");
+        table = mgr.getTableBPlusTreeByName("tb1");
+        mgr.close();
 
 //        BPlusTree table = mgr.getTableBPlusTreeByName(table1_name);
 //
@@ -332,7 +348,7 @@ public class MetadataManager {
 //            it.getTuple().print();
 //        }
 
-        mgr.close();
+//        mgr.close();
 
     }
 
