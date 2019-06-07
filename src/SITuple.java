@@ -47,9 +47,9 @@ public class SITuple extends AbstractTuple implements Serializable {
     void serializeInplace(AbstractTupleDesc desc, byte[] dest, int index) throws Exception {
         for(int k = 0; k < attrs.length; ++k) {
             if (attrs[k] != null)
-                SerializeInplaceUtil.objectToBytes(attrs[k], dest, desc.getOffset(k));
+                SerializeInplaceUtil.objectToBytes(attrs[k], dest, index + desc.getOffset(k));
             else {
-                dest[k / 8] |= (byte) (1 << (k % 8));
+                dest[index + (k / 8)] |= (byte) (1 << (k % 8));
             }
         }
     }
@@ -74,7 +74,7 @@ public class SITuple extends AbstractTuple implements Serializable {
         int offk = desc.getOffset(0) + index;
         for(int k = 0; k < attrs.length; ++k) {
             int offkp1 = desc.getOffset(k+1) + index;
-            if(((b[k / 8] >> (k % 8)) & 1) == 1) {
+            if(((b[index + (k / 8)] >> (k % 8)) & 1) == 1) {
                 attrs[k] = null;
             }
             else {
