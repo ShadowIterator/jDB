@@ -8,8 +8,6 @@ public class SerializeInplaceUtil {
     }
 
     static long bytesToLong(byte[] b, int index) {
-//        byte[] b_low = Arrays.copyOfRange(b, 0, 4);
-//        byte[] b_high = Arrays.copyOfRange(b, 4, 8);
         return ((long) bytesToInt(b, index) & 0xffffffffl) | (((long) bytesToInt(b, index + 4) & 0xffffffffl) << 32);
     }
 
@@ -21,6 +19,10 @@ public class SerializeInplaceUtil {
     static double bytesToDouble(byte[] b, int index) {
         long double_long_value = bytesToLong(b, index);
         return Double.longBitsToDouble(double_long_value);
+    }
+
+    static boolean bytesToBoolean(byte[] b, int index) {
+        return b[index] != 0;
     }
 
     static String bytesToString(byte[] b, int index, int length) {
@@ -55,16 +57,9 @@ public class SerializeInplaceUtil {
         dest[index + 2] = (byte) ((int_value >> 16) & 0xff);
         dest[index + 3] = (byte) ((int_value >> 24) & 0xff);
         return 4;
-//        return b;
     }
 
     static int longToBytes(long long_value, byte[] dest, int index) {
-//        byte[] b = new byte[8];
-//        byte[] b_low = intToBytes(((int) (long_value)) & 0xffffffff);
-//        byte[] b_high = intToBytes(((int) (long_value >> 32)) & 0xffffffff);
-//        System.arraycopy(b_low, 0, b, 0, b_low.length);
-//        System.arraycopy(b_high, 0, b, b_low.length, b_high.length);
-//        return b;
         intToBytes(((int) (long_value)) & 0xffffffff, dest, index);
         intToBytes(((int) (long_value >> 32)) & 0xffffffff, dest, index + 4);
         return 8;
@@ -82,10 +77,15 @@ public class SerializeInplaceUtil {
         return 8;
     }
 
+    static int booleanToBytes(boolean boolean_value, byte[] dest, int index) {
+        dest[index] = (byte) (boolean_value? 0 : 1);
+        return 1;
+    }
+
     static int stringToBytes(String string_value, byte[] dest, int index) {
         byte[] b = string_value.getBytes();
         System.arraycopy(b, 0, dest, index, b.length);
-        b[index + b.length] = 0;
+        dest[index + b.length] = 0;
         return b.length + 1;
     }
 

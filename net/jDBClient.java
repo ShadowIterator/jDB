@@ -55,7 +55,7 @@ public class jDBClient {
         String file_prefix = "test-doc/sql-gen/";
 
         String file_name = file_prefix + "test_10000-3.schema";
-        
+
         String out_file_name = file_name + ".result";
         PrintStream ps=new PrintStream(new FileOutputStream(out_file_name));
         System.setOut(ps);
