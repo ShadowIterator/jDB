@@ -31,8 +31,8 @@ show table db2_table
 select * from classroom where building = 'Chandler' and capacity > 10
 select * from student where dept_name = 'Comp. Sci.' and tot_cred >= 85 or ID > '30000'
 
-select * from student left outer join advisor on student.ID = advisor.s_ID
-select * from student right outer join advisor on student.ID = advisor.s_ID
+select * from student left outer join advisor on student.ID = advisor.s_ID where student.ID > '70000'
+select * from student right outer join advisor on student.ID = advisor.s_ID where student.ID > '70000' and advisor.s_ID > '70000'
 
 select * from (select * from student join advisor on student.ID = advisor.s_ID) as t join instructor on t.i_ID = instructor.ID
 
