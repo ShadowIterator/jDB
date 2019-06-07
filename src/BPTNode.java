@@ -92,10 +92,11 @@ public class BPTNode {
             readPos+=keySize;
             if(isLeaf)
             {
-                byte[] tuplePart = Arrays.copyOfRange(info, readPos, readPos+tupleSize);
-                readPos+=tupleSize;
+//                byte[] tuplePart = Arrays.copyOfRange(info, readPos, readPos+tupleSize);
+//                readPos+=tupleSize;
                 SITuple valTuple = new SITuple(desc);
-                valTuple.deSerialize(tuplePart, desc);
+                valTuple.deSerializeInplace(info, readPos, desc);
+                readPos += tupleSize;
                 entries.add(new AbstractMap.SimpleEntry<Comparable, AbstractTuple>(key, valTuple));
             }
             else
@@ -143,7 +144,7 @@ public class BPTNode {
         byte[] part = serializeBool(isRoot);
 //        System.arraycopy(part, 0, originContent, 0, 1);
         writePos += SerializeInplaceUtil.booleanToBytes(isRoot, originContent, writePos);
-        part = serializeBool(isLeaf);
+//        part = serializeBool(isLeaf);
 //        System.arraycopy(part, 0, originContent, 1, 1);
         writePos += SerializeInplaceUtil.booleanToBytes(isLeaf, originContent, writePos);
         writePos = 2;
@@ -166,9 +167,10 @@ public class BPTNode {
 //                writePos += keySize;
                 writePos += SerializeInplaceUtil.objectToBytes(entries.get(i).getKey(), originContent, writePos);
                 AbstractTuple tup = entries.get(i).getValue();
-                part = tup.serialize(desc);
-                // TODO: use serializeinplaceutil to serialize tuple
-                System.arraycopy(part, 0, originContent, writePos, tupleSize);
+//                part = tup.serialize(desc);
+//                writePos += tupleSize;
+//                System.arraycopy(part, 0, originContent, writePos, tupleSize);
+                tup.serializeInplace(desc, originContent, writePos);
                 writePos += tupleSize;
             }
         }
