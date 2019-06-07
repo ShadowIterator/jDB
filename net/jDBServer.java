@@ -102,7 +102,7 @@ public class jDBServer extends Thread{
                 this.soc.close();
                 return;
             }
-            System.out.println("Query: " + sql);
+//            System.out.println("Query: " + sql);
             ArrayList<SQLResult> sqlResults = null;
             try {
                 sqlResults = this.executeSql(sql);
