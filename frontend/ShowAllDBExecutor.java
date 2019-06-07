@@ -27,7 +27,8 @@ public class ShowAllDBExecutor extends SQLExecutor {
             ArrayList<String> dbNames = new ArrayList<>();
             // get all database names
             BPlusTree db_meta = mgr.database_meta;
-            for(BPlusTree.Cursor it = db_meta.new Cursor(); !it.isEnd(); it.moveNext()) {
+            BPlusTree.Cursor it = db_meta.new Cursor();
+            for(it.setToStart(); !it.isEnd(); it.moveNext()) {
                 String dbName = (String)(it.getTuple().getAttr(0));
                 dbNames.add(dbName);
             }

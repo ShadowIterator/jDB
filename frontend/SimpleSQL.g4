@@ -478,7 +478,7 @@ OUTER      : O U T E R;
 LEFT       : L E F T;
 RIGHT      : R I G H T;
 AS         : A S;
-EXIST      : E X I S T;
+EXIST      : E X I S T S;
 
 TEXT       : (SINQ | DOUQ);
 NUMFLOAT   : DIGIT+ [.] (DIGIT+)?;

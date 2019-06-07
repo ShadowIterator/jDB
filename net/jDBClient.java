@@ -53,7 +53,7 @@ public class jDBClient {
 //                "select id, name, grade from tablepp" +
 //                " ";
         String file_prefix = "test-doc/sql-gen/";
-        String file_name = file_prefix + "test_1000000000.schema";
+        String file_name = file_prefix + "test_100k.schema";
         String out_file_name = file_name + ".result";
         PrintStream ps=new PrintStream(new FileOutputStream(out_file_name));
         System.setOut(ps);
@@ -72,14 +72,14 @@ public class jDBClient {
 //        }
         int cnt = 0;
         while((sql = bf.readLine()) != null) {
-//            System.out.println("\n" + sql + ": ");
+            System.out.println("\n" + sql + ": ");
 //            if((cnt++) % 2000 == 0) {
-                System.out.println("\n" + cnt);
+//                System.out.println("\n" + cnt);
 //            }
             ArrayList<SQLResult> sqlResults = client.query(sql);
-//            for(SQLResult res : sqlResults) {
-//                res.print();
-//            }
+            for(SQLResult res : sqlResults) {
+                res.print();
+            }
         }
     }
 }

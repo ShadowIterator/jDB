@@ -306,6 +306,7 @@ public class BPlusTree extends  AbstractRecordManager{
             prevId = -1;
             idInNode = 0;
             entryNum = 0;
+            this.setToStart();
 //            keyStart = null;
 //            keyEnd = null;
         }

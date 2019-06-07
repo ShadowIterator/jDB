@@ -1,0 +1,5 @@
+show databases;
+create database DB1;
+create database DB2;
+use database DB1;
+create table table1(id long, name string(8), gpa double, group int, primary key(id));
