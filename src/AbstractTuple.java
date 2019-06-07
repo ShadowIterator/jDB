@@ -38,7 +38,7 @@ abstract public class AbstractTuple {
         //int primary_key_id
         //int attr_count
 
-
+        abstract int getKeySize();
         abstract byte[] serialize() throws  Exception;
         abstract void deSerialize(byte[] b) throws  Exception;
         abstract int tupleSize() throws Exception;

@@ -181,7 +181,8 @@ public class BPTNode {
 //                part = SerializeUtil.objectToBytes(entries.get(i).getKey());
 //                System.arraycopy(part, 0, originContent, writePos, part.length);
 //                writePos += keySize;
-                writePos += SerializeInplaceUtil.objectToBytes(entries.get(i).getKey(), originContent, writePos);
+                SerializeInplaceUtil.objectToBytes(entries.get(i).getKey(), originContent, writePos);
+                writePos += keySize;
                 AbstractTuple tup = entries.get(i).getValue();
 //                part = tup.serialize(desc);
 //                writePos += tupleSize;
@@ -197,7 +198,8 @@ public class BPTNode {
 //                part = SerializeUtil.objectToBytes(entries.get(i).getKey());
 //                System.arraycopy(part, 0, originContent, writePos, part.length);
 //                writePos += keySize;
-                writePos += SerializeInplaceUtil.objectToBytes(entries.get(i).getKey(), originContent, writePos);
+                SerializeInplaceUtil.objectToBytes(entries.get(i).getKey(), originContent, writePos);
+                writePos += keySize;
 //                part = SerializeUtil.objectToBytes(children.get(i));
 //                System.arraycopy(part, 0, originContent, writePos, Integer.BYTES);
 //                writePos += Integer.BYTES;
