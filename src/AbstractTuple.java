@@ -17,6 +17,7 @@ abstract public class AbstractTuple {
 
     public static class Constraints {
         public static byte NOT_NULL = 1;
+        public static byte IS_INC = 2;
     }
 
     abstract public static class AbstractTupleDesc{

@@ -12,7 +12,7 @@ public class ShowSQLExecutor extends SQLExecutor {
         this.type = sqlType.SHOW;
         this.tableName = _tableName;
 
-        this.show_attr_count = 5;
+        this.show_attr_count = 6;
         this.show_attr_example = new Object[show_attr_count];
         this.show_attr_name = new String[show_attr_count];
         this.show_constraint_list = new byte[show_attr_count];
@@ -21,11 +21,13 @@ public class ShowSQLExecutor extends SQLExecutor {
         show_attr_example[2] = "thisisthetypeofthedataanditslengthis38";
         show_attr_example[3] = (int)0;
         show_attr_example[4] = (int)0;
+        show_attr_example[5] = (int)0;
         show_attr_name[0] = "Attribute ID";
         show_attr_name[1] = "Attribute Name";
         show_attr_name[2] = "Data Type";
         show_attr_name[3] = "Is Primary Key";
         show_attr_name[4] = "Is Not Null";
+        show_attr_name[5] = "Is Self Inc";
     }
 
     @Override
@@ -35,7 +37,7 @@ public class ShowSQLExecutor extends SQLExecutor {
     }
 
     /*
-    | Attribute ID | Attribute Name | Data Type | is Primary Key | is Not Null |
+    | Attribute ID | Attribute Name | Data Type | is Primary Key | is Not Null | is Self Inc |
      */
 
     private String fillString(String str, int targetLen) {
@@ -70,6 +72,7 @@ public class ShowSQLExecutor extends SQLExecutor {
                 String attribute_name = table_desc.getAttr_name(i);
                 Object attribute_example = table_desc.getAttr_example(i);
                 int not_null = table_desc.getAttr_constraint(i) & AbstractTuple.Constraints.NOT_NULL;
+                int self_inc = table_desc.getAttr_constraint(i) & AbstractTuple.Constraints.IS_INC;
                 int is_pk = pk_id == i ? 1 : 0;
                 String data_type = "";
                 if (attribute_example.getClass() == Integer.class) {
@@ -90,6 +93,7 @@ public class ShowSQLExecutor extends SQLExecutor {
                 tuple.setAttr(2, data_type);
                 tuple.setAttr(3, is_pk);
                 tuple.setAttr(4, not_null);
+                tuple.setAttr(5, self_inc);
                 result.addTuple(tuple);
             }
             return result;

@@ -155,11 +155,12 @@ public class jDBServer extends Thread{
             File file = new File("data_meta.jDB");
             if(file.exists()) {
                 jDBServer.mgr.open("data_meta.jDB");
-                jDBServer.mgr.checkoutDatabase("ded");
+
+                jDBServer.mgr.checkoutDatabase("db2");
             } else {
                 jDBServer.mgr.init("data_meta.jDB");
-                jDBServer.mgr.createDatabase("ded");
-                jDBServer.mgr.checkoutDatabase("ded");
+                jDBServer.mgr.createDatabase("db2");
+                jDBServer.mgr.checkoutDatabase("db2");
             }
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("JDB Server running on port " + port);
