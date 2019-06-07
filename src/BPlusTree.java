@@ -30,8 +30,8 @@ public class BPlusTree extends  AbstractRecordManager{
         int nodeInfoSize = 8 * Integer.BYTES;
         int primaryKeySize = SerializeUtil.objectToBytes(desc.getAttr_example(desc.getPrimary_key_id())).length;
         int tupleSize = desc.tupleSize();
-        innerOrder = (pageSize-nodeInfoSize)/(primaryKeySize+Integer.BYTES);
-        leafOrder = (pageSize-nodeInfoSize)/(primaryKeySize+tupleSize);
+        innerOrder = (pageSize-nodeInfoSize)/(primaryKeySize+Integer.BYTES)-1;
+        leafOrder = (pageSize-nodeInfoSize)/(primaryKeySize+tupleSize)-1;
 
         init();
     }
@@ -49,8 +49,8 @@ public class BPlusTree extends  AbstractRecordManager{
         int nodeInfoSize = 8 * Integer.BYTES;
         int primaryKeySize = SerializeUtil.objectToBytes(desc.getAttr_example(desc.getPrimary_key_id())).length;
         int tupleSize = desc.tupleSize();
-        innerOrder = (pageSize-nodeInfoSize)/(primaryKeySize+Integer.BYTES);
-        leafOrder = (pageSize-nodeInfoSize)/(primaryKeySize+tupleSize);
+        innerOrder = (pageSize-nodeInfoSize)/(primaryKeySize+Integer.BYTES)-1;
+        leafOrder = (pageSize-nodeInfoSize)/(primaryKeySize+tupleSize)-1;
 
         init();
     }
