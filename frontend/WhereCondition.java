@@ -240,11 +240,11 @@ public class WhereCondition {
             return null;
         }
         if(tableName != null && cond.leftValue.tableName != null) {
-            if(tableName != cond.leftValue.tableName) {
+            if(!tableName.equals(cond.leftValue.tableName)) {
                 return null;
             }
         }
-        if(cond.leftValue.attributeName == pkName) {
+        if(cond.leftValue.attributeName.equals(pkName)) {
             return cond.rightValue.directValue;
         } else {
             return null;
