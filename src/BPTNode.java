@@ -110,6 +110,22 @@ public class BPTNode {
         }
     }
 
+    public void selfDestruct(AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
+    {
+        if(isLeaf)
+        {
+            pager.delPage(selfPageId);
+        }
+        else
+        {
+            for(int i=0; i<children.size(); i++)
+            {
+                BPTNode chNode = new BPTNode(pager, desc, children.get(i));
+                chNode.selfDestruct(pager, desc);
+            }
+        }
+    }
+
     public void writeToPage(AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
         AbstractPage page = pager.get(selfPageId);
@@ -537,10 +553,6 @@ public class BPTNode {
 //                    }
 //                }
 //            }
-            if(key.compareTo((long)1161) == 0)
-            {
-                System.out.println("here");
-            }
             int nodePos = keyPosInEntries(key);
             BPTNode chNode = new BPTNode(pager, desc, children.get(nodePos));
             succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);

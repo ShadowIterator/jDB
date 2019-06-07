@@ -78,6 +78,10 @@ public class BPlusTree extends  AbstractRecordManager{
         desc = new SITuple.SITupleDesc();
         desc.deSerialize(Arrays.copyOfRange(info, readPos, readPos+descLength));
         this.root = new BPTNode(pager, desc, intInfo[2]);
+    }
+
+    public void selfDestruct() throws Exception
+    {
 
     }
 
@@ -185,7 +189,7 @@ public class BPlusTree extends  AbstractRecordManager{
 //            part = SerializeUtil.intToBytes(infoInt[i]);
 //            System.arraycopy(part, 0, infoBuffer, writePos, Integer.BYTES);
             writePos += SerializeInplaceUtil.intToBytes(infoInt[i], infoBuffer, writePos);
-            writePos+=Integer.BYTES;
+//            writePos+=Integer.BYTES;
         }
         System.arraycopy(descPart, 0, infoBuffer, writePos, infoLength);
         writePos+=infoLength;
