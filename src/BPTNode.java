@@ -430,7 +430,9 @@ public class BPTNode {
 
     public boolean insertOrUpdate(Comparable key, AbstractTuple tuple, boolean isInsert, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
-        Integer order = tree.getOrder();
+//        Integer order = tree.getOrder();
+        Integer innerOrder = tree.getInnerOrder();
+        Integer leafOrder = tree.getLeafOrder();
         boolean succeed = false;
         if(isLeaf)
         {
@@ -448,7 +450,8 @@ public class BPTNode {
             {
                 throw new Exception("No tuple with matched key to update");
             }
-            if(contain(key)||entries.size()<order)
+//            if(contain(key)||entries.size()<order)
+            if(contain(key)||entries.size()<leafOrder)
             {
                 // 还有空间直接插入
                 succeed = insertOrUpdateItem(key, tuple, pager);
@@ -493,8 +496,10 @@ public class BPTNode {
                 previous=-1;
                 next=-1;
                 // 原本数据分到两个节点中
-                Integer leftSize = (order+1)/2+(order+1)%2;
-                Integer rightSize = (order+1)/2;
+//                Integer leftSize = (order+1)/2+(order+1)%2;
+//                Integer rightSize = (order+1)/2;
+                Integer leftSize = (leafOrder+1)/2+(leafOrder+1)%2;
+                Integer rightSize = (leafOrder+1)/2;
                 succeed = insertOrUpdateItem(key, tuple, pager);
                 for(int i=0; i<leftSize; i++)
                 {
@@ -543,18 +548,24 @@ public class BPTNode {
 
     protected void insertRelatedUpdate(BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
-        Integer order = tree.getOrder();
-        validate(this, order, pager, desc);
+//        Integer order = tree.getOrder();
+        Integer innerOrder = tree.getInnerOrder();
+        Integer leafOrder = tree.getLeafOrder();
+//        validate(this, order, pager, desc);
+        validate(this, innerOrder, pager, desc);
 
-        if(children.size()>order)
+//        if(children.size()>order)
+        if(children.size()>innerOrder)
         {
             // 需要分裂
             // BPTNode left = new BPTNode(true, false);
             // BPTNode right = new BPTNode(true, false);
             BPTNode left = new BPTNode(false, false, keyType, pager);
             BPTNode right = new BPTNode(false, false, keyType, pager);
-            Integer leftSize = (order+1)/2+(order+1)%2;
-            Integer rightSize = (order+1)/2;
+//            Integer leftSize = (order+1)/2+(order+1)%2;
+//            Integer rightSize = (order+1)/2;
+            Integer leftSize = (innerOrder+1)/2+(innerOrder+1)%2;
+            Integer rightSize = (innerOrder+1)/2;
             for(int i=0; i<leftSize; i++)
             {
                 // BPTNode chNode = fromPage(pager.get(children.get(i)));
@@ -624,10 +635,13 @@ public class BPTNode {
 
     protected void removeRelatedUpdate(BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
-        Integer order = tree.getOrder();
-        validate(this, order, pager, desc);
+//        Integer order = tree.getOrder();
+        Integer innerOrder = tree.getInnerOrder();
+//        validate(this, order, pager, desc);
+        validate(this, innerOrder, pager, desc);
 
-        if(children.size()<order/2 || children.size()<2)
+//        if(children.size()<order/2 || children.size()<2)
+        if(children.size()<innerOrder/2 || children.size()<2)
         {
             if(isRoot)
             {
@@ -666,7 +680,8 @@ public class BPTNode {
                     nextNode = new BPTNode(pager, desc, parNode.getChildren().get(nextId));
                 }
 
-                if(prevNode!=null && prevNode.getChildren().size()>order/2 && prevNode.getChildren().size()>2)
+//                if(prevNode!=null && prevNode.getChildren().size()>order/2 && prevNode.getChildren().size()>2)
+                if(prevNode!=null && prevNode.getChildren().size()>innerOrder/2 && prevNode.getChildren().size()>2)
                 {
                     int idx = prevNode.getChildren().size()-1;
                     // BPTNode borrowed = fromPage(pager.get(prevNode.getChildren().get(idx)));
@@ -677,11 +692,14 @@ public class BPTNode {
                     borrowed.writeToPage(pager, desc);
 
                     children.add(0, borrowed.getId());
-                    validate(prevNode, order, pager, desc);
-                    validate(this, order, pager, desc);
+//                    validate(prevNode, order, pager, desc);
+//                    validate(this, order, pager, desc);
+                    validate(prevNode, innerOrder, pager, desc);
+                    validate(this, innerOrder, pager, desc);
                     parNode.removeRelatedUpdate(tree, pager, desc);
                 }
-                else if(nextNode!=null && nextNode.getChildren().size()>order/2 && nextNode.getChildren().size()>2)
+//                else if(nextNode!=null && nextNode.getChildren().size()>order/2 && nextNode.getChildren().size()>2)
+                else if(nextNode!=null && nextNode.getChildren().size()>innerOrder/2 && nextNode.getChildren().size()>2)
                 {
                     // BPTNode borrowed = fromPage(pager.get(nextNode.getChildren().get(0)));
                     BPTNode borrowed = new BPTNode(pager, desc, nextNode.getChildren().get(0));
@@ -691,13 +709,16 @@ public class BPTNode {
                     borrowed.writeToPage(pager, desc);
 
                     children.add(borrowed.getId());
-                    validate(nextNode, order, pager, desc);
-                    validate(this, order, pager, desc);
+//                    validate(nextNode, order, pager, desc);
+//                    validate(this, order, pager, desc);
+                    validate(nextNode, innerOrder, pager, desc);
+                    validate(this, innerOrder, pager, desc);
                     parNode.removeRelatedUpdate(tree, pager, desc);
                 }
                 else
                 {
-                    if(prevNode!=null && (prevNode.getChildren().size()<order/2 || prevNode.getChildren().size()<=2))
+//                    if(prevNode!=null && (prevNode.getChildren().size()<order/2 || prevNode.getChildren().size()<=2))
+                    if(prevNode!=null && (prevNode.getChildren().size()<innerOrder/2 || prevNode.getChildren().size()<=2))
                     {
                         for(int i=prevNode.getChildren().size()-1; i>=0; i--)
                         {
@@ -715,10 +736,12 @@ public class BPTNode {
                         pager.delPage(prevNode.getId());
 
                         parNode.getChildren().remove(prevNode);
-                        validate(this, order, pager, desc);
+//                        validate(this, order, pager, desc);
+                        validate(this, innerOrder, pager, desc);
                         parNode.removeRelatedUpdate(tree, pager, desc);
                     }
-                    else if(nextNode!=null && (nextNode.getChildren().size()<order/2 || nextNode.getChildren().size()<=2))
+//                    else if(nextNode!=null && (nextNode.getChildren().size()<order/2 || nextNode.getChildren().size()<=2))
+                    else if(nextNode!=null && (nextNode.getChildren().size()<innerOrder/2 || nextNode.getChildren().size()<=2))
                     {
                         for(int i=0; i<nextNode.getChildren().size(); i++)
                         {
@@ -736,7 +759,8 @@ public class BPTNode {
                         pager.delPage(nextNode.getId());
 
                         parNode.getChildren().remove(nextNode);
-                        validate(this, order, pager, desc);
+//                        validate(this, order, pager, desc);
+                        validate(this, innerOrder, pager, desc);
                         parNode.removeRelatedUpdate(tree, pager, desc);
                     }
                 }
@@ -746,7 +770,9 @@ public class BPTNode {
 
     public boolean remove(Comparable key, BPlusTree tree, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
-        Integer order = tree.getOrder();
+        //        Integer order = tree.getOrder();
+        Integer innerOrder = tree.getInnerOrder();
+        Integer leafOrder = tree.getLeafOrder();
         boolean succeed = false;
         if(isLeaf)
         {
@@ -762,7 +788,8 @@ public class BPTNode {
             {
                 // BPTNode parNode = fromPage(pager.get(parent));
                 BPTNode parNode = new BPTNode(pager, desc, parent);
-                if(entries.size()>order/2 && entries.size()>2)
+//                if(entries.size()>order/2 && entries.size()>2)
+                if(entries.size()>leafOrder/2 && entries.size()>2)
                 {
                     succeed = removeItem(key, pager, desc);
                 }
@@ -779,7 +806,8 @@ public class BPTNode {
                         // nextNode = fromPage(pager.get(next));
                         nextNode = new BPTNode(pager, desc, next);
 
-                    if(prevNode!=null && prevNode.getEntries().size()>order/2
+//                    if(prevNode!=null && prevNode.getEntries().size()>order/2
+                    if(prevNode!=null && prevNode.getEntries().size()>leafOrder/2
                     && prevNode.getEntries().size()>2 && prevNode.getParent()==parent)
                     {
                         Integer size = prevNode.getEntries().size();
@@ -790,7 +818,8 @@ public class BPTNode {
 
                         prevNode.writeToPage(pager, desc);
                     }
-                    else if(nextNode!=null && nextNode.getEntries().size()>order/2
+//                    else if(nextNode!=null && nextNode.getEntries().size()>order/2
+                    else if(nextNode!=null && nextNode.getEntries().size()>leafOrder/2
                     && nextNode.getEntries().size()>2 && nextNode.getParent()==parent)
                     {
                         Map.Entry<Comparable, AbstractTuple> item = nextNode.getEntries().get(0);
@@ -802,7 +831,8 @@ public class BPTNode {
                     }
                     else
                     {
-                        if(prevNode!=null && (prevNode.getEntries().size()<=order/2 || prevNode.getEntries().size()<=2)
+//                        if(prevNode!=null && (prevNode.getEntries().size()<=order/2 || prevNode.getEntries().size()<=2)
+                        if(prevNode!=null && (prevNode.getEntries().size()<=leafOrder/2 || prevNode.getEntries().size()<=2)
                         && prevNode.getParent()==parent)
                         {
                             for(int i=prevNode.getEntries().size()-1; i>=0; i--)
@@ -831,7 +861,8 @@ public class BPTNode {
                             }
                             pager.delPage(previous);
                         }
-                        else if(nextNode!=null && (nextNode.getEntries().size()<=order/2 || nextNode.getEntries().size()<=1)
+//                        else if(nextNode!=null && (nextNode.getEntries().size()<=order/2 || nextNode.getEntries().size()<=1)
+                        else if(nextNode!=null && (nextNode.getEntries().size()<=leafOrder/2 || nextNode.getEntries().size()<=1)
                         && nextNode.getParent()==parent)
                         {
                             for(int i=0; i<nextNode.getEntries().size(); i++)
