@@ -415,6 +415,19 @@ table_list_select returns [TableJoin tableJoin]
                         {
                             $tableJoin = new SubSelectTable($select_table.selectSqlExec, $ID.text);
                         }
+                      | '(' select_table ')'
+                        {
+                            $tableJoin = new SubSelectTable($select_table.selectSqlExec, null);
+                        }
+                      | '(' select_table ')' AS t=ID JOIN s=ID ON ft=ID '.' fa=ID '=' st=ID '.' sa=ID
+                        {
+                            SQLValue _leftValue = new SQLValue($ft.text, $fa.text);
+                            SQLValue _rightValue = new SQLValue($st.text, $sa.text);
+                            WhereCondition _whereCondition = new WhereCondition();
+                            WhereCondition.Operator _op = WhereCondition.Operator.EQ;
+                            _whereCondition.conditions.add(new OneCondition(_leftValue, _rightValue, _op));
+                            $tableJoin = new SubSelectTable($select_table.selectSqlExec, $t.text, $s.text, _whereCondition);
+                        }
                       ;
 
 // Lexer Rules

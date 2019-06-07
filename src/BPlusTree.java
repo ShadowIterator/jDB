@@ -270,8 +270,8 @@ public class BPlusTree extends  AbstractRecordManager{
             }
         }
 
-        public boolean isEnd() {
-            return visitedEnd;
+        public boolean isEnd() throws Exception {
+            return visitedEnd || this.start.isEnd();
         }
 
         public void moveNext() throws Exception {
