@@ -78,7 +78,7 @@ public class SerializeInplaceUtil {
     }
 
     static int booleanToBytes(boolean boolean_value, byte[] dest, int index) {
-        dest[index] = (byte) (boolean_value? 0 : 1);
+        dest[index] = (byte) (boolean_value? 1 : 0);
         return 1;
     }
 
