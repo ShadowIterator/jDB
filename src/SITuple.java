@@ -92,6 +92,11 @@ public class SITuple extends AbstractTuple implements Serializable {
         int primary_key_id;
         int attr_count;
         int desc_size;
+        int key_size;
+
+        int getKeySize() {
+            return key_size;
+        }
 
         void print() {
             String out_str = "";
@@ -118,6 +123,7 @@ public class SITuple extends AbstractTuple implements Serializable {
                 offset_list[i + 1] = offset_list[i] + SerializeUtil.objectToBytes(attr_example[i]).length;
             }
             desc_size = serialize().length;
+            key_size = SerializeUtil.objectToBytes(attr_example[primary_key_id]).length;
         }
 
         int getIDByName(String attrName) { //TODO: optimize time complexity
