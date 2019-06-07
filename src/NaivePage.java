@@ -1,5 +1,5 @@
 public class NaivePage extends AbstractPage {
-    final static int PAGE_SIZE = 1024;//4096; // Bytes
+    final static int PAGE_SIZE = 4096; // Bytes
     int page_id;
     byte[] data;
     NaivePage() {

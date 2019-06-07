@@ -53,10 +53,10 @@ public class jDBClient {
 //                "select id, name, grade from tablepp" +
 //                " ";
         String file_prefix = "test-doc/sql-gen/";
-        String file_name = file_prefix + "test_10000-2.schema";
+        String file_name = file_prefix + "test_10000-3.schema";
         String out_file_name = file_name + ".result";
         PrintStream ps=new PrintStream(new FileOutputStream(out_file_name));
-//        System.setOut(ps);
+        System.setOut(ps);
 
         File file = new File(file_name);
         InputStreamReader inputreader= new InputStreamReader(new FileInputStream(file));
@@ -79,7 +79,7 @@ public class jDBClient {
 //                res.print();
 //            }
             if((cnt++) % 1 == 0) {
-                System.out.println("\n" + cnt);
+//                System.out.println("\n" + cnt);
                 System.out.println("\n" + sql + ": ");
                 for(SQLResult res : sqlResults) {
                     res.print();
