@@ -159,7 +159,12 @@ public class MetadataManager {
 
     boolean dropTable(String table_name) throws Exception {
 
+        BPlusTree table = getTableBPlusTreeByName(table_name);
+        table.selfDestruct();
+
         table_meta.removeTuple(table_name);
+
+
 //        loadTables();
 
         return true;

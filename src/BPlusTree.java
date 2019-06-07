@@ -82,7 +82,7 @@ public class BPlusTree extends  AbstractRecordManager{
 
     public void selfDestruct() throws Exception
     {
-
+        root.selfDestruct(pager, desc);
     }
 
     public int getInfoPageID() {
