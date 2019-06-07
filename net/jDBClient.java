@@ -80,6 +80,7 @@ public class jDBClient {
             ArrayList<SQLResult> sqlResults = client.query(sql);
             for(SQLResult res : sqlResults) {
                 res.print();
+
             }
         }
     }

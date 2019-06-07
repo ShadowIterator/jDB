@@ -31,39 +31,58 @@ public class SITuple extends AbstractTuple implements Serializable {
     }
 
     byte[] serialize(AbstractTupleDesc desc) throws Exception {
-//        return new byte[1];
-//        for()
         byte[] b = new byte[desc.tupleSize()];
-//        for (int k = attrs.length - 1; k >= 0; --k) {
-        for(int k = 0; k < attrs.length; ++k) {
-            byte[] tb;
-            if (attrs[k] != null)
-                SerializeInplaceUtil.objectToBytes(attrs[k], b, desc.getOffset(k));
-            else {
-//                tb = new byte[1];
-                b[k / 8] |= (byte) (1 << (k % 8));
-            }
-//            System.arraycopy(tb, 0, b, desc.getOffset(k), tb.length);
-        }
+//        for(int k = 0; k < attrs.length; ++k) {
+//            if (attrs[k] != null)
+//                SerializeInplaceUtil.objectToBytes(attrs[k], b, desc.getOffset(k));
+//            else {
+//                b[k / 8] |= (byte) (1 << (k % 8));
+//            }
+//        }
+        serializeInplace(desc, b, 0);
         return b;
     }
 
-    void deSerialize(byte[] b, AbstractTupleDesc desc) throws Exception {
-//        for (int k = attrs.length; k >= 0; --k)
-        SITupleDesc sidesc = (SITupleDesc) desc;
+
+    void serializeInplace(AbstractTupleDesc desc, byte[] dest, int index) throws Exception {
         for(int k = 0; k < attrs.length; ++k) {
+            if (attrs[k] != null)
+                SerializeInplaceUtil.objectToBytes(attrs[k], dest, desc.getOffset(k));
+            else {
+                dest[k / 8] |= (byte) (1 << (k % 8));
+            }
+        }
+    }
+
+
+    void deSerialize(byte[] b, AbstractTupleDesc desc) throws Exception {
+//        int offk = desc.getOffset(0);
+//        for(int k = 0; k < attrs.length; ++k) {
+//            if(((b[k / 8] >> (k % 8)) & 1) == 1) {
+//                attrs[k] = null;
+//            }
+//            else {
+//                int offkp1 = desc.getOffset(k+1);
+//                attrs[k] = SerializeInplaceUtil.bytesToObject(b, offk, offkp1 - offk, desc.getAttr_example(k).getClass());//SerializeUtil.bytesToObject(tb, sidesc.getAttr_example(k).getClass());
+//                offk = offkp1;
+//            }
+//        }
+        deSerializeInplace(b, 0, desc);
+    }
+
+    void deSerializeInplace(byte[] b, int index, AbstractTupleDesc desc) throws Exception {
+        int offk = desc.getOffset(0) + index;
+        for(int k = 0; k < attrs.length; ++k) {
+            int offkp1 = desc.getOffset(k+1) + index;
             if(((b[k / 8] >> (k % 8)) & 1) == 1) {
                 attrs[k] = null;
             }
             else {
-                byte[] tb = new byte[desc.getOffset(k + 1) - desc.getOffset(k)];
-                System.arraycopy(b, desc.getOffset(k), tb, 0, tb.length);
-                attrs[k] = SerializeUtil.bytesToObject(tb, sidesc.getAttr_example(k).getClass());
+                attrs[k] = SerializeInplaceUtil.bytesToObject(b, offk, offkp1 - offk, desc.getAttr_example(k).getClass());//SerializeUtil.bytesToObject(tb, sidesc.getAttr_example(k).getClass());
             }
+            offk = offkp1;
         }
     }
-
-
 
     public static class SITupleDesc extends AbstractTupleDesc implements java.io.Serializable {
         Object[] attr_example; //types,default_value
@@ -73,6 +92,15 @@ public class SITuple extends AbstractTuple implements Serializable {
         int primary_key_id;
         int attr_count;
         int desc_size;
+
+        void print() {
+            String out_str = "";
+            for(int i = 0; i < attr_count; ++i) {
+                System.out.print(attr_example[i]);
+                System.out.print(" ");
+            }
+            System.out.print("\n");
+        }
 
         SITupleDesc() {
 
@@ -174,7 +202,7 @@ public class SITuple extends AbstractTuple implements Serializable {
 
     public static void main(String[] args) throws Exception {
         System.out.println("SITuple.main:");
-        int attr_count = 6;
+        int attr_count = 19;
         Object[] attr_example = new Object[attr_count];
         String[] attr_name = new String[attr_count];
         byte[] constraint_list = new byte[attr_count];
@@ -184,13 +212,40 @@ public class SITuple extends AbstractTuple implements Serializable {
         attr_example[3] = (double) 3.3;
         attr_example[4] = (String) "string_value";
         attr_example[5] = (String) "string2";
+        attr_example[6] = (int) 12;
+        attr_example[7] = (long) 13;
+        attr_example[8] = (float) 2.1;
+        attr_example[9] = (double) 3.3;
+        attr_example[10] = (String) "string_value";
+        attr_example[11] = (String) "string2";
+        attr_example[12] = (float) 2.1;
+        attr_example[13] = (double) 3.3;
+        attr_example[14] = (String) "string_value";
+        attr_example[15] = (String) "string2";
+        attr_example[16] = (int) 12;
+        attr_example[17] = (long) 13;
+        attr_example[18] = (float) 2.1;
 
-        attr_name[0] = "int_value";
-        attr_name[1] = "long_value";
-        attr_name[2] = "float_value";
-        attr_name[3] = "double_value";
-        attr_name[4] = "string_value";
-        attr_name[5] = "string2";
+
+        attr_name[0] = "1int_value";
+        attr_name[1] = "2long_value";
+        attr_name[2] = "3float_value";
+        attr_name[3] = "4double_value";
+        attr_name[4] = "5string_value";
+        attr_name[5] = "6string2";
+        attr_name[6] = "7int_value";
+        attr_name[7] = "8long_value";
+        attr_name[8] = "9float_value";
+        attr_name[9] = "10double_value";
+        attr_name[10] = "11string_value";
+        attr_name[11] = "12string2";
+        attr_name[12] = "13float_value";
+        attr_name[13] = "14double_value";
+        attr_name[14] = "15string_value";
+        attr_name[15] = "16string2";
+        attr_name[16] = "17int_value";
+        attr_name[17] = "18long_value";
+        attr_name[18] = "19float_value";
 
         for(int i = 0; i < attr_count; ++i)
              constraint_list[i] = 0;
@@ -201,8 +256,9 @@ public class SITuple extends AbstractTuple implements Serializable {
         for(int i = 0; i < attr_count; ++i){
 
         }
-        System.out.println((int)desc_2.attr_example[0] + " " + (long)desc_2.attr_example[1] + " " +
-                (float) desc_2.attr_example[2] + " " + desc_2.attr_example[3] + " " + desc_2.attr_example[4]);
+//        System.out.println((int)desc_2.attr_example[0] + " " + (long)desc_2.attr_example[1] + " " +
+//                (float) desc_2.attr_example[2] + " " + desc_2.attr_example[3] + " " + desc_2.attr_example[4]);
+        desc_2.print();
 
         SITuple tuple1 = new SITuple(desc);
         SITuple tuple2 = new SITuple(desc);
@@ -211,19 +267,21 @@ public class SITuple extends AbstractTuple implements Serializable {
         tuple1.setAttr(2, (float)-0.872);
         tuple1.setAttr(3, (double)-0.1);
         tuple1.setAttr(4, (String)"strivalue");
-        tuple1.setAttr(5, "stri");
+        tuple1.setAttr(5, "strix");
+        tuple1.setAttr(15, "attr15");
+        tuple1.setAttr(18, (float)1.24);
         tuple1.print();
         byte[] b = tuple1.serialize(desc);
         tuple2.deSerialize(b, desc);
         tuple2.print();
-//        desc.attr_example[4] = tuple2.getAttr(4);
-//        System.out.println(desc.getAttr_example(4) + " : " + desc.getAttr_default(4));
-//        System.out.println((double)tuple2.getAttr(3));
-//        long la = 4591870180066957722l;
-//        int alow =(int) (la & 0xffffffffl);
-//        int ahigh = (int) ((la >> 32) & 0xffffffffl);
-//        long pa = (((long)alow) & 0xffffffffl) | ((((long)ahigh) & 0xffffffffl) << 32);
-//        System.out.println(la + " " + alow + " " + ahigh + " " + pa + " " + (long)(0xffffffff));
+        desc.attr_example[4] = tuple2.getAttr(4);
+        System.out.println(desc.getAttr_example(4) + " : " + desc.getAttr_default(4));
+        System.out.println((double)tuple2.getAttr(3));
+        long la = 4591870180066957722l;
+        int alow =(int) (la & 0xffffffffl);
+        int ahigh = (int) ((la >> 32) & 0xffffffffl);
+        long pa = (((long)alow) & 0xffffffffl) | ((((long)ahigh) & 0xffffffffl) << 32);
+        System.out.println(la + " " + alow + " " + ahigh + " " + pa + " " + (long)(0xffffffff));
 
     }
 }
