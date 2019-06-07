@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class NaivePager extends AbstractPager {
-    final static int POOL_PAGE_TOT = 1024;
+    final static int POOL_PAGE_TOT = 131072; //512MB
     final static int INFO_PAGE_NUM = 1;
     AbstractPage[] page_pool;
 
