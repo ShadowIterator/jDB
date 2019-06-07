@@ -50,3 +50,5 @@ lib/
 
 # outpur folder
 out
+
+*.bat

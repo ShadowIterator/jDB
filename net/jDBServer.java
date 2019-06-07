@@ -155,6 +155,7 @@ public class jDBServer extends Thread{
             File file = new File("data_meta.jDB");
             if(file.exists()) {
                 jDBServer.mgr.open("data_meta.jDB");
+
                 jDBServer.mgr.checkoutDatabase("db2");
             } else {
                 jDBServer.mgr.init("data_meta.jDB");
