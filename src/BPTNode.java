@@ -543,10 +543,10 @@ public class BPTNode {
 //                    }
 //                }
 //            }
-            if(key.compareTo((long)1161) == 0)
-            {
-                System.out.println("here");
-            }
+//            if(key.compareTo((long)1161) == 0)
+//            {
+//                System.out.println("here");
+//            }
             int nodePos = keyPosInEntries(key);
             BPTNode chNode = new BPTNode(pager, desc, children.get(nodePos));
             succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);

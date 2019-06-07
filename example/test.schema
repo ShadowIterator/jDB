@@ -14,3 +14,5 @@ insert into student values (1005, 60.0, 2.7, 3, 'tuixue')
 select * from student right outer join teacher on student.grade = tgrade
 
 select * from (select * from student right outer join teacher on student.grade = teacher.grade) as v join student on v.grade = student.grade
+
+delete from student where id <> -1

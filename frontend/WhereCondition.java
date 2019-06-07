@@ -227,6 +227,9 @@ public class WhereCondition {
         if(cond.isNotExist()) {
             return null;
         }
+        if(cond.operator == WhereCondition.Operator.NQ) {
+            return null;
+        }
         if(cond.rightValue.type == SQLValueType.ATTRIBUTE) {
             SQLValue tmp = cond.leftValue;
             cond.leftValue = cond.rightValue;

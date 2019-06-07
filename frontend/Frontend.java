@@ -10,8 +10,9 @@ public class Frontend {
         mgr.createDatabase("default");
         mgr.checkoutDatabase("default");
         ParseTree tree;
+        long beginTime = System.nanoTime();
         try {
-            InputStream is = new FileInputStream("example/test.schema");
+            InputStream is = new FileInputStream("example/largeRelationsInsertFile.sql");
             ANTLRInputStream input = new ANTLRInputStream(is);
             SimpleSQLLexer lexer = new SimpleSQLLexer(input);
             lexer.removeErrorListeners();
@@ -29,6 +30,8 @@ public class Frontend {
             System.out.println(e.getMessage());
             return;
         }
+        long endTime = System.nanoTime();
+        System.out.println((endTime - beginTime)/1000000.0);
 
         ArrayList<SQLExecutor> sqlExecutorList = ((SimpleSQLParser.CommandsContext)tree).sqlExecutorList;
 //        for(SQLExecutor sqlExecutor: sqlExecutorList) {
@@ -37,8 +40,11 @@ public class Frontend {
         System.out.println("------------------- Execute Result -------------------");
         for(SQLExecutor sqlExecutor: sqlExecutorList) {
             SQLResult sqlResult = sqlExecutor.execute(mgr);
-            sqlResult.print();
+//            sqlResult.print();
         }
+
+        endTime = System.nanoTime();
+        System.out.println((endTime - beginTime)/1000000.0);
 
 //        System.out.println("LISP:");
 //        System.out.println(tree.toStringTree(parser));

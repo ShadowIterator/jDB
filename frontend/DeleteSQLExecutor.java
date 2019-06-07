@@ -1,5 +1,7 @@
 import javafx.util.Pair;
 
+import java.util.ArrayList;
+
 public class DeleteSQLExecutor extends SQLExecutor {
     private String tableName;
     private WhereCondition whereCondition;
@@ -20,7 +22,7 @@ public class DeleteSQLExecutor extends SQLExecutor {
 
     @Override
     public SQLResult execute(MetadataManager mgr) throws Exception {
-        if(!this.whereCondition.isLegal()) {
+        if(this.whereCondition != null && !this.whereCondition.isLegal()) {
             return new SQLResult(-1, "Delete: Some Where Condition Error.");
         }
         try {
@@ -37,14 +39,23 @@ public class DeleteSQLExecutor extends SQLExecutor {
                 }
                 crange.setRange(pkRange.getKey(), pkRange.getValue());
             }
+            ArrayList<Object> keyList = new ArrayList<>();
             for(; !crange.isEnd(); crange.moveNext()) {
                 AbstractTuple tuple = crange.getTuple();
 //            for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
 //                AbstractTuple tuple = it.getTuple();
-                if(this.whereCondition.NaiveJudge(tuple, desc, mgr)) {
+                if(this.whereCondition!= null && this.whereCondition.NaiveJudge(tuple, desc, mgr)) {
                     Object obj = tuple.getAttr(pkId);
-                    table.removeTuple((Comparable)obj);
+                    keyList.add(obj);
+//                    table.removeTuple((Comparable)obj);
+                } else if(this.whereCondition == null) {
+                    Object obj = tuple.getAttr(pkId);
+                    keyList.add(obj);
+//                    table.removeTuple((Comparable)obj);
                 }
+            }
+            for(Object obj: keyList) {
+                table.removeTuple((Comparable)obj);
             }
             return new SQLResult(0);
         } catch (Exception e) {

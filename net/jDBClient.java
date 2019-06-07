@@ -19,7 +19,20 @@ public class jDBClient {
     public ArrayList<SQLResult> query(String sql) throws Exception {
         Socket s = new Socket(this.ip, this.port);
         DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-        dos.writeUTF(sql);
+//        dos.writeUTF(sql);
+        int sqlLength = sql.length();
+        int bufferSize = 60000;
+        int i = 0;
+        int sum = 0;
+        while(i < sqlLength) {
+            int endIdx = java.lang.Math.min(sqlLength, i + bufferSize);
+            String part = sql.substring(i, endIdx);
+            dos.writeUTF(part);
+            sum += part.length();
+            i += bufferSize;
+        }
+        assert sum == sql.length();
+        dos.writeUTF("<END>");
         ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
         ArrayList<SQLResult> results = (ArrayList<SQLResult>)(ois.readObject());
         dos.close();

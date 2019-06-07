@@ -209,7 +209,12 @@ public class JDBGUI extends JFrame {
                     }
                 }
                 for(Integer id: secondAttrId) {
-                    newRow.add(secondTuples.get(i).getAttr(id).toString());
+                    Object obj = secondTuples.get(i).getAttr(id);
+                    if(obj == null) {
+                        newRow.add("NULL");
+                    } else {
+                        newRow.add(obj.toString());
+                    }
                 }
                 this.tableModel.addRow(newRow);
             }

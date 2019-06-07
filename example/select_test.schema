@@ -1,2 +1,0 @@
-select id, name, grade from student where name = 'hhh';
-select id from student where name = 'hha';

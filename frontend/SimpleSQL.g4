@@ -228,6 +228,10 @@ delete_from returns [DeleteSQLExecutor deleteSqlExec]
                 {
                     $deleteSqlExec = new DeleteSQLExecutor($ID.text, $where_list.whereCondition);
                 }
+              | DELETE FROM ID
+                {
+                    $deleteSqlExec = new DeleteSQLExecutor($ID.text, null);
+                }
               ;
 
 sql_value returns [SQLValue sqlValue]

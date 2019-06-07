@@ -83,15 +83,26 @@ public class jDBServer extends Thread{
             String sql = "";
             try {
                 DataInputStream dis = new DataInputStream(is);
-                sql = dis.readUTF();
-            } catch (IOException e) {
+                while(true) {
+                    try {
+                        String tmp = dis.readUTF();
+//                        System.out.println(tmp);
+                        if(tmp.equals("<END>")) {
+                            break;
+                        }
+                        sql += tmp;
+                    } catch (Exception e) {
+                        break;
+                    }
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
                 os.close();
                 is.close();
                 this.soc.close();
                 return;
             }
-//            System.out.println("Query: " + sql);
+            System.out.println("Query: " + sql);
             ArrayList<SQLResult> sqlResults = null;
             try {
                 sqlResults = this.executeSql(sql);
@@ -143,6 +154,7 @@ public class jDBServer extends Thread{
             sqlResult.setCostTime(costTime);
             results.add(sqlResult);
             if(sqlResult.getResultType() == -1) {
+                sqlExecutor.printExecutor();
                 break;
             }
         }
