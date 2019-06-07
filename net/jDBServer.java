@@ -91,7 +91,7 @@ public class jDBServer extends Thread{
                 this.soc.close();
                 return;
             }
-            System.out.println("Query: " + sql);
+//            System.out.println("Query: " + sql);
             ArrayList<SQLResult> sqlResults = null;
             try {
                 sqlResults = this.executeSql(sql);
@@ -142,6 +142,9 @@ public class jDBServer extends Thread{
             double costTime = (endTime - beginTime) / 1000000.0;
             sqlResult.setCostTime(costTime);
             results.add(sqlResult);
+            if(sqlResult.getResultType() == -1) {
+                break;
+            }
         }
         return results;
     }

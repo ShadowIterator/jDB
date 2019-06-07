@@ -1,4 +1,4 @@
-public final class NaivePage extends AbstractPage {
+public class NaivePage extends AbstractPage {
     final static int PAGE_SIZE = 4096; // Bytes
     int page_id;
     byte[] data;
@@ -27,5 +27,9 @@ public final class NaivePage extends AbstractPage {
     boolean setPageID(int page_id) {
         this.page_id = page_id;
         return true;
+    }
+
+    int getPAGESIZE() {
+        return PAGE_SIZE;
     }
 }

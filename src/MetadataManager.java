@@ -7,6 +7,7 @@ public class MetadataManager {
     public BPlusTree database_meta;
     public BPlusTree table_meta;
     public BPlusTree[] tables;
+    final static int FIRST_PAGE_ID = 1;
     NaivePager cur_db_pager;
     NaivePager cur_dbmeta_pager;
     SITuple.SITupleDesc database_meta_desc;
@@ -38,6 +39,8 @@ public class MetadataManager {
         attr_name[0] = "db_name";
         attr_name[1] = "db_file_name";
         SITuple.SITupleDesc desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
+
+        // the info page should be 1
         database_meta = new BPlusTree(bpt_order, desc, pager);
 
     }
@@ -47,7 +50,7 @@ public class MetadataManager {
         pager.open(file_name);
         cur_dbmeta_pager = pager;
 
-        database_meta = new BPlusTree(pager, 0);
+        database_meta = new BPlusTree(pager, FIRST_PAGE_ID);
     }
 
     boolean createDatabase(String db_name) throws Exception{
@@ -92,6 +95,7 @@ public class MetadataManager {
         SITuple.SITupleDesc table_meta_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
 
 
+        //the info page should be 1
         BPlusTree new_table_metadata = new BPlusTree(bpt_order, table_meta_desc, pager);
 
         new_table_metadata.close();
@@ -125,7 +129,7 @@ public class MetadataManager {
         NaivePager pager = new NaivePager();
         pager.open(db_filename);
         cur_db_pager = pager;
-        table_meta = new BPlusTree(cur_db_pager, 0);
+        table_meta = new BPlusTree(cur_db_pager, FIRST_PAGE_ID);
 
 //        loadTables();
 

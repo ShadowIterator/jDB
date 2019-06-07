@@ -2,7 +2,6 @@
 show databases;: 
 Result Type: 1
 dbName	
-default	
 
 create database DB1;: 
 Result Type: 0

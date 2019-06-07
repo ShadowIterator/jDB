@@ -282,7 +282,7 @@ public class JDBGUI extends JFrame {
                 JOptionPane.showConfirmDialog(null, "Please connect to server first.", "No connection.", JOptionPane.YES_OPTION);
                 return;
             }
-            System.out.println(sqlArea.getText());
+//            System.out.println(sqlArea.getText());
             execute(sqlArea.getText());
         }
     }
@@ -318,7 +318,7 @@ public class JDBGUI extends JFrame {
                 importFail(file.getName());
             }
             String sql = buffer.toString();
-            sqlArea.setText(sql);
+//            sqlArea.setText(sql);
             execute(sql);
         }
     }

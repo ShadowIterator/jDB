@@ -51,7 +51,7 @@ public class BPTNode {
         Integer[] intInfo = new Integer[7];
         for(int i=0; i<7; i++)
         {
-            intInfo[i] = SITuple.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
+            intInfo[i] = SerializeUtil.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
             readPos+=Integer.BYTES;
         }
         parent = intInfo[1];
@@ -83,7 +83,7 @@ public class BPTNode {
         for(int i=0; i<keyNum; i++)
         {
             byte[] keyPart = Arrays.copyOfRange(info, readPos, readPos+keySize);
-            Comparable key = (Comparable) SITuple.bytesToObject(keyPart, keyClass);
+            Comparable key = (Comparable) SerializeUtil.bytesToObject(keyPart, keyClass);
             readPos+=keySize;
             if(isLeaf)
             {
@@ -98,7 +98,7 @@ public class BPTNode {
                 byte[] childPart = Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES);
                 readPos += Integer.BYTES;
                 entries.add(new AbstractMap.SimpleEntry(key, null));
-                children.add(SITuple.bytesToInt(childPart));
+                children.add(SerializeUtil.bytesToInt(childPart));
             }
         }
     }
@@ -135,7 +135,7 @@ public class BPTNode {
             case BPTConfig.TYPE_STR:
 //                keySize = BPTConfig.CUNSTOMIZED_SIZE;
                 String keyExample =(String) desc.getAttr_example(desc.getPrimary_key_id());
-                keySize = SITuple.stringToBytes(keyExample).length;
+                keySize = SerializeUtil.stringToBytes(keyExample).length;
                 break;
             case BPTConfig.TYPE_LONG:
                 keySize = Long.BYTES;
@@ -157,7 +157,7 @@ public class BPTNode {
         Integer[] infoInt = {selfPageId, parent, previous, next, keyType, keySize, keyNum};
         for(int i=0; i<infoInt.length; i++)
         {
-            part = SITuple.intToBytes(infoInt[i]);
+            part = SerializeUtil.intToBytes(infoInt[i]);
             System.arraycopy(part, 0, originContent, 2+i*Integer.BYTES, Integer.BYTES);
         }
         Integer infoSize = 2+7*Integer.BYTES; // plus key type and num info
@@ -167,7 +167,7 @@ public class BPTNode {
         {
             for(int i=0; i<entries.size(); i++)
             {
-                part = SITuple.objectToBytes(entries.get(i).getKey());
+                part = SerializeUtil.objectToBytes(entries.get(i).getKey());
                 System.arraycopy(part, 0, originContent, writePos, part.length);
                 writePos += keySize;
                 AbstractTuple tup = entries.get(i).getValue();
@@ -186,10 +186,10 @@ public class BPTNode {
         {
             for(int i=0; i<entries.size(); i++)
             {
-                part = SITuple.objectToBytes(entries.get(i).getKey());
+                part = SerializeUtil.objectToBytes(entries.get(i).getKey());
                 System.arraycopy(part, 0, originContent, writePos, part.length);
                 writePos += keySize;
-                part = SITuple.objectToBytes(children.get(i));
+                part = SerializeUtil.objectToBytes(children.get(i));
                 System.arraycopy(part, 0, originContent, writePos, Integer.BYTES);
                 writePos += Integer.BYTES;
             }
