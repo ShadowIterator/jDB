@@ -65,7 +65,8 @@ public class BPlusTree extends  AbstractRecordManager{
         Integer[] intInfo = new Integer[7];
         for(int i=0; i<intInfo.length; i++)
         {
-            intInfo[i] = SerializeUtil.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
+//            intInfo[i] = SerializeUtil.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
+            intInfo[i] = SerializeInplaceUtil.bytesToInt(info, readPos);
             readPos+=Integer.BYTES;
         }
 //        order = intInfo[0];
@@ -178,11 +179,12 @@ public class BPlusTree extends  AbstractRecordManager{
         Integer infoLength = descPart.length;
 //        Integer[] infoInt = {order, root.getId(), head, infoPageId, count, infoLength};
         Integer[] infoInt = {innerOrder, leafOrder, root.getId(), head, infoPageId, count, infoLength};
-        byte[] part;
+//        byte[] part;
         for(int i=0; i<infoInt.length; i++)
         {
-            part = SerializeUtil.intToBytes(infoInt[i]);
-            System.arraycopy(part, 0, infoBuffer, writePos, Integer.BYTES);
+//            part = SerializeUtil.intToBytes(infoInt[i]);
+//            System.arraycopy(part, 0, infoBuffer, writePos, Integer.BYTES);
+            writePos += SerializeInplaceUtil.intToBytes(infoInt[i], infoBuffer, writePos);
             writePos+=Integer.BYTES;
         }
         System.arraycopy(descPart, 0, infoBuffer, writePos, infoLength);
