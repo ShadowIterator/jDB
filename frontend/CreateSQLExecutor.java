@@ -39,11 +39,14 @@ public class CreateSQLExecutor extends SQLExecutor {
         Object[] attr_example = new Object[attr_count];
         String[] attr_name = new String[attr_count];
         byte[] constraint_list = new byte[attr_count];
-        int pk_id = 0;
+        int pk_id = -1;
 
+        if(this.pkName == null) {
+            return new SQLResult(-1, "Need to specify the primary key.");
+        }
         for(int i = 0; i < attr_count; ++i) {
             AttributeMeta attr = this.attributeList.get(i);
-            if(attr.attributeName == this.pkName) {
+            if(attr.attributeName.equals(this.pkName)) {
                 pk_id = i;
             }
             attr_name[i] = attr.attributeName;
@@ -52,6 +55,9 @@ public class CreateSQLExecutor extends SQLExecutor {
             if(attr.isNotNull) {
                 constraint_list[i] |= AbstractTuple.Constraints.NOT_NULL;
             }
+        }
+        if(pk_id == -1) {
+            return new SQLResult(-1, "No attribute named " + pkName);
         }
         try {
             SITuple.SITupleDesc table_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, pk_id);

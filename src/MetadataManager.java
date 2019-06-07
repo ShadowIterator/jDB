@@ -146,6 +146,7 @@ public class MetadataManager {
     }
 
     void close() throws Exception {
+        System.out.println("Shutting down metadata manager");
         cur_dbmeta_pager.close();
         cur_db_pager.close();
     }
@@ -193,143 +194,143 @@ public class MetadataManager {
         String table1_name = "defaulttable1";
         mgr.createTable(table1_name, table1_desc);
 
-        BPlusTree table = mgr.getTableBPlusTreeByName(table1_name);
-
-        SITuple tuple1 = new SITuple(table1_desc);
-        tuple1.setAttr(0, "gonnnnnn");
-        tuple1.setAttr(1, (long)13);
-        tuple1.setAttr(2, (float)14.8);
-        table.insertTuple(tuple1);
-
-        SITuple tuple2 = new SITuple(table1_desc);
-        tuple2.setAttr(0, "killuaaa");
-        tuple2.setAttr(1, (long)13);
-        tuple2.setAttr(2, (float)13.2);
-        table.insertTuple(tuple2);
-
-        SITuple tuple3 = new SITuple(table1_desc);
-        tuple3.setAttr(0, "reoriooo");
-        tuple3.setAttr(1, (long)18);
-        tuple3.setAttr(2, (float)17.8);
-        table.insertTuple(tuple3);
-
-
-        for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
-            it.getTuple().print();
-        }
-
-        System.out.println("------------------------------------------");
-        //--------------------table-2----------------------------------
-        attr_count = 4;
-        attr_example = new Object[attr_count];
-        attr_name = new String[attr_count];
-        constraint_list = new byte[attr_count];
-        attr_example[0] = "hfz";
-        attr_example[1] = (long)16;
-        attr_example[2] = (float)14.4;
-        attr_example[3] = "zfh";
-        attr_name[0] = "attr1";
-        attr_name[1] = "attr2";
-        attr_name[2] = "attr3";
-        attr_name[3] = "attr4";
-
-        SITuple.SITupleDesc table2_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
-        String table2_name = "defaulttable2";
-        mgr.createTable(table2_name, table2_desc);
-
-        table = mgr.getTableBPlusTreeByName(table2_name);
-
-        tuple1 = new SITuple(table2_desc);
-        tuple1.setAttr(0, "hfz");
-        tuple1.setAttr(1, (long)13);
-        tuple1.setAttr(2, (float)14.8);
-//        tuple1.setAttr();
-        table.insertTuple(tuple1);
-
-        tuple2 = new SITuple(table2_desc);
-        tuple2.setAttr(0, "kaa");
-        tuple2.setAttr(1, (long)13);
+//        BPlusTree table = mgr.getTableBPlusTreeByName(table1_name);
+//
+//        SITuple tuple1 = new SITuple(table1_desc);
+//        tuple1.setAttr(0, "gonnnnnn");
+//        tuple1.setAttr(1, (long)13);
+//        tuple1.setAttr(2, (float)14.8);
+//        table.insertTuple(tuple1);
+//
+//        SITuple tuple2 = new SITuple(table1_desc);
+//        tuple2.setAttr(0, "killuaaa");
+//        tuple2.setAttr(1, (long)13);
 //        tuple2.setAttr(2, (float)13.2);
-        tuple2.setAttr(3, "aak");
-        table.insertTuple(tuple2);
-
+//        table.insertTuple(tuple2);
+//
 //        SITuple tuple3 = new SITuple(table1_desc);
 //        tuple3.setAttr(0, "reoriooo");
 //        tuple3.setAttr(1, (long)18);
 //        tuple3.setAttr(2, (float)17.8);
 //        table.insertTuple(tuple3);
-
-        for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
-            it.getTuple().print();
-        }
-
-        System.out.println("table_meta-db1:");
-        mgr.printBPlusTree(mgr.table_meta);
-
-
-        mgr.checkoutDatabase("defaultdb2");
-
-        System.out.println("---------------db2-------------------------");
-        //--------------------table-2----------------------------------
-        attr_count = 4;
-        attr_example = new Object[attr_count];
-        attr_name = new String[attr_count];
-        constraint_list = new byte[attr_count];
-        attr_example[0] = "hfz";
-        attr_example[1] = (long)16;
-        attr_example[2] = (float)14.4;
-        attr_example[3] = "zfh";
-        attr_name[0] = "attr1";
-        attr_name[1] = "attr2";
-        attr_name[2] = "attr3";
-        attr_name[3] = "attr4";
-
-        table2_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
-        table2_name = "defaulttable2";
-        mgr.createTable(table2_name, table2_desc);
-
-        table = mgr.getTableBPlusTreeByName(table2_name);
-
-        tuple1 = new SITuple(table2_desc);
-        tuple1.setAttr(0, "hfz");
-        tuple1.setAttr(1, (long)13);
-        tuple1.setAttr(2, (float)14.8);
-//        tuple1.setAttr();
-        table.insertTuple(tuple1);
-
-        tuple2 = new SITuple(table2_desc);
-        tuple2.setAttr(0, "kaa");
-        tuple2.setAttr(1, (long)13);
-//        tuple2.setAttr(2, (float)13.2);
-        tuple2.setAttr(3, "aak");
-        table.insertTuple(tuple2);
-
-//        SITuple tuple3 = new SITuple(table1_desc);
-//        tuple3.setAttr(0, "reoriooo");
-//        tuple3.setAttr(1, (long)18);
-//        tuple3.setAttr(2, (float)17.8);
-//        table.insertTuple(tuple3);
-
-        for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
-            it.getTuple().print();
-        }
-
-        System.out.println("table_meta-db2:");
-        mgr.printBPlusTree(mgr.table_meta);
-
-
-
+//
+//
+//        for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
+//            it.getTuple().print();
+//        }
+//
+//        System.out.println("------------------------------------------");
+//        //--------------------table-2----------------------------------
+//        attr_count = 4;
+//        attr_example = new Object[attr_count];
+//        attr_name = new String[attr_count];
+//        constraint_list = new byte[attr_count];
+//        attr_example[0] = "hfz";
+//        attr_example[1] = (long)16;
+//        attr_example[2] = (float)14.4;
+//        attr_example[3] = "zfh";
+//        attr_name[0] = "attr1";
+//        attr_name[1] = "attr2";
+//        attr_name[2] = "attr3";
+//        attr_name[3] = "attr4";
+//
+//        SITuple.SITupleDesc table2_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
+//        String table2_name = "defaulttable2";
+//        mgr.createTable(table2_name, table2_desc);
+//
+//        table = mgr.getTableBPlusTreeByName(table2_name);
+//
+//        tuple1 = new SITuple(table2_desc);
+//        tuple1.setAttr(0, "hfz");
+//        tuple1.setAttr(1, (long)13);
+//        tuple1.setAttr(2, (float)14.8);
+////        tuple1.setAttr();
+//        table.insertTuple(tuple1);
+//
+//        tuple2 = new SITuple(table2_desc);
+//        tuple2.setAttr(0, "kaa");
+//        tuple2.setAttr(1, (long)13);
+////        tuple2.setAttr(2, (float)13.2);
+//        tuple2.setAttr(3, "aak");
+//        table.insertTuple(tuple2);
+//
+////        SITuple tuple3 = new SITuple(table1_desc);
+////        tuple3.setAttr(0, "reoriooo");
+////        tuple3.setAttr(1, (long)18);
+////        tuple3.setAttr(2, (float)17.8);
+////        table.insertTuple(tuple3);
+//
+//        for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
+//            it.getTuple().print();
+//        }
+//
+//        System.out.println("table_meta-db1:");
+//        mgr.printBPlusTree(mgr.table_meta);
+//
+//
 //        mgr.checkoutDatabase("defaultdb2");
+//
+//        System.out.println("---------------db2-------------------------");
+//        //--------------------table-2----------------------------------
+//        attr_count = 4;
+//        attr_example = new Object[attr_count];
+//        attr_name = new String[attr_count];
+//        constraint_list = new byte[attr_count];
+//        attr_example[0] = "hfz";
+//        attr_example[1] = (long)16;
+//        attr_example[2] = (float)14.4;
+//        attr_example[3] = "zfh";
+//        attr_name[0] = "attr1";
+//        attr_name[1] = "attr2";
+//        attr_name[2] = "attr3";
+//        attr_name[3] = "attr4";
+//
+//        table2_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, 0);
+//        table2_name = "defaulttable2";
+//        mgr.createTable(table2_name, table2_desc);
+//
+//        table = mgr.getTableBPlusTreeByName(table2_name);
+//
+//        tuple1 = new SITuple(table2_desc);
+//        tuple1.setAttr(0, "hfz");
+//        tuple1.setAttr(1, (long)13);
+//        tuple1.setAttr(2, (float)14.8);
+////        tuple1.setAttr();
+//        table.insertTuple(tuple1);
+//
+//        tuple2 = new SITuple(table2_desc);
+//        tuple2.setAttr(0, "kaa");
+//        tuple2.setAttr(1, (long)13);
+////        tuple2.setAttr(2, (float)13.2);
+//        tuple2.setAttr(3, "aak");
+//        table.insertTuple(tuple2);
+//
+////        SITuple tuple3 = new SITuple(table1_desc);
+////        tuple3.setAttr(0, "reoriooo");
+////        tuple3.setAttr(1, (long)18);
+////        tuple3.setAttr(2, (float)17.8);
+////        table.insertTuple(tuple3);
+//
+//        for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
+//            it.getTuple().print();
+//        }
+//
+//        System.out.println("table_meta-db2:");
+//        mgr.printBPlusTree(mgr.table_meta);
+//
+//
+//
+////        mgr.checkoutDatabase("defaultdb2");
+////        mgr.checkoutDatabase("defaultdb1");
+//
 //        mgr.checkoutDatabase("defaultdb1");
-
-        mgr.checkoutDatabase("defaultdb1");
-
-        System.out.println("table_meta-db1");
-        mgr.printBPlusTree(mgr.table_meta);
-        table = mgr.getTableBPlusTreeByName("defaulttable1");
-        for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
-            it.getTuple().print();
-        }
+//
+//        System.out.println("table_meta-db1");
+//        mgr.printBPlusTree(mgr.table_meta);
+//        table = mgr.getTableBPlusTreeByName("defaulttable1");
+//        for(BPlusTree.Cursor it = table.new Cursor(); !it.isEnd(); it.moveNext()) {
+//            it.getTuple().print();
+//        }
 
         mgr.close();
 
