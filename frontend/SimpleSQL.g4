@@ -17,6 +17,10 @@ sql returns [SQLExecutor sqlExecutor]
                 {
                     $sqlExecutor = $create_table.createSqlExec;
                 }
+              | SHUTDOWN (';')?
+                {
+                    $sqlExecutor = new ShutdownExecutor();
+                }
               | drop_table (';')?
                 {
                     $sqlExecutor = $drop_table.dropSqlExec;
@@ -479,6 +483,7 @@ LEFT       : L E F T;
 RIGHT      : R I G H T;
 AS         : A S;
 EXIST      : E X I S T S;
+SHUTDOWN   : S H U T D O W N;
 
 TEXT       : (SINQ | DOUQ);
 NUMFLOAT   : DIGIT+ [.] (DIGIT+)?;
