@@ -515,33 +515,31 @@ public class BPTNode {
         }
         else
         {
-            if(key.compareTo(entries.get(0).getKey())<=0)
-            {
-                // BPTNode chNode = fromPage(pager.get(children.get(0)));
-                BPTNode chNode = new BPTNode(pager, desc, children.get(0));
-                succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
-            }
-            else if(key.compareTo(entries.get(entries.size()-1).getKey())>=0)
-            {
-                // BPTNode chNode = fromPage(pager.get(children.get(children.size()-1)));
-                BPTNode chNode = new BPTNode(pager, desc, children.get(children.size()-1));
-                succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
-
-            }
-            else
-            {
-                for(int i=0; i<entries.size(); i++)
-                {
-                    if (entries.get(i).getKey().compareTo(key) <= 0 && entries.get(i+1).getKey().compareTo(key) > 0)
-                    {
-                        // BPTNode chNode = fromPage(pager.get(children.get(i)));
-                        BPTNode chNode = new BPTNode(pager, desc, children.get(i));
-                        succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
-
-                        break;
-                    }
-                }
-            }
+//            if(key.compareTo(entries.get(0).getKey())<=0)
+//            {
+//                BPTNode chNode = new BPTNode(pager, desc, children.get(0));
+//                succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
+//            }
+//            else if(key.compareTo(entries.get(entries.size()-1).getKey())>=0)
+//            {
+//                BPTNode chNode = new BPTNode(pager, desc, children.get(children.size()-1));
+//                succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
+//
+//            }
+//            else
+//            {
+//                for(int i=0; i<entries.size(); i++)
+//                {
+//                    if (entries.get(i).getKey().compareTo(key) <= 0 && entries.get(i+1).getKey().compareTo(key) > 0)
+//                    {
+//                        BPTNode chNode = new BPTNode(pager, desc, children.get(i));
+//                        succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
+//
+//                        break;
+//                    }
+//                }
+//            }
+            int nodePos = keyPosInEntries(key);
         }
         return succeed;
     }
@@ -845,7 +843,7 @@ public class BPTNode {
                             parNode.getChildren().remove(previous);
                             if(prevNode.getPrevious()>=0)
                             {
-                                //更前的Node
+                                // 更前的Node
                                 // BPTNode morePrev=fromPage(pager.get(prevNode.getPrevious()));
                                 BPTNode morePrev = new BPTNode(pager, desc, prevNode.getPrevious());
                                 morePrev.setNext(selfPageId);
@@ -924,6 +922,29 @@ public class BPTNode {
         }
         return succeed;
     }
+    protected int keyPosInEntries(Comparable key)
+    {
+        int endPos = entries.size();
+        int startPos = 0;
+        int middlePos = 0;
+        while (startPos !=  endPos)
+        {
+            middlePos = (endPos + startPos)/2;
+            if(entries.get(middlePos).getKey().compareTo(key) == 0 || endPos-startPos<=1)
+            {
+                break;
+            }
+            else if (key.compareTo(entries.get(middlePos).getKey())<0)
+            {
+                endPos = middlePos;
+            }
+            else
+            {
+                startPos = middlePos;
+            }
+        }
+        return middlePos;
+    }
 
     protected boolean insertOrUpdateItem(Comparable key, AbstractTuple info, AbstractPager pager)
     {
@@ -933,35 +954,52 @@ public class BPTNode {
             entries.add(toAdd);
             return true;
         }
-        for(int i=0; i<entries.size(); i++)
+        int keyPos = keyPosInEntries(key);
+        if(entries.get(keyPos).getKey().compareTo(key) == 0)
         {
-            if(entries.get(i).getKey().compareTo(key)==0)
-            {
-                entries.get(i).setValue(info);
-                return true;
-            }
-            else if(entries.get(i).getKey().compareTo(key)>0)
-            {
-                entries.add(i, toAdd);
-                return true;
-            }
+            entries.get(keyPos).setValue(info);
         }
-        entries.add(entries.size(), toAdd);
+        else if(key.compareTo(entries.get(keyPos).getKey()) < 0)
+        {
+            entries.add(keyPos, toAdd);
+        }
+        else if(key.compareTo(entries.get(keyPos).getKey()) > 0)
+        {
+            entries.add(keyPos+1, toAdd);
+        }
         return true;
+//        for(int i=0; i<entries.size(); i++)
+//        {
+//            if(entries.get(i).getKey().compareTo(key)==0)
+//            {
+//                entries.get(i).setValue(info);
+//                return true;
+//            }
+//            else if(entries.get(i).getKey().compareTo(key)>0)
+//            {
+//                entries.add(i, toAdd);
+//                return true;
+//            }
+//        }
+//        entries.add(entries.size(), toAdd);
+//        return true;
     }
 
     public boolean removeItem(Comparable key, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
-        Integer idx = -1;
-        for(int i=0; i<entries.size(); i++)
-        {
-            if(entries.get(i).getKey().compareTo(key)==0)
-            {
-                idx=i;
-                break;
-            }
-        }
-        if(idx!=-1)
+        if(entries.size()==0)
+            return false;
+        Integer idx = keyPosInEntries(key);
+//        for(int i=0; i<entries.size(); i++)
+//        {
+//            if(entries.get(i).getKey().compareTo(key)==0)
+//            {
+//                idx=i;
+//                break;
+//            }
+//        }
+//        if(idx!=-1)
+        if(key.compareTo(entries.get(idx).getKey())==0)
         {
             entries.remove((int)idx);
             writeToPage(pager, desc);
@@ -972,11 +1010,17 @@ public class BPTNode {
 
     protected boolean contain(Comparable key)
     {
-        for (Map.Entry<Comparable, AbstractTuple> item : entries) {
-            if (item.getKey().compareTo(key) == 0) {
-                return true;
-            }
-        }
+//        for (Map.Entry<Comparable, AbstractTuple> item : entries) {
+//            if (item.getKey().compareTo(key) == 0) {
+//                return true;
+//            }
+//        }
+//        return false;
+        if(entries.size()==0)
+            return false;
+        int possiblePos = keyPosInEntries(key);
+        if(key.compareTo(entries.get(possiblePos).getKey())==0)
+            return true;
         return false;
     }
 
