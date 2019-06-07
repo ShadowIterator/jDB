@@ -364,46 +364,31 @@ attribute_list_select returns [ArrayList<Pair<String, String> > attributeList]
                         }
                       ;
 table_list_select returns [TableJoin tableJoin]
-                      : f=ID JOIN s=ID ON ft=ID '.' fa=ID '=' st=ID '.' sa=ID
+                      : f=ID JOIN s=ID ON where_list//ft=ID '.' fa=ID '=' st=ID '.' sa=ID
                         {
                             $tableJoin = new TableJoin();
                             $tableJoin.isJoin = true;
                             $tableJoin.firstTableName = $f.text;
                             $tableJoin.secondTableName = $s.text;
-                            $tableJoin.onCondition = new WhereCondition();
-                            SQLValue _leftValue = new SQLValue($ft.text, $fa.text);
-                            SQLValue _rightValue = new SQLValue($st.text, $sa.text);
-                            WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-                            OneCondition _oneCondition = new OneCondition(_leftValue, _rightValue, _op);
-                            $tableJoin.onCondition.conditions.add(_oneCondition);
+                            $tableJoin.onCondition = $where_list.whereCondition;
                         }
-                      | f=ID LEFT OUTER JOIN s=ID ON ft=ID '.' fa=ID '=' st=ID '.' sa=ID
+                      | f=ID LEFT OUTER JOIN s=ID ON where_list//ft=ID '.' fa=ID '=' st=ID '.' sa=ID
                         {
                             $tableJoin = new TableJoin();
                             $tableJoin.isJoin = true;
                             $tableJoin.firstTableName = $f.text;
                             $tableJoin.secondTableName = $s.text;
-                            $tableJoin.onCondition = new WhereCondition();
                             $tableJoin.setJoinType(0);
-                            SQLValue _leftValue = new SQLValue($ft.text, $fa.text);
-                            SQLValue _rightValue = new SQLValue($st.text, $sa.text);
-                            WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-                            OneCondition _oneCondition = new OneCondition(_leftValue, _rightValue, _op);
-                            $tableJoin.onCondition.conditions.add(_oneCondition);
+                            $tableJoin.onCondition = $where_list.whereCondition;
                           }
-                      | f=ID RIGHT OUTER JOIN s=ID ON ft=ID '.' fa=ID '=' st=ID '.' sa=ID
+                      | f=ID RIGHT OUTER JOIN s=ID ON where_list//ft=ID '.' fa=ID '=' st=ID '.' sa=ID
                         {
                             $tableJoin = new TableJoin();
                             $tableJoin.isJoin = true;
                             $tableJoin.firstTableName = $f.text;
                             $tableJoin.secondTableName = $s.text;
-                            $tableJoin.onCondition = new WhereCondition();
                             $tableJoin.setJoinType(1);
-                            SQLValue _leftValue = new SQLValue($ft.text, $fa.text);
-                            SQLValue _rightValue = new SQLValue($st.text, $sa.text);
-                            WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-                            OneCondition _oneCondition = new OneCondition(_leftValue, _rightValue, _op);
-                            $tableJoin.onCondition.conditions.add(_oneCondition);
+                            $tableJoin.onCondition = $where_list.whereCondition;
                         }
                       | ID
                         {
@@ -419,14 +404,9 @@ table_list_select returns [TableJoin tableJoin]
                         {
                             $tableJoin = new SubSelectTable($select_table.selectSqlExec, null);
                         }
-                      | '(' select_table ')' AS t=ID JOIN s=ID ON ft=ID '.' fa=ID '=' st=ID '.' sa=ID
+                      | '(' select_table ')' AS t=ID JOIN s=ID ON where_list//ft=ID '.' fa=ID '=' st=ID '.' sa=ID
                         {
-                            SQLValue _leftValue = new SQLValue($ft.text, $fa.text);
-                            SQLValue _rightValue = new SQLValue($st.text, $sa.text);
-                            WhereCondition _whereCondition = new WhereCondition();
-                            WhereCondition.Operator _op = WhereCondition.Operator.EQ;
-                            _whereCondition.conditions.add(new OneCondition(_leftValue, _rightValue, _op));
-                            $tableJoin = new SubSelectTable($select_table.selectSqlExec, $t.text, $s.text, _whereCondition);
+                            $tableJoin = new SubSelectTable($select_table.selectSqlExec, $t.text, $s.text, $where_list.whereCondition);
                         }
                       ;
 

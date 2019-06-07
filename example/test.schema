@@ -11,6 +11,6 @@ insert into student values (1003, 99.6, 3.96, 3, 'jiege04')
 insert into student values (1004, 99.5, 3.95, 3, 'jiege05')
 insert into student values (1005, 60.0, 2.7, 3, 'tuixue')
 
-select * from student right outer join teacher on student.grade = teacher.grade
+select * from student right outer join teacher on student.grade = tgrade
 
 select * from (select * from student right outer join teacher on student.grade = teacher.grade) as v join student on v.grade = student.grade
