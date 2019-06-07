@@ -45,6 +45,20 @@ public class InsertSQLExecutor extends SQLExecutor {
             BPlusTree table = mgr.getTableBPlusTreeByName(this.tableName);
             AbstractTuple.AbstractTupleDesc desc = table.getTupleDesc();
             SITuple tuple = new SITuple(desc);
+            int pkId = desc.getPrimary_key_id();
+            if(desc.getAttr_constraint(pkId) == AbstractTuple.Constraints.IS_INC) {
+                BPlusTree.Cursor lastCursor = table.new Cursor();
+                lastCursor.setToEnd();
+                try {
+                    Object largestPk = lastCursor.getTuple().getAttr(pkId);
+                    valueList.add(0, ((Integer) ((Integer) largestPk + 1)).toString());
+                } catch (Exception e) {
+                    valueList.add(0, "0");
+                }
+                if(this.attributeList != null) {
+                    attributeList.add(0, desc.getAttr_name(pkId));
+                }
+            }
             if(this.attributeList == null || (this.attributeList != null && this.attributeList.size() == 0)) {
                 if(this.valueList.size() != desc.getAttr_count()) {
                     return new SQLResult(-1, "Not enough value provided.");
@@ -96,7 +110,6 @@ public class InsertSQLExecutor extends SQLExecutor {
                 }
                 // Constraint Validation: pk cannot be null, not null cannot be null
                 int insert_num = this.attributeList.size();
-                int pkId = desc.getPrimary_key_id();
                 boolean havePk = false;
                 for(int i = 0; i < insert_num; ++i) {
                     int currentId = desc.getIDByName(this.attributeList.get(i));

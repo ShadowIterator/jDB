@@ -1,3 +1,4 @@
+import javax.management.Attribute;
 import java.util.ArrayList;
 
 public class CreateSQLExecutor extends SQLExecutor {
@@ -33,19 +34,45 @@ public class CreateSQLExecutor extends SQLExecutor {
         }
     }
 
+    public String getNewPkName() {
+        String newpk = "pkId";
+        while(true) {
+            boolean flag = false;
+            for(AttributeMeta attr: this.attributeList) {
+                if(attr.attributeName.equals(newpk)) {
+                    newpk = "_" + newpk;
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag) {
+                break;
+            }
+        }
+        return newpk;
+    }
+
     @Override
     public SQLResult execute(MetadataManager mgr) throws Exception {
         int attr_count = this.attributeList.size();
+        if(this.pkName == null) {
+            attr_count += 1;
+        }
         Object[] attr_example = new Object[attr_count];
         String[] attr_name = new String[attr_count];
         byte[] constraint_list = new byte[attr_count];
+        int idx = 0;
+        if(this.pkName == null) {
+            attr_example[0] = 0;
+            attr_name[0] = getNewPkName();
+            constraint_list[0] = AbstractTuple.Constraints.IS_INC;
+            idx = 1;
+        }
+
         int pk_id = -1;
 
-        if(this.pkName == null) {
-            return new SQLResult(-1, "Need to specify the primary key.");
-        }
-        for(int i = 0; i < attr_count; ++i) {
-            AttributeMeta attr = this.attributeList.get(i);
+        for(int i = idx; i < attr_count; ++i) {
+            AttributeMeta attr = this.attributeList.get(i-idx);
             if(attr.attributeName.equals(this.pkName)) {
                 pk_id = i;
             }
@@ -56,8 +83,12 @@ public class CreateSQLExecutor extends SQLExecutor {
                 constraint_list[i] |= AbstractTuple.Constraints.NOT_NULL;
             }
         }
-        if(pk_id == -1) {
+
+        if(this.pkName != null && pk_id == -1) {
             return new SQLResult(-1, "No attribute named " + pkName);
+        }
+        if(this.pkName == null) {
+            pk_id = 0;
         }
         try {
             SITuple.SITupleDesc table_desc = new SITuple.SITupleDesc(attr_example, attr_name, constraint_list, pk_id);
