@@ -67,9 +67,10 @@ public class jDBClient {
 //                " ";
         String file_prefix = "test-doc/sql-gen/";
         String file_name = file_prefix + "test_100k.schema";
+
         String out_file_name = file_name + ".result";
         PrintStream ps=new PrintStream(new FileOutputStream(out_file_name));
-//        System.setOut(ps);
+        System.setOut(ps);
 
         File file = new File(file_name);
         InputStreamReader inputreader= new InputStreamReader(new FileInputStream(file));
@@ -92,6 +93,7 @@ public class jDBClient {
             ArrayList<SQLResult> sqlResults = client.query(sql);
             for(SQLResult res : sqlResults) {
                 res.print();
+
             }
         }
     }

@@ -36,12 +36,15 @@ public class BPTNode {
         AbstractPage page = pager.get(pageId);
         byte[] info = page.getContent();
         Integer readPos = 0;
-        byte[] part = Arrays.copyOfRange(info, readPos, readPos+1);
+//        byte[] part = Arrays.copyOfRange(info, readPos, readPos+1);
+        isRoot = SerializeInplaceUtil.bytesToBoolean(info, readPos);
+//        isRoot = deserializeBool(part);
         readPos++;
-        isRoot = deserializeBool(part);
-        part = Arrays.copyOfRange(info, readPos, readPos+1);
+//        part = Arrays.copyOfRange(info, readPos, readPos+1);
+//        isLeaf = deserializeBool(part);
+        isLeaf = SerializeInplaceUtil.bytesToBoolean(info, readPos);
         readPos++;
-        isLeaf = deserializeBool(part);
+
         entries = new ArrayList<Map.Entry<Comparable, AbstractTuple>>();
         if(!isLeaf)
         {
@@ -51,7 +54,8 @@ public class BPTNode {
         Integer[] intInfo = new Integer[7];
         for(int i=0; i<7; i++)
         {
-            intInfo[i] = SerializeUtil.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
+//            intInfo[i] = SerializeUtil.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
+            intInfo[i] = SerializeInplaceUtil.bytesToInt(info, readPos);
             readPos+=Integer.BYTES;
         }
         parent = intInfo[1];
@@ -82,41 +86,45 @@ public class BPTNode {
         }
         for(int i=0; i<keyNum; i++)
         {
-            byte[] keyPart = Arrays.copyOfRange(info, readPos, readPos+keySize);
-            Comparable key = (Comparable) SerializeUtil.bytesToObject(keyPart, keyClass);
+//            byte[] keyPart = Arrays.copyOfRange(info, readPos, readPos+keySize);
+//            Comparable key = (Comparable) SerializeUtil.bytesToObject(keyPart, keyClass);
+            Comparable key = (Comparable) SerializeInplaceUtil.bytesToObject(info, readPos, keySize, keyClass);
             readPos+=keySize;
             if(isLeaf)
             {
-                byte[] tuplePart = Arrays.copyOfRange(info, readPos, readPos+tupleSize);
-                readPos+=tupleSize;
+//                byte[] tuplePart = Arrays.copyOfRange(info, readPos, readPos+tupleSize);
+//                readPos+=tupleSize;
                 SITuple valTuple = new SITuple(desc);
-                valTuple.deSerialize(tuplePart, desc);
+                valTuple.deSerializeInplace(info, readPos, desc);
+                readPos += tupleSize;
                 entries.add(new AbstractMap.SimpleEntry<Comparable, AbstractTuple>(key, valTuple));
             }
             else
             {
-                byte[] childPart = Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES);
-                readPos += Integer.BYTES;
+//                byte[] childPart = Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES);
                 entries.add(new AbstractMap.SimpleEntry(key, null));
-                children.add(SerializeUtil.bytesToInt(childPart));
+//                children.add(SerializeUtil.bytesToInt(childPart));
+                children.add(SerializeInplaceUtil.bytesToInt(info, readPos));
+                readPos += Integer.BYTES;
             }
         }
     }
 
-
-//    public BPTNode(boolean isLeaf, boolean isRoot)
-//    {
-//        // TODO:加入page
-//        this.isLeaf=isLeaf;
-//        this.isRoot=isRoot;
-//
-//        entries = new ArrayList<Map.Entry<Comparable, AbstractTuple>>();
-//        if(!isLeaf)
-//        {
-//            children = new ArrayList<Integer>();
-//        }
-//
-//    }
+    public void selfDestruct(AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
+    {
+        if(isLeaf)
+        {
+            pager.delPage(selfPageId);
+        }
+        else
+        {
+            for(int i=0; i<children.size(); i++)
+            {
+                BPTNode chNode = new BPTNode(pager, desc, children.get(i));
+                chNode.selfDestruct(pager, desc);
+            }
+        }
+    }
 
     public void writeToPage(AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
     {
@@ -150,35 +158,36 @@ public class BPTNode {
         Integer writePos = 0;
 
         byte[] part = serializeBool(isRoot);
-        System.arraycopy(part, 0, originContent, 0, 1);
-        part = serializeBool(isLeaf);
-        System.arraycopy(part, 0, originContent, 1, 1);
-
+//        System.arraycopy(part, 0, originContent, 0, 1);
+        writePos += SerializeInplaceUtil.booleanToBytes(isRoot, originContent, writePos);
+//        part = serializeBool(isLeaf);
+//        System.arraycopy(part, 0, originContent, 1, 1);
+        writePos += SerializeInplaceUtil.booleanToBytes(isLeaf, originContent, writePos);
+        writePos = 2;
         Integer[] infoInt = {selfPageId, parent, previous, next, keyType, keySize, keyNum};
         for(int i=0; i<infoInt.length; i++)
         {
-            part = SerializeUtil.intToBytes(infoInt[i]);
-            System.arraycopy(part, 0, originContent, 2+i*Integer.BYTES, Integer.BYTES);
+//            part = SerializeUtil.intToBytes(infoInt[i]);
+//            System.arraycopy(part, 0, originContent, 2+i*Integer.BYTES, Integer.BYTES);
+            writePos += SerializeInplaceUtil.objectToBytes(infoInt[i], originContent, writePos);
         }
-        Integer infoSize = 2+7*Integer.BYTES; // plus key type and num info
-        writePos = infoSize;
+//        Integer infoSize = 2+7*Integer.BYTES;
+//        writePos = infoSize;
         Integer tupleSize = desc.tupleSize();
         if(isLeaf)
         {
             for(int i=0; i<entries.size(); i++)
             {
-                part = SerializeUtil.objectToBytes(entries.get(i).getKey());
-                System.arraycopy(part, 0, originContent, writePos, part.length);
+//                part = SerializeUtil.objectToBytes(entries.get(i).getKey());
+//                System.arraycopy(part, 0, originContent, writePos, part.length);
+//                writePos += keySize;
+                SerializeInplaceUtil.objectToBytes(entries.get(i).getKey(), originContent, writePos);
                 writePos += keySize;
                 AbstractTuple tup = entries.get(i).getValue();
-
-//                System.out.println("serialize tuple:    ");
-//                tup.print();
-
-                part = tup.serialize(desc);
-
-
-                System.arraycopy(part, 0, originContent, writePos, tupleSize);
+//                part = tup.serialize(desc);
+//                writePos += tupleSize;
+//                System.arraycopy(part, 0, originContent, writePos, tupleSize);
+                tup.serializeInplace(desc, originContent, writePos);
                 writePos += tupleSize;
             }
         }
@@ -186,12 +195,15 @@ public class BPTNode {
         {
             for(int i=0; i<entries.size(); i++)
             {
-                part = SerializeUtil.objectToBytes(entries.get(i).getKey());
-                System.arraycopy(part, 0, originContent, writePos, part.length);
+//                part = SerializeUtil.objectToBytes(entries.get(i).getKey());
+//                System.arraycopy(part, 0, originContent, writePos, part.length);
+//                writePos += keySize;
+                SerializeInplaceUtil.objectToBytes(entries.get(i).getKey(), originContent, writePos);
                 writePos += keySize;
-                part = SerializeUtil.objectToBytes(children.get(i));
-                System.arraycopy(part, 0, originContent, writePos, Integer.BYTES);
-                writePos += Integer.BYTES;
+//                part = SerializeUtil.objectToBytes(children.get(i));
+//                System.arraycopy(part, 0, originContent, writePos, Integer.BYTES);
+//                writePos += Integer.BYTES;
+                writePos += SerializeInplaceUtil.objectToBytes(children.get(i), originContent, writePos);
             }
         }
         pager.write(page);
@@ -542,10 +554,6 @@ public class BPTNode {
 //                        break;
 //                    }
 //                }
-//            }
-//            if(key.compareTo((long)1161) == 0)
-//            {
-//                System.out.println("here");
 //            }
             int nodePos = keyPosInEntries(key);
             BPTNode chNode = new BPTNode(pager, desc, children.get(nodePos));

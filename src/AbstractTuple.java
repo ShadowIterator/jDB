@@ -10,7 +10,8 @@ abstract public class AbstractTuple {
 //
 //    }
 //    abstract byte[] serialize(int id,) throws Exception;
-
+    abstract void serializeInplace(AbstractTupleDesc desc, byte[] dest, int index) throws Exception;
+    abstract void deSerializeInplace(byte[] b, int index, AbstractTupleDesc desc) throws Exception;
     //abstract Object getAttr(int id) throws Exception;
     //abstract boolean setAttr(int id, Object obj) throw Exception;
     //abstract Object getPrimaryKey() throw Exception;
@@ -37,7 +38,7 @@ abstract public class AbstractTuple {
         //int primary_key_id
         //int attr_count
 
-
+        abstract int getKeySize();
         abstract byte[] serialize() throws  Exception;
         abstract void deSerialize(byte[] b) throws  Exception;
         abstract int tupleSize() throws Exception;
