@@ -1,7 +1,9 @@
 import java.util.Arrays;
 
 public class BPlusTree extends  AbstractRecordManager{
-    protected Integer order;
+//    protected Integer order;
+    protected Integer innerOrder;
+    protected Integer leafOrder;
     protected Integer head;
     protected Integer infoPageId;
     protected Integer count;
@@ -18,11 +20,19 @@ public class BPlusTree extends  AbstractRecordManager{
     public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager) throws Exception
     {
         this.desc = desc;
-        this.order = order;
+//        this.order = order;
         this.pager = pager;
         this.count = 0;
         AbstractPage infoPage = pager.newPage();
         this.infoPageId = infoPage.getPageID();
+
+        int pageSize = infoPage.getPAGESIZE();
+        int nodeInfoSize = 8 * Integer.BYTES;
+        int primaryKeySize = SerializeUtil.objectToBytes(desc.getAttr_example(desc.getPrimary_key_id())).length;
+        int tupleSize = desc.tupleSize();
+        innerOrder = (pageSize-nodeInfoSize)/(primaryKeySize+Integer.BYTES)-1;
+        leafOrder = (pageSize-nodeInfoSize)/(primaryKeySize+tupleSize)-1;
+
         init();
     }
 
@@ -30,10 +40,18 @@ public class BPlusTree extends  AbstractRecordManager{
     public BPlusTree(Integer order, AbstractTuple.AbstractTupleDesc desc, AbstractPager pager, Integer infoPageId) throws Exception
     {
         this.desc = desc;
-        this.order = order;
+//        this.order = order;
         this.pager = pager;
         this.infoPageId = infoPageId;
         this.count = 0;
+
+        int pageSize = pager.get(infoPageId).getPAGESIZE();
+        int nodeInfoSize = 8 * Integer.BYTES;
+        int primaryKeySize = SerializeUtil.objectToBytes(desc.getAttr_example(desc.getPrimary_key_id())).length;
+        int tupleSize = desc.tupleSize();
+        innerOrder = (pageSize-nodeInfoSize)/(primaryKeySize+Integer.BYTES)-1;
+        leafOrder = (pageSize-nodeInfoSize)/(primaryKeySize+tupleSize)-1;
+
         init();
     }
 
@@ -44,19 +62,21 @@ public class BPlusTree extends  AbstractRecordManager{
         AbstractPage infoPage = pager.get(infoPageId);
         byte[] info = infoPage.getContent();
         Integer readPos = 0;
-        Integer[] intInfo = new Integer[6];
+        Integer[] intInfo = new Integer[7];
         for(int i=0; i<intInfo.length; i++)
         {
             intInfo[i] = SerializeUtil.bytesToInt(Arrays.copyOfRange(info, readPos, readPos+Integer.BYTES));
             readPos+=Integer.BYTES;
         }
-        order = intInfo[0];
-        head = intInfo[2];
-        count = intInfo[4];
-        Integer descLength = intInfo[5];
+//        order = intInfo[0];
+        innerOrder = intInfo[0];
+        leafOrder = intInfo[1];
+        head = intInfo[3];
+        count = intInfo[5];
+        Integer descLength = intInfo[6];
         desc = new SITuple.SITupleDesc();
         desc.deSerialize(Arrays.copyOfRange(info, readPos, readPos+descLength));
-        this.root = new BPTNode(pager, desc, intInfo[1]);
+        this.root = new BPTNode(pager, desc, intInfo[2]);
 
     }
 
@@ -71,14 +91,14 @@ public class BPlusTree extends  AbstractRecordManager{
 
     public BPlusTree(Integer order)
     {
-        this.order = order;
+//        this.order = order;
         pager = new NaivePager();
     }
 
     public BPlusTree(Integer order, SITuple.SITupleDesc desc)
     {
         this.desc = desc;
-        this.order = order;
+//        this.order = order;
         pager = new NaivePager();
     }
 
@@ -89,9 +109,14 @@ public class BPlusTree extends  AbstractRecordManager{
         writeInfoPage();
     }
 
-    public Integer getOrder()
+    public Integer getInnerOrder()
     {
-        return order;
+        return innerOrder;
+    }
+
+    public Integer getLeafOrder()
+    {
+        return leafOrder;
     }
 
     public void setHead(Integer head) throws Exception
@@ -151,7 +176,8 @@ public class BPlusTree extends  AbstractRecordManager{
         byte[] infoBuffer = infoPage.getContent();
         byte[] descPart = desc.serialize();
         Integer infoLength = descPart.length;
-        Integer[] infoInt = {order, root.getId(), head, infoPageId, count, infoLength};
+//        Integer[] infoInt = {order, root.getId(), head, infoPageId, count, infoLength};
+        Integer[] infoInt = {innerOrder, leafOrder, root.getId(), head, infoPageId, count, infoLength};
         byte[] part;
         for(int i=0; i<infoInt.length; i++)
         {

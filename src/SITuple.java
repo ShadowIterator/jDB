@@ -38,12 +38,12 @@ public class SITuple extends AbstractTuple implements Serializable {
         for(int k = 0; k < attrs.length; ++k) {
             byte[] tb;
             if (attrs[k] != null)
-                tb = SerializeUtil.objectToBytes(attrs[k]);
+                SerializeInplaceUtil.objectToBytes(attrs[k], b, desc.getOffset(k));
             else {
-                tb = new byte[1];
+//                tb = new byte[1];
                 b[k / 8] |= (byte) (1 << (k % 8));
             }
-            System.arraycopy(tb, 0, b, desc.getOffset(k), tb.length);
+//            System.arraycopy(tb, 0, b, desc.getOffset(k), tb.length);
         }
         return b;
     }

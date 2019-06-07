@@ -48,16 +48,17 @@ public class SerializeInplaceUtil {
         return obj;
     }
 
-    static void intToBytes(int int_value, byte[] dest, int index) {
+    static int intToBytes(int int_value, byte[] dest, int index) {
 //        byte[] b = new byte[4];
         dest[index + 0] = (byte) (int_value & 0xff);
         dest[index + 1] = (byte) ((int_value >> 8) & 0xff);
         dest[index + 2] = (byte) ((int_value >> 16) & 0xff);
         dest[index + 3] = (byte) ((int_value >> 24) & 0xff);
+        return 4;
 //        return b;
     }
 
-    static void longToBytes(long long_value, byte[] dest, int index) {
+    static int longToBytes(long long_value, byte[] dest, int index) {
 //        byte[] b = new byte[8];
 //        byte[] b_low = intToBytes(((int) (long_value)) & 0xffffffff);
 //        byte[] b_high = intToBytes(((int) (long_value >> 32)) & 0xffffffff);
@@ -66,41 +67,46 @@ public class SerializeInplaceUtil {
 //        return b;
         intToBytes(((int) (long_value)) & 0xffffffff, dest, index);
         intToBytes(((int) (long_value >> 32)) & 0xffffffff, dest, index + 4);
+        return 8;
     }
 
-    static void floatToBytes(float float_value, byte[] dest, int index) {
+    static int floatToBytes(float float_value, byte[] dest, int index) {
         int float_int_value = Float.floatToRawIntBits(float_value);
         intToBytes(float_int_value, dest, index);
+        return 4;
     }
 
-    static void doubleToBytes(double double_value, byte[] dest, int index) {
+    static int doubleToBytes(double double_value, byte[] dest, int index) {
         long double_long_value = Double.doubleToRawLongBits(double_value);
         longToBytes(double_long_value, dest, index);
+        return 8;
     }
 
-    static void stringToBytes(String string_value, byte[] dest, int index) {
+    static int stringToBytes(String string_value, byte[] dest, int index) {
         byte[] b = string_value.getBytes();
         System.arraycopy(b, 0, dest, index, b.length);
+        b[index + b.length] = 0;
+        return b.length + 1;
     }
 
-    static void objectToBytes(Object obj,byte[] dest, int index) throws Exception  {
+    static int objectToBytes(Object obj,byte[] dest, int index) throws Exception  {
 
 
         if (obj.getClass() == Integer.class) {
             int int_obj = (int) obj;
-            intToBytes(int_obj, dest, index);
+            return intToBytes(int_obj, dest, index);
         } else if (obj.getClass() == Long.class) {
             long long_obj = (long) obj;
-            longToBytes(long_obj, dest, index);
+            return longToBytes(long_obj, dest, index);
         } else if (obj.getClass() == Float.class) {
             float float_obj = (float) obj;
-            floatToBytes(float_obj, dest, index);
+            return floatToBytes(float_obj, dest, index);
         } else if (obj.getClass() == Double.class) {
             double double_obj = (double) obj;
-            doubleToBytes(double_obj, dest, index);
+            return doubleToBytes(double_obj, dest, index);
         } else /* if(obj.getClass() == String.class) */ {
             String string_obj = (String) obj;
-            stringToBytes(string_obj, dest, index);
+            return stringToBytes(string_obj, dest, index);
         }
     }
 
