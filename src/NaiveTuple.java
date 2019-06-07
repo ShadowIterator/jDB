@@ -5,6 +5,14 @@ public final class NaiveTuple extends AbstractTuple implements java.io.Serializa
     int id;
     double gpa;
 
+    void serializeInplace(AbstractTupleDesc desc, byte[] dest, int index) throws Exception {
+
+    }
+
+    void deSerializeInplace(byte[] b, int index, AbstractTupleDesc desc) throws Exception {
+
+    }
+
     NaiveTuple(int id, double gpa) {
         this.id = id;
         this.gpa = gpa;
