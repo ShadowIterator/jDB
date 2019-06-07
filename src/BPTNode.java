@@ -298,44 +298,48 @@ public class BPTNode {
     {
         if(isLeaf)
         {
-            for(Map.Entry<Comparable, AbstractTuple> item:entries)
+//            for(Map.Entry<Comparable, AbstractTuple> item:entries)
+//            {
+////                System.out.println("--From BPTNode: " + item.getKey() + " : " + key + " : " + item.getKey().compareTo(key));
+//                if(item.getKey().compareTo(key) == 0)
+//                {
+//                    return item.getValue();
+//                }
+//            }
+            int keyPos = keyPosInEntries(key);
+            if(key.compareTo(entries.get(keyPos).getKey())==0)
             {
-//                System.out.println("--From BPTNode: " + item.getKey() + " : " + key + " : " + item.getKey().compareTo(key));
-                if(item.getKey().compareTo(key) == 0)
-                {
-                    return item.getValue();
-                }
+                return entries.get(keyPos).getValue();
             }
             return null;
         }
         else
         {
-            if(key.compareTo(entries.get(0).getKey()) <= 0)
-            {
-                // BPTNode child  = fromPage(pager.get(children.get(0)));
-                BPTNode child = new BPTNode(pager, desc, children.get(0));
-                return child.get(key, pager, desc);
-            }
-            else if(key.compareTo(entries.get(entries.size()-1).getKey()) >= 0)
-            {
-                // BPTNode child = fromPage(pager.get(children.get(entries.size()-1)));
-                BPTNode child = new BPTNode(pager, desc, children.get(entries.size()-1));
-                return child.get(key, pager, desc);
-            }
-            else
-            {
-                for(int i=0; i<entries.size(); i++)
-                {
-                    if (entries.get(i).getKey().compareTo(key) <= 0 && entries.get(i + 1).getKey().compareTo(key) > 0)
-                    {
-                        // BPTNode child = fromPage(pager.get(children.get(i)));
-                        BPTNode child = new BPTNode(pager, desc, children.get(i));
-                        return child.get(key, pager, desc);
-                    }
-                }
-            }
+//            if(key.compareTo(entries.get(0).getKey()) <= 0)
+//            {
+//                BPTNode child = new BPTNode(pager, desc, children.get(0));
+//                return child.get(key, pager, desc);
+//            }
+//            else if(key.compareTo(entries.get(entries.size()-1).getKey()) >= 0)
+//            {
+//                BPTNode child = new BPTNode(pager, desc, children.get(entries.size()-1));
+//                return child.get(key, pager, desc);
+//            }
+//            else
+//            {
+//                for(int i=0; i<entries.size(); i++)
+//                {
+//                    if (entries.get(i).getKey().compareTo(key) <= 0 && entries.get(i + 1).getKey().compareTo(key) > 0)
+//                    {
+//                        BPTNode child = new BPTNode(pager, desc, children.get(i));
+//                        return child.get(key, pager, desc);
+//                    }
+//                }
+//            }
+            int nodePos = keyPosInEntries(key);
+            BPTNode child = new BPTNode(pager, desc, children.get(nodePos));
+            return child.get(key, pager, desc);
         }
-        return null;
     }
 
     public int[] getKeyPos(Comparable key, AbstractPager pager, AbstractTuple.AbstractTupleDesc desc) throws Exception
@@ -540,6 +544,8 @@ public class BPTNode {
 //                }
 //            }
             int nodePos = keyPosInEntries(key);
+            BPTNode chNode = new BPTNode(pager, desc, children.get(nodePos));
+            succeed = chNode.insertOrUpdate(key, tuple, isInsert, tree, pager, desc);
         }
         return succeed;
     }
@@ -894,31 +900,34 @@ public class BPTNode {
         else
         {
             BPTNode child = null;
-            if(key.compareTo(entries.get(0).getKey())<=0)
-            {
-                // child = fromPage(pager.get(children.get(0)));
-                child = new BPTNode(pager, desc, children.get(0));
-                succeed = child.remove(key, tree, pager, desc);
-            }
-            else if(key.compareTo(entries.get(entries.size()-1).getKey())>=0)
-            {
-                // child = fromPage(pager.get(children.get(children.size()-1)));
-                child = new BPTNode(pager, desc, children.get(children.size()-1));
-                succeed = child.remove(key, tree, pager, desc);
-            }
-            else
-            {
-                for(int i=0; i<entries.size(); i++)
-                {
-                    if (entries.get(i).getKey().compareTo(key) <= 0 && entries.get(i+1).getKey().compareTo(key) > 0)
-                    {
-                        // child = fromPage(pager.get(children.get(i)));
-                        child = new BPTNode(pager, desc, children.get(i));
-                        succeed = child.remove(key, tree, pager, desc);
-                        break;
-                    }
-                }
-            }
+//            if(key.compareTo(entries.get(0).getKey())<=0)
+//            {
+//                // child = fromPage(pager.get(children.get(0)));
+//                child = new BPTNode(pager, desc, children.get(0));
+//                succeed = child.remove(key, tree, pager, desc);
+//            }
+//            else if(key.compareTo(entries.get(entries.size()-1).getKey())>=0)
+//            {
+//                // child = fromPage(pager.get(children.get(children.size()-1)));
+//                child = new BPTNode(pager, desc, children.get(children.size()-1));
+//                succeed = child.remove(key, tree, pager, desc);
+//            }
+//            else
+//            {
+//                for(int i=0; i<entries.size(); i++)
+//                {
+//                    if (entries.get(i).getKey().compareTo(key) <= 0 && entries.get(i+1).getKey().compareTo(key) > 0)
+//                    {
+//                        // child = fromPage(pager.get(children.get(i)));
+//                        child = new BPTNode(pager, desc, children.get(i));
+//                        succeed = child.remove(key, tree, pager, desc);
+//                        break;
+//                    }
+//                }
+//            }
+            int nodePos = keyPosInEntries(key);
+            child = new BPTNode(pager, desc, children.get(nodePos));
+            succeed = child.remove(key, tree, pager, desc);
         }
         return succeed;
     }
