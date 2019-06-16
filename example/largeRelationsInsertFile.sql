@@ -1,9 +1,4 @@
-drop table advisor;
-drop table student;
-drop table instructor;
-drop table classroom;
-drop table department;
-drop table course;
+
 create table classroom
 	(building		string(15),
 	 room_number    int,
